@@ -1,63 +1,66 @@
-# 04 · Agent 怎么用
+# 04 · Using an agent
 
-> 这一章讲**把仓库交给 agent 时的操作方式**，不讲话术技巧。
-> 主要依据 Anthropic 官方的 [Best practices](https://code.claude.com/docs/en/best-practices)、
-> [Memory](https://code.claude.com/docs/en/memory)、[Skills](https://code.claude.com/docs/en/skills)、
-> [Subagents](https://code.claude.com/docs/en/sub-agents)，以及 `cli/cli`、`python/cpython` 等仓库里
-> 真实在用的 `AGENTS.md` 写法。
+**English** · [简体中文](04-Agent怎么用.zh-CN.md)
+
+> This chapter is about **how to operate** when handing a repository to an agent — not about prompt tricks.
+> Sources: Anthropic's [Best practices](https://code.claude.com/docs/en/best-practices),
+> [Memory](https://code.claude.com/docs/en/memory), [Skills](https://code.claude.com/docs/en/skills),
+> [Subagents](https://code.claude.com/docs/en/sub-agents), plus the `AGENTS.md` files actually used in
+> `cli/cli` and `python/cpython`.
 
 ---
 
-## 0. 地基：先分清两类指令
+## 0. The foundation: two kinds of instruction
 
-官方文档把每一条给 agent 的指令分成两种，这个区分决定了后面一切做法：
+The official docs split every instruction you give an agent into two kinds, and that split decides everything below:
 
-| | 非确定性（模型自己决定） | 确定性（harness 强制执行） |
+| | Non-deterministic (the model decides) | Deterministic (the harness enforces) |
 |---|---|---|
-| 载体 | 你的 prompt、`AGENTS.md`/`CLAUDE.md`、skill | hook、`deny` 规则、managed settings |
-| 谁执行 | 模型 | Claude Code 本体 |
-| 保证 | **通常**遵守，没有保证 | **每一次**都执行，不管模型怎么想 |
+| Carrier | your prompt, `AGENTS.md`/`CLAUDE.md`, skills | hooks, `deny` rules, managed settings |
+| Who executes | the model | Claude Code itself |
+| Guarantee | it **usually** complies — no guarantee | **always**, regardless of what the model decided |
 
-官方原话很值得抄下来：
+Worth quoting in full:
 
-> Almost every guideline has exceptions... With the actual code in front of it, Claude is usually better placed to make that call than a rule you wrote in advance.
-> （绝大多数规则都有例外；看到真实代码时，模型通常比你事先写下的规则更会判断。）
+> Almost every guideline has exceptions... With the actual code in front of it, Claude is usually better placed to make
+> that call than a rule you wrote in advance.
 
-**所以默认应该是"让模型判断"，只把"绝不能有例外"的那几条升级成确定性机制。**
-这条和"指导性文档不替人做决定"是同一个道理——只不过对象从人换成了 agent。
+**So the default should be "let the model judge", and only the "no exceptions" rules get promoted to deterministic
+mechanisms.** This is the same reasoning as "guidance documentation does not make decisions for people" — only the
+subject changes from humans to agents.
 
 ---
 
-## 1. 给上下文：短、分层、按需
+## 1. Give it context: short, layered, on demand
 
-### 1.1 根文件要短
+### 1.1 Keep the root file short
 
-官方建议在 `CLAUDE.md`/`AGENTS.md` 里只写**模型看不到、又每次都要用**的东西：
+Only what the model **cannot see and needs every time**:
 
-- 跑测试/构建/lint 的那几条命令
-- 目录地图（哪个目录做什么，哪里有雷）
-- 硬约定（提交格式、不许动的目录）
-- 已知的坑
+- the commands to build / test / lint
+- a directory map (what each area is, where the traps are)
+- hard rules (commit format, untouchable directories)
+- known pitfalls
 
-**不要**写：架构长文、代码风格百科、能从代码读出来的东西。
+**Do not** put in: long architecture essays, a style encyclopaedia, anything derivable from the code.
 
-### 1.2 按目录分层，而不是把根文件写长
+### 1.2 Layer by directory instead of growing the root file
 
-官方在 [large codebases 指南](https://code.claude.com/docs/en/large-codebases) 给的做法：
+Per Claude Code's [large codebases guide](https://code.claude.com/docs/en/large-codebases):
 
-- 根放共享约定；每个包/子系统再放一份（`packages/api/CLAUDE.md`）；
-- 根在启动时加载，**子目录的只在你读到那里时才加载**；
-- 不想加载的包用 `claudeMdExcludes` 排除；
-- 也可以改成 `path-scoped rules`（`.claude/rules/*.md` + `paths:`）。
+- shared conventions at the root; one more per package/subsystem (`packages/api/CLAUDE.md`);
+- the root loads at startup, **subdirectory files load only when work reaches them**;
+- exclude packages with `claudeMdExcludes`;
+- or replace a pile of files with `path-scoped rules` (`.claude/rules/*.md` + `paths:`).
 
-### 1.3 多步流程放 skill，不占根文件
+### 1.3 Put multi-step procedures in skills
 
-官方明确"把团队流程放进 skills"：流程只在被调用时加载，不占日常上下文。
-判断标准：**每次都要知道 → 根文件；做某件事时才需要 → skill。**
+Official advice: move team procedures into skills — they load only when invoked and don't consume the daily budget.
+The test: **needed every session → root file; needed only to do one thing → skill.**
 
-### 1.4 一个被真实使用的写法
+### 1.4 A pattern real repositories use
 
-`cli/cli` 的做法值得抄：agent 定义里先声明优先级，再叠加仓库自己的覆盖层——
+`cli/cli` declares precedence and layers a repository overlay on top:
 
 ```markdown
 ## Repository Instructions Overlay
@@ -67,118 +70,107 @@ If `.github/aw/instructions.md` exists, load it with:
 Precedence: repository overlay instructions override defaults in this agent when they conflict.
 ```
 
-**"默认 + 仓库覆盖层 + 明写优先级"**，比两边各写一份、靠模型猜要可靠得多。
+**Default + repository overlay + explicit precedence** beats "write it in two places and hope the model guesses".
 
 ---
 
-## 2. 给检查：让它能自己判断"做完了"
+## 2. Give it a check: something that decides "done"
 
-官方这句话是整章的题眼：
+This line is the heart of the chapter:
 
-> Claude stops when the work looks done. If it has nothing to run that tells it whether the work actually *is* done, "looks done" is all it has to go on.
-> （模型在"看起来做完了"时停下。如果没有能跑出 pass/fail 的东西，"看起来"就是它唯一的依据。）
+> Claude stops when the work looks done. If it has nothing to run that tells it whether the work actually *is* done,
+> "looks done" is all it has to go on.
 
-四种收紧方式，从松到紧：
+Four levels, from loose to strict:
 
-| 级别 | 做法 | 什么时候够用 |
+| Level | Approach | Sufficient when |
 |---|---|---|
-| 1 | prompt 里说"跑测试，直到全过" | 一次性任务 |
-| 2 | 设成目标（`/goal all tests pass and lint is clean`），每轮由另一个模型核对 | 长任务、后台跑 |
-| 3 | 在 `AGENTS.md` 里写明"提交前必跑 X"，并在 PR 模板里要求贴输出 | 日常协作 |
-| 4 | CI required check / `Stop` hook 拦住"没跑就结束" | 一定要保证 |
+| 1 | say "run the tests until they pass" in the prompt | one-off task |
+| 2 | set a goal (`/goal all tests pass and lint is clean`), checked by another model every turn | long or background runs |
+| 3 | write "run X before committing" in `AGENTS.md`, require the output in the PR template | day-to-day collaboration |
+| 4 | CI required check / a `Stop` hook blocks "finishing" without it | must always hold |
 
-**投入产出比最高的一句话**：如果你的仓库已经有测试/lint/类型检查，那么 `AGENTS.md` 里最值钱的一行就是**跑它的那条命令**。
+**The single highest-value line**: if the repo already has tests/lint/typecheck, the most useful line in `AGENTS.md`
+is **the command that runs it**.
 
 ---
 
-## 3. 给边界：哪些必须确定性
+## 3. Give it boundaries: what must be deterministic
 
-官方给的三个例子可以直接照搬：
+Three official examples, usable as-is:
 
-| 规则 | 写在 `AGENTS.md` 里 | 升级为确定性 |
+| Rule | Written in `AGENTS.md` | Promoted to deterministic |
 |---|---|---|
-| 不要读 `.env` | 模型通常遵守 | `permissions.deny: ["Read(./.env)"]` |
-| 改完必须格式化 | 经常忘 | `PostToolUse` hook 直接跑 formatter |
-| 不要动 `migrations/` | 偶尔会绕 | `Edit(./migrations/**)` deny，或 hook 里 `exit 2` |
+| Do not read `.env` | usually obeyed | `permissions.deny: ["Read(./.env)"]` |
+| format after editing | often forgotten | a `PostToolUse` hook runs the formatter |
+| do not touch `migrations/` | occasionally worked around | `Edit(./migrations/**)` deny, or a hook with `exit 2` |
 
-要点：
+Two rules of thumb:
 
-- **hook 里不要用 `prompt`/`agent` 类型做强制的判断**——那仍然是模型判断，不是确定性。要强制就用 `command`/`http`。
-- 如果"hook 自己崩了"也必须拦住，加 `onFailure: "block"`。
-- 确定性手段是**稀缺资源**：只给"绝不能有例外"的规则用，否则会把仓库变成不可维护的规则迷宫。
+- **Don't use `prompt`/`agent` hooks for enforcement** — a model deciding is not deterministic. Use `command`/`http`.
+- If "the hook itself crashes" must also block, add `onFailure: "block"`.
+- Deterministic mechanisms are a **scarce resource**: reserve them for "no exceptions", or the repo becomes a maze.
 
 ---
 
-## 4. 会话操作：什么时候用哪种模式
+## 4. Session mechanics: which mode when
 
-| 场景 | 做法 | 什么时候**不**该用 | 成本量级 |
+| Situation | Do | When **not** to | Cost |
 |---|---|---|---|
-| 改动跨多个文件、方向不明 | 先 plan mode 出方案再执行（官方 permission modes） | 方案已经明确时——多一轮确认只是延迟 | 无额外调用，多一次交互 |
-| 一次改很多、互不相干的文件 | 派 subagent，各自独立上下文（[Subagents](https://code.claude.com/docs/en/sub-agents)） | 任务之间有强依赖、需要共享中间结论时 | 每个 subagent 重新读一遍相关文件；3 个 ≈ 3 份上下文 |
-| 多个任务并行、会互相踩文件 | 每个任务一个 worktree（[Worktrees](https://code.claude.com/docs/en/worktrees)） | 只改同一个文件时 | 磁盘与依赖安装成本，首次准备较慢 |
-| 需要大量搜索/读文件才能定位 | 交给 subagent 去搜，主上下文只要结论 | 读一两个文件就能定位时 | 一次独立读取，只回传结论 |
-| 长任务、可以无人值守 | 设目标 + 明确检查 + 预算上限（`--max-turns` / `--max-budget-usd`） | 没有可运行的检查时——无人值守只会放大错误 | 按 token 与轮次计费 |
+| Change spans many files, direction unclear | plan mode first, then execute (official permission modes) | the plan is already clear — the extra round trip is just delay | no extra call, one more exchange |
+| Many unrelated files to touch | dispatch a subagent with its own context ([Subagents](https://code.claude.com/docs/en/sub-agents)) | tasks depend on each other and must share intermediate results | each subagent re-reads the relevant files; 3 ≈ 3 contexts |
+| Several tasks in parallel, files would collide | one worktree per task ([Worktrees](https://code.claude.com/docs/en/worktrees)) | they all edit the same file | disk + dependency install; slower first run |
+| Need heavy search/reading to locate something | let a subagent search; return only the conclusion | one or two files would find it | one independent read, conclusion comes back |
+| Long run, unattended | set a goal + a runnable check + a budget cap (`--max-turns` / `--max-budget-usd`) | there is no runnable check — unattended runs amplify errors | billed per token and per turn |
 
-### subagent 的账要算对
+### Get the subagent arithmetic right
 
-官方列的是它**在哪些情况下划算**：
+The official list is about **when subagents pay off**:
 
-- 把独立的工作并行，整体更早完成；
-- 把长输出（一次完整测试、一次大范围搜索）挡在主对话之外——否则它会跟着整个会话一直占着上下文；
-- 拿到一个**没见过代码是怎么写的**评审者；
-- 给任务**更少的工具**（例如只读评审）。
+- running independent work in parallel so the whole task finishes sooner;
+- keeping long output (a full test run, a wide search) out of the main conversation, where it would otherwise ride along;
+- getting a reviewer that hasn't seen how the code was written;
+- giving a task **fewer tools** (e.g. a read-only reviewer).
 
-代价的机制在这里：**subagent 有独立的上下文窗口，它要重新读一遍相关文件才能干活。**
-所以在文件大、依赖多的仓库里，"派一个 subagent 去查"的总成本可能高于在主上下文里查一次。
-**它不是免费的并行，是用上下文换隔离。**
+The mechanism behind the cost: **a subagent has its own context window, so it must re-read the relevant files.**
+In a repo with large files and deep dependencies, "dispatch a subagent to look" can cost more than looking yourself.
+**It is not free parallelism; it trades context for isolation.**
 
-同源的一个效果问题：**上下文越满，判断质量越差**。
-所以"根文件短、流程进 skill、搜索进 subagent"不是洁癖，是在保质量。
+A related quality effect: **the fuller the context, the worse the judgement.** "Short root file, procedures in skills,
+searches in subagents" is not tidiness — it protects quality.
 
-官方还说明：宽泛的代码库搜索会自动交给内置的 Explore agent，侧任务在 fork 模式下默认分叉并在后台跑——
-也就是说**这些切换很多时候不是你决定的**，你至少要知道它的账怎么算。
+The docs also note that broad codebase searches are delegated to the built-in Explore agent, and side tasks fork and run
+in the background by default — **many of these switches are not yours to make**; at least know the arithmetic.
 
 ---
 
-## 5. 反例
+## 5. Counter-examples
 
-| 反例 | 问题 | 改法 |
+| Counter-example | Problem | Fix |
 |---|---|---|
-| 把所有规则都写成 hook | 不可维护，且模型失去判断空间 | 只升级"绝不能有例外"的 |
-| `AGENTS.md` 写 500 行 | 每次会话都付费，遵守率还下降 | 超过 200 行就分层或改路由 |
-| 没有可运行的检查，只靠人看 | 人变成测试套件 | 给一条能跑出 pass/fail 的命令 |
-| 让 agent"注意代码风格" | 无法执行 | 给 formatter + lint 命令 |
-| 一个会话里连做五件不相关的事 | 上下文污染、互相踩 | 拆 subagent / worktree |
-| 用 prompt hook 做安全拦截 | 仍是模型判断 | 换 `command` hook + `exit 2` |
+| Turning every rule into a hook | unmaintainable; the model loses room to judge | promote only "no exceptions" rules |
+| A 500-line `AGENTS.md` | paid for every session, and compliance drops | split past 200 lines, or switch to the router shape |
+| No runnable check, only human review | you become the test suite | give it one pass/fail command |
+| Telling the agent to "mind the code style" | not executable | provide formatter + lint commands |
+| Five unrelated changes in one session | context pollution, files collide | split into subagents / worktrees |
+| A `prompt` hook as a safety gate | still a model decision | `command` hook with `exit 2` |
 
 ---
 
-## 6. 判据：这套用法是否到位
+## 6. Criteria
 
-**硬性（这四条不成立，说明做法没到位）**
+**Must hold (if not, the practice isn't in place)**
 
-- [ ] 仓库里有**一条命令**能告诉 agent"你做对了没有"？
-- [ ] 那条命令，最近一次实际跑通是什么时候？
-- [ ] 有没有哪条"绝不能有例外"的规则，却还只写在文档里？
-- [ ] 子目录的约定是分层加载的，还是全塞在根文件里？
+- [ ] Is there **one command** that tells the agent whether it got it right?
+- [ ] When was that command last actually run?
+- [ ] Is any "no exceptions" rule still only written in a document?
+- [ ] Are subdirectory conventions layered, or all crammed into the root file?
 
-**视情况（没做也可以，但要能说出理由）**
+**Situational (fine to skip, but be able to say why)**
 
-- [ ] 反过来看：有没有把"有例外的规则"硬写成了 hook？
-- [ ] 多步流程在 skill 里，还是在根文件里？
-- [ ] 需要隔离上下文时你派了 subagent，还是把搜索结果全塞进了主对话？
+- [ ] Conversely: has a rule with legitimate exceptions been frozen into a hook?
+- [ ] Are multi-step procedures in skills, or in the root file?
+- [ ] When isolation mattered, did you dispatch a subagent, or dump the search results into the main thread?
 
-> 这些不是评分项。勾满不等于用法到位，勾不满也不等于有问题——**理由比勾重要。**
-
----
-
-## 7. 依据
-
-| 论断 | 来源 |
-|---|---|
-| 确定性 vs 非确定性指令；"多数时候应让模型判断" | [Best practices · Deterministic and non-deterministic instructions](https://code.claude.com/docs/en/best-practices) |
-| "给一个能跑出 pass/fail 的检查"；四级收紧 | 同上 · Give Claude a check to run |
-| 不可例外的规则用 hook / deny / managed settings；`onFailure: block` | 同上 · Enforce the rules that can't have exceptions |
-| 根文件短、按目录分层、`claudeMdExcludes`、per-directory skills | [Set up Claude Code in a monorepo](https://code.claude.com/docs/en/large-codebases) |
-| 加载顺序与作用域 | [How Claude remembers your project](https://code.claude.com/docs/en/memory) |
-| 覆盖层 + 优先级声明的真实写法 | `cli/cli` 的 `.github/agents/agentic-workflows.md`（实测） |
+> These are not a score. A full checklist doesn't mean the practice is in place, and an incomplete one isn't a problem —
+> **the reason matters more than the tick.**

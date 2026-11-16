@@ -1,52 +1,56 @@
-# 05 · Agent 参与怎么管理
+# 05 · Governing agent participation
 
-> 这一章讲**当 agent 的提交开始变多时，怎么管**。
-> 依据：Anthropic 的 [Best practices](https://code.claude.com/docs/en/best-practices)、
-> [Permissions](https://code.claude.com/docs/en/permissions)、[Hooks](https://code.claude.com/docs/en/hooks)、
-> [Worktrees](https://code.claude.com/docs/en/worktrees)；GitHub 的分支保护与 CODEOWNERS 规则；
-> 以及 `cli/cli`、`python/cpython`、`microsoft/vscode` 仓库里**真实写着的** agent 门槛。
+**English** · [简体中文](05-Agent参与怎么管理.zh-CN.md)
 
----
-
-## 0. 管理只需要回答四个问题
-
-| 问题 | 机制 | 谁执行 |
-|---|---|---|
-| **谁能改** | 分支保护、CODEOWNERS、deny 规则、managed settings | 平台 / harness |
-| **什么时候允许动手** | 贡献资格门槛、开工前检查 | 人定的规则 + agent 遵守 |
-| **怎么判合格** | required checks、PR 模板、人的最后一票 | CI + 人 |
-| **怎么留痕与回滚** | 归属 trailer、CHANGELOG、ADR、PR 讨论、worktree | 工具 + 惯例 |
-
-一句话立场（官方原话）：
-
-> Who has the last word: **Branch protection, a person who approves the merge.**
-> （最后一票在分支保护和批准合并的那个人。）
-
-**agent 永远不是最终裁决者。** 它可以是作者、可以是评审的第一读者，不能是"通过"的那一方。
+> This chapter is about **what changes once agent commits become common**.
+> Sources: Anthropic's [Best practices](https://code.claude.com/docs/en/best-practices),
+> [Permissions](https://code.claude.com/docs/en/permissions), [Hooks](https://code.claude.com/docs/en/hooks),
+> [Worktrees](https://code.claude.com/docs/en/worktrees); GitHub's branch-protection and CODEOWNERS rules;
+> and the agent gates **actually written down** in `cli/cli`, `python/cpython` and `microsoft/vscode`.
 
 ---
 
-## 1. 谁能改：先把门装上
+## 0. Four questions are enough
 
-### 1.1 分支保护是唯一真正硬的边界
-
-| 设置 | 值 | 作用 |
+| Question | Mechanism | Who enforces |
 |---|---|---|
-| Require a pull request | ✅ | 禁止直推 |
-| Required approvals | ≥1 | 人必须看 |
-| Dismiss stale approvals | ✅ | 新提交作废旧批准 |
-| **Require review from Code Owners** | ✅ | 让 `CODEOWNERS` 真正生效（不开就是装饰） |
-| Require status checks | `lint`、`test` 等 | CI 门禁 |
-| Allow force pushes / deletions | ❌ | 保护历史 |
-| **Do not allow bypassing** | ✅ | 开了之后管理员也必须走门禁；紧急通道改用 Rulesets 的 **bypass list** 精确授权，而不是靠"管理员都能绕过" |
+| **Who may change what** | branch protection, CODEOWNERS, deny rules, managed settings | platform / harness |
+| **When may work start** | contribution eligibility gates, pre-flight checks | rules set by people, followed by the agent |
+| **How is it judged** | required checks, PR template, the human's final vote | CI + a person |
+| **How is it recorded and reverted** | attribution trailer, CHANGELOG, ADRs, PR discussion, worktrees | tooling + convention |
 
-**关于 bypass，两条必须说清的补充**
+The official position, in one line:
 
-- 这一项决定了上面整张表在"赶时间"时还算不算数。绕过的动机通常不是恶意，而是"我急着发"——而 agent 让改动变便宜之后，这个动机出现得更频繁。
-- 例外可以存在，但要**被授权并被记录**：开 `Do not allow bypassing`，在 Rulesets 的 bypass list 里点名"谁可以在什么条件下绕过"，并把"为什么允许"写进 ADR。**"视团队"不是一种设置，是一种遗忘。**
-- 本仓库当前未开启 admin 强制，理由与代价记在 `docs/adr/0003-why-this-repo-delays-admin-enforcement.md`——**规范允许例外，但要求例外被写下来。**
+> **Who has the last word** — Branch protection, a person who approves the merge.
 
-### 1.2 治理面单独设 owner
+**The agent is never the final judge.** It can be the author and the first reader of a review; it cannot be the one who
+approves.
+
+---
+
+## 1. Who may change what: install the gate first
+
+### 1.1 Branch protection is the only truly hard boundary
+
+| Setting | Value | Effect |
+|---|---|---|
+| Require a pull request | ✅ | no direct pushes |
+| Required approvals | ≥1 | a human must look |
+| Dismiss stale approvals | ✅ | new commits void old approvals |
+| **Require review from Code Owners** | ✅ | makes `CODEOWNERS` real (without it, decoration) |
+| Require status checks | `lint`, `test`, … | CI gate |
+| Allow force pushes / deletions | ❌ | protects history |
+| **Do not allow bypassing** | ✅ | admins must go through the gate too; use a ruleset **bypass list** for emergencies instead of "admins can bypass anything" |
+
+Two notes on bypass:
+
+- This setting decides whether all of the above still holds when someone is in a hurry. The motive is rarely malice —
+  it is "I need to ship". Once agents make changes cheap, that motive shows up far more often.
+- Exceptions can exist, but they must be **authorised and recorded**: enable `Do not allow bypassing`, name who may
+  bypass in the ruleset bypass list, and write down why in an ADR.
+  **"Depends on the team" is not a setting; it is a way of forgetting.**
+
+### 1.2 Give the governance surface its own owners
 
 ```
 /.claude/               @org/agent-ops
@@ -54,106 +58,107 @@
 /AGENTS.md              @org/agent-ops
 ```
 
-理由：**agent 改代码是工作，agent 改自己的权限与门禁是越权。**
-这三处必须走人工 PR，且最好由不同的人看。
+Rationale: **an agent changing code is work; an agent changing its own permissions and gates is overreach.**
+These three must go through a human PR, ideally reviewed by someone other than the author.
 
-### 1.3 组织级用托管配置
+### 1.3 Use managed settings at the organisation level
 
-个人 `settings.json` 可以改，但**managed settings（组织下发）不能被个人覆盖**。
-需要"全公司都必须遵守"的几条，放这一层；放在仓库里的规则，永远只是"这个仓库的约定"。
+A personal `settings.json` can be edited; **managed settings (pushed by the org) cannot be overridden by the individual.**
+Anything that must hold company-wide belongs there. Rules that live in the repository are only "this repo's convention".
 
 ---
 
-## 2. 什么时候允许动手：真实仓库的门槛
+## 2. When may work start: gates real repositories use
 
-这是最容易被忽略、但头部仓库都在做的一件事——**在 agent 开始写代码之前设卡**。
+This is the most overlooked practice, and the top repositories all do it — **gate the agent before it starts writing code.**
 
-### `cli/cli` 的做法
+### `cli/cli`
 
-> 摘录（2026-11-17 抓取，`cli/cli` 仓库 `AGENTS.md`）：
+> Excerpt (fetched 2026-11-17, `AGENTS.md` in `cli/cli`):
 >
 > "**Do not prepare an unsolicited external upstream pull request to cli/cli.**"
 > "Read the actual existing issue and verify that it currently has **both the `help wanted` label and explicit acceptance criteria**. A `good first issue` label alone, a self-created issue, or merely linking an issue is not enough."
 > "**Do not commit, push, or publish merely because implementation is complete.**"
 
-中文要点：
+Key points:
 
-- **不许为未经邀请的上游 PR 做准备**：必须同时有 `help wanted` 标签 **和**明确的验收标准；
-  只凭 `good first issue`、自己开的 issue、或"链接了一个 issue"都不算；
-- 标了 `core` 的 issue 不动；
-- 拿不到资格、或资格不明确时，**停止实现**，向人解释政策，不要自动创建 issue/讨论/评论；
-- 授权是具体的：**对该仓库有 `write` 权限的已认证身份**才构成"被要求做这件事"的授权；fork 所有权、一句"修一下吧"、或看起来有益，都不构成；
-- **"实现完了"不等于可以 commit、push、publish。**
+- **No unsolicited upstream PRs**: it needs `help wanted` **and** explicit acceptance criteria; a `good first issue`
+  label alone, a self-created issue, or merely linking an issue does not count;
+- issues labelled `core` are off limits;
+- if eligibility is absent or ambiguous, **stop implementing**, explain the policy, and do not auto-create
+  issues/discussions/comments;
+- authorisation is specific: an authenticated identity with **`write` permission** on the repo counts as "someone asked
+  for this"; fork ownership, a "please fix this", or a beneficial-looking change does not;
+- **"implementation complete" does not mean you may commit, push, or publish.**
 
-### `python/cpython` 的做法
+### `python/cpython`
 
-> 摘录（2026-11-17 抓取，`python/cpython` 仓库 `AGENTS.md`）：
+> Excerpt (fetched 2026-11-17, `AGENTS.md` in `python/cpython`):
 >
-> "CPython has a [policy on the use of AI tools](https://devguide.python.org/getting-started/ai-tools/). All use of AI tools and agents when working on or interacting with CPython must follow it."
+> "CPython has a policy on the use of AI tools… All use of AI tools and agents when working on or interacting with CPython must follow it."
 > "**Primary directive**: Read the policy before making or proposing any changes."
 > "Do not auto-generate issues with AI tools."
 
-中文要点：
+Key points: read the policy first; never auto-open issues; and it ships de-duplication commands so "don't open
+duplicates" becomes an executable action.
 
-- 开头就是"先读 AI 政策"，不读不许提改动；
-- 不许用 AI 自动开 issue；
-- 附了去重命令（`gh search issues …`），把"别开重复 issue"变成可执行的动作。
+### Four things to copy
 
-### 可以照搬的四条
-
-1. **开工前有资格判断**（有没有被邀请、有没有验收标准）；
-2. **有"停止条件"**（资格不明 → 停，不许自己扩大范围）；
-3. **把"别做某事"变成可执行的命令**（去重搜索）；
-4. **明写"完成 ≠ 可以提交"**，把提交/推送/发布当成需要单独决定的事。
+1. **An eligibility check before starting** (were you invited? are there acceptance criteria?);
+2. **Stop conditions** (ambiguous eligibility → stop; do not widen scope yourself);
+3. **Turn "don't" into a command** (a de-duplication search);
+4. **Say explicitly that "done" ≠ "may submit"** — commit, push and publish are separate decisions.
 
 ---
 
-## 3. 怎么判合格：三道闸
+## 3. How is it judged: three gates
 
-| 闸 | 谁执行 | 判什么 |
+| Gate | Enforced by | Judges |
 |---|---|---|
-| 机器闸 | CI required checks | 能不能编译、测试过不过、lint 干净 |
-| 结构闸 | PR 模板 | 有没有说"改了什么/为什么/怎么验证的" |
-| 人闸 | 评审者 | 意图对不对、边界条件、影响面、能不能回滚 |
+| Machine | CI required checks | does it build, do tests pass, is lint clean |
+| Structure | PR template | was "what / why / how verified" filled in |
+| Human | the reviewer | intent, edge cases, blast radius, revertibility |
 
-**PR 模板里最值钱的两栏**：
+**The two most valuable fields in a PR template**:
 
-- **怎么验证的**——要求贴真实输出，不接受"已测试"；
-- **需要 reviewer 特别看的地方**——把评审从"通读 diff"变成"重点核对三处"。
+- **How it was verified** — require real output; "tested" is not evidence;
+- **What the reviewer should look at closely** — turns review from "read the diff" into "check these three things".
 
 ---
 
-## 4. 怎么留痕：归属、变更、决策
+## 4. How is it recorded: attribution, changes, decisions
 
-| 留痕对象 | 机制 | 说明 |
+| What | Mechanism | Note |
 |---|---|---|
-| 这次提交是谁写的 | **git trailer**（Claude Code 默认写 `Co-Authored-By: <model> <noreply@anthropic.com>`） | 配置项是 `attribution.commit`；不要自造 `Agent:` 之类的新行 |
-| 这个版本改了什么 | `CHANGELOG.md` | 只写用户可感知的变化，带 PR 号 |
-| 为什么这么设计 | `docs/adr/` | 选项里必须写"为什么不选" |
-| 当时讨论了什么 | PR 描述与评论 | 模板强制了结构，讨论才不会散 |
+| who wrote this commit | **git trailer** (Claude Code writes `Co-Authored-By: <model> <noreply@anthropic.com>` by default) | configured via `attribution.commit`; do not invent a custom `Agent:` line |
+| what changed in this version | `CHANGELOG.md` | user-visible changes only, with PR numbers |
+| why it was designed this way | `docs/adr/` | options must say why they were rejected |
+| what was discussed | PR description and comments | the template forces structure so discussion doesn't scatter |
 
-**归属为什么重要**：它是事后唯一能回答"这段代码是谁写的、能不能复现"的线索。
-把它关掉（`attribution: false` 或空串）等于主动放弃审计能力——这也是本库把它列为 `should` 的唯一一条提交相关规则。
+**Why attribution matters**: it is the only clue that later answers "who wrote this, and can it be reproduced".
+Turning it off (`attribution: false` or an empty string) is knowingly discarding auditability — which is why it is the
+only `should` among this repo's commit-related rules.
 
 ---
 
-## 5. 怎么隔离与回滚
+## 5. How to isolate and revert
 
-| 手段 | 用途 | 注意 |
+| Tool | Use | Note |
 |---|---|---|
-| **worktree** | 多个并行任务互不踩文件 | 各自独立分支；哪些 gitignore 文件要带进去用 `.worktreeinclude` 声明 |
-| **小步提交** | 一次改动只有一个目的 | 混入无关重构的 PR 无法评审，也无法干净 revert |
-| **禁止 force push** | 历史不被重写 | 这是回滚的前提 |
-| **`revert` 优先于"再改回去"** | 出问题时先恢复可用状态 | 修 bug 是第二件事 |
+| **worktree** | parallel tasks that must not collide | each on its own branch; declare which gitignored files come along via `.worktreeinclude` |
+| **small commits** | one purpose per change | a PR mixing refactors cannot be reviewed, nor cleanly reverted |
+| **no force push** | history is not rewritten | it is the precondition for reverting |
+| **`revert` before "fix forward"** | restore a working state first | the bug fix is a second task |
 
-**回滚的判据**：这次改动能不能用一条 `git revert` 干净撤掉？
-如果有数据迁移、外部副作用、或已发布的接口变更——那就不是"回滚"，是"发布事故"，需要单独的 runbook。
+**The revert test**: can this change be undone with a single `git revert`?
+If there is a data migration, an external side effect, or a shipped interface change — that is not a revert, that is an
+incident, and it needs a runbook.
 
 ---
 
-## 6. 别让 agent 管治理面
+## 6. Don't let the agent govern itself
 
-`cli/cli` 的 agent 定义里有一种值得抄的结构：
+A structure worth copying from `cli/cli`'s agent definition:
 
 ```markdown
 ## Repository Instructions Overlay
@@ -162,70 +167,57 @@ If `.github/aw/instructions.md` exists, load it with:
 Precedence: repository overlay instructions override defaults in this agent when they conflict.
 ```
 
-两个要点：
+Two ideas:
 
-1. **agent 的默认行为与仓库的覆盖层分开存放**，冲突时明写谁优先——避免"两套规则打架、模型随机选"；
-2. **覆盖层本身在 `.github/` 里，受 CODEOWNERS 管辖**——agent 改不了自己的规则。
+1. **The agent's defaults and the repository's overlay live in separate places**, and precedence is stated explicitly —
+   no "two rule sets fight and the model picks one at random";
+2. **The overlay itself lives under `.github/`, governed by CODEOWNERS** — the agent cannot rewrite its own rules.
 
-同理：`microsoft/vscode` 把 `agents/`、`skills/`、`instructions/`、`hooks/` 都放在 `.github/` 下，
-和 workflows 一起接受同一套评审与权限。**把 agent 的"能力"和"约束"放在同一个受管目录里**，比分散在两处更难被绕过。
+Likewise, `microsoft/vscode` keeps `agents/`, `skills/`, `instructions/` and `hooks/` under `.github/`, subject to the
+same review and permissions as workflows. **Putting an agent's capabilities and its constraints in the same governed
+directory** is much harder to bypass than spreading them out.
 
 ---
 
-## 7. 组织级与规模化
+## 7. Organisation scale
 
-| 场景 | 做法 |
+| Situation | Do |
 |---|---|
-| 多个仓库要同一套底线 | 组织级 `.github` 仓库放默认 `CONTRIBUTING`/`SECURITY`/模板，单仓库可覆盖 |
-| 必须无条件遵守的规则 | managed settings（个人与仓库都无法覆盖） |
-| 并行跑多个任务 | worktree + 各自的 subagent；不要在一个会话里串行做五件事 |
-| 无人值守的长任务 | 明确检查 + 目标条件 + 预算上限（`--max-turns` / `--max-budget-usd`） |
+| Same baseline across many repos | a public org-level `.github` repo with default `CONTRIBUTING`/`SECURITY`/templates; per-repo files override |
+| Rules that must never be overridden | managed settings (neither the individual nor the repo can override) |
+| Many tasks in parallel | worktrees + a subagent each; don't serialise five things in one session |
+| Long unattended runs | an explicit check + a goal condition + a budget cap (`--max-turns` / `--max-budget-usd`) |
 
 ---
 
-## 8. 反例
+## 8. Counter-examples
 
-| 反例 | 后果 | 改法 |
+| Counter-example | Consequence | Fix |
 |---|---|---|
-| agent 直推 main | 没有评审、没有回滚点 | 分支保护 |
-| 开了 CODEOWNERS 但没开 `Require review from Code Owners` | 看起来有治理，实际零效果 | 打开那个开关 |
-| agent 能改 `.github/workflows/` 和 `.claude/` | 自己给自己放行 | 治理面单独 owner + deny |
-| 关掉 attribution | 事后分不清哪次提交是模型写的 | 保留 trailer |
-| 用 PR 描述里一句"已测试"当验证 | 假绿 | 要求贴输出 |
-| 一个 PR 混三轮重构 | 无法评审、无法回滚 | 强制聚焦，拆 PR |
-| 用 prompt hook 做安全拦截 | 仍是模型判断 | `command` hook + `exit 2` + `onFailure: block` |
+| The agent commits straight to main | no review, no rollback point | branch protection |
+| CODEOWNERS present but `Require review from Code Owners` off | looks like governance, does nothing | enable the toggle |
+| The agent can edit `.github/workflows/` and `.claude/` | it can let itself through | separate owners + deny rules |
+| Attribution turned off | you cannot tell which commits came from a model | keep the trailer |
+| "Tested" as the only verification | false green | require pasted output |
+| One PR mixing three rounds of refactoring | unreviewable, unrevertable | enforce focus; split |
+| A `prompt` hook as the security gate | still a model decision | `command` hook + `exit 2` + `onFailure: block` |
 
 ---
 
-## 9. 判据：治理是否真的在起作用
+## 9. Criteria
 
-**硬性（这四条不成立，治理等于没装）**
+**Must hold (if not, governance is not installed)**
 
-- [ ] 分支保护开了吗？`Require review from Code Owners` 开了吗？
-- [ ] `/.claude/`、`/.github/workflows/`、`/AGENTS.md` 有独立 owner 吗？
-- [ ] 出问题时能用一条 `git revert` 撤掉吗？
-- [ ] 有没有哪条"绝不能例外"的规则还只写在文档里？
+- [ ] Is branch protection on? Is `Require review from Code Owners` on?
+- [ ] Do `/.claude/`, `/.github/workflows/` and `/AGENTS.md` have their own owners?
+- [ ] Can an incident be undone with a single `git revert`?
+- [ ] Is any "no exceptions" rule still only written in a document?
 
-**视情况（没做也可以，但要能说出理由）**
+**Situational (fine to skip, but be able to say why)**
 
-- [ ] agent 有没有"开工前资格判断"和"停止条件"？
-- [ ] PR 模板是否强制"怎么验证的"与"需要特别看的地方"？
-- [ ] 提交里能看出是哪个模型写的吗（`Co-Authored-By` trailer）？
+- [ ] Does the agent have an eligibility check and stop conditions?
+- [ ] Does the PR template demand "how it was verified" and "what to look at closely"?
+- [ ] Can you tell which model wrote a commit (`Co-Authored-By` trailer)?
 
-> 这些不是评分项。勾满不等于治理到位，勾不满也不等于有问题——**能说出"为什么不"比勾满更重要。**
-
----
-
-## 10. 依据
-
-| 论断 | 来源 |
-|---|---|
-| "最后一票在分支保护和批准合并的人" | [Best practices](https://code.claude.com/docs/en/best-practices) |
-| deny 规则、sandbox、managed settings 的强制力 | [Permissions](https://code.claude.com/docs/en/permissions) · [Settings](https://code.claude.com/docs/en/settings) |
-| hook 的确定性、`exit 2`、`onFailure: block` | [Hooks reference](https://code.claude.com/docs/en/hooks) |
-| worktree 隔离与 `.worktreeinclude` | [Worktrees](https://code.claude.com/docs/en/worktrees) |
-| 默认 `Co-Authored-By` trailer、`attribution` 配置 | [Settings reference · Git and attribution](https://code.claude.com/docs/en/settings-reference) |
-| 开工前资格门槛、"实现完 ≠ 可提交" | `cli/cli` 的 `AGENTS.md`（实测） |
-| 先读 AI 政策、不许自动开 issue、去重命令 | `python/cpython` 的 `AGENTS.md`（实测） |
-| 覆盖层 + 优先级声明；agent 能力与约束同目录受管 | `cli/cli` 的 `.github/agents/agentic-workflows.md`、`microsoft/vscode` 的 `.github/`（实测） |
-| 分支保护、CODEOWNERS 开关 | [About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) |
+> These are not a score. A full checklist doesn't mean governance works —
+> **being able to say why you skipped something matters more than ticking everything.**
