@@ -4,7 +4,7 @@
 
 ## 项目是什么
 
-一个**规则库 + 检查器**：把“一个 agent 参与的 GitHub 仓库该长什么样”写成机器可读的 `rules/rules.json`，用 `checker/spec-check.ps1` 给任意仓库体检，输出 PASS/FAIL、修复建议、达成等级（L0–L3）。
+一个**规则库 + 检查器**：把“一个 agent 参与的 GitHub 仓库该长什么样”写成机器可读的 `rules/rules.json`，用 `checker/spec-check.ps1` 给任意仓库体检，输出自查清单（已有 / 建议补 / 跳过）与修复建议；加 `-Assess` 才给评分与达成等级（L0–L3）。
 
 - 输入：任意本地目录
 - 输出：`text` / `json` / `md`，退出码 0 通过 / 1 有未通过项 / 2 运行错误
@@ -14,11 +14,12 @@
 
 | 用途 | 命令 | 备注 |
 |---|---|---|
-| 体检 | `pwsh ./checker/spec-check.ps1 -Target <path>` | 加 `-Level 2` 只看 L0–L2 |
+| 体检（自查清单） | `pwsh ./checker/spec-check.ps1 -Target <path>` | 默认只列"已有/建议补"，不给分数与等级 |
+| 评级（看分数） | `pwsh ./checker/spec-check.ps1 -Target <path> -Assess` | 才输出 score 与达成等级 |
 | 机器可读输出 | `pwsh ./checker/spec-check.ps1 -Target <path> -Format json` | CI 用 |
 | 生成规则表 | `pwsh ./checker/gen-rules-doc.ps1` | 改完 `rules/rules.json` 必跑 |
 | 自测 | `pwsh ./tests/selftest.ps1` | 临时 fixture，无需联网 |
-| 自己体检自己 | `pwsh ./checker/spec-check.ps1 -Target .` | 提交前必跑，必须 L3 全绿 |
+| 自己体检自己 | `pwsh ./checker/spec-check.ps1 -Target . -Assess` | 提交前必跑，必须达成 L3 |
 | 提交历史体检 | `pwsh ./checker/spec-check.ps1 -Target . -Git` | 需 git；无 git/非仓库时 R050/R051 跳过，不扣分 |
 
 Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoProfile -ExecutionPolicy Bypass -File`。

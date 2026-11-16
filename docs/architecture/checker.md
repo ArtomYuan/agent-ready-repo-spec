@@ -45,6 +45,7 @@ spec-check.ps1
 
 ## 汇总与退出码
 
+- 默认输出**不带**评分与等级：只报"已有 / 建议补 / 跳过"。加 `-Assess` 才计算并按下面的规则展示。
 - 权重：`must` 5 / `should` 2 / `may` 1；`score = 通过权重 / 总权重`。
 - `achievedLevel`：从 L0 往上，**所有 must+should 都通过**的最高级别（`may` 不阻断）。
 - `-FailOn`：`must`（默认）/ `should` / `none`。命中即 `exit 1`。

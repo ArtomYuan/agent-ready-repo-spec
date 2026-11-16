@@ -34,8 +34,11 @@
 ## 命令行接口
 
 ```
-spec-check.ps1 -Target <path> [-Level 0..3] [-Format text|json|md] [-FailOn must|should|none]
+spec-check.ps1 -Target <path> [-Level 0..3] [-Format text|json|md] [-FailOn must|should|none] [-Assess] [-Git]
 ```
+
+默认输出是**自查清单**（已有 / 建议补 / 跳过），不给分数与等级；`-Assess` 才加评分与达成等级。
+`-FailOn` 只决定退出码，两种模式都生效。
 
 | 退出码 | 含义 |
 |---|---|

@@ -20,7 +20,8 @@ param(
   [ValidateSet('must', 'should', 'none')][string]$FailOn = 'must',
   [string]$RulesPath = '',
   [switch]$NoColor,
-  [switch]$Git
+  [switch]$Git,
+  [switch]$Assess
 )
 
 $ErrorActionPreference = 'Stop'
@@ -423,16 +424,22 @@ if ($Format -eq 'md') {
   [void]$sb.AppendLine('')
   [void]$sb.AppendLine("- 目标：``$root``")
   [void]$sb.AppendLine("- 规范版本：$($spec.specVersion) · 检查到 L$Level")
-  [void]$sb.AppendLine("- 得分：**$score / 100** · 达成等级：**$(if ($achieved -lt 0) { '未达 L0' } else { "L$achieved" })**")
-  foreach ($s in 'must', 'should', 'may') {
-    $x = $bySeverity[$s]
-    [void]$sb.AppendLine("- $s：$($x.pass)/$($x.total) 通过")
+  if ($Assess) {
+    [void]$sb.AppendLine("- 得分：**$score / 100** · 达成等级：**$(if ($achieved -lt 0) { '未达 L0' } else { "L$achieved" })**")
+    foreach ($s in 'must', 'should', 'may') {
+      $x = $bySeverity[$s]
+      [void]$sb.AppendLine("- $s：$($x.pass)/$($x.total) 通过")
+    }
+  }
+  else {
+    [void]$sb.AppendLine("- 已有 **$okCount** 项 · 建议补 **$todoCount** 项 · 跳过 $skippedCount 项")
+    [void]$sb.AppendLine("- 这是自查清单，不是评级；要得分与等级请加 ``-Assess``")
   }
   [void]$sb.AppendLine('')
   [void]$sb.AppendLine('| 规则 | 级别 | 严重度 | 结果 | 说明 |')
   [void]$sb.AppendLine('|---|---|---|---|---|')
   foreach ($r in $results) {
-    $mark = if ($r.skipped) { 'SKIP' } elseif ($r.ok) { 'PASS' } else { 'FAIL' }
+    $mark = if ($r.skipped) { '跳过' } elseif ($r.ok) { '已有' } else { '待补' }
     [void]$sb.AppendLine("| $($r.id) $($r.title) | L$($r.level) | $($r.severity) | $mark | $($r.detail) |")
   }
   $bad = @($results | Where-Object { -not $_.ok })
@@ -450,7 +457,12 @@ $useColor = -not $NoColor
 function Write-Line([string]$text, [string]$color = '') {
   if ($useColor -and $color) { Write-Host $text -ForegroundColor $color } else { Write-Host $text }
 }
+$okCount = @($results | Where-Object { -not $_.skipped -and $_.ok }).Count
+$todoCount = @($results | Where-Object { -not $_.skipped -and -not $_.ok }).Count
+$applicable = @($results | Where-Object { -not $_.skipped }).Count
+
 Write-Line "spec-check $($spec.specVersion)  target: $root  (检查到 L$Level)" 'Cyan'
+Write-Line ("共 {0} 项：适用 {1}，跳过 {2}" -f $results.Count, $applicable, $skippedCount) 'DarkGray'
 Write-Line ''
 foreach ($l in 0..$Level) {
   $group = @($results | Where-Object { $_.level -eq $l })
@@ -464,20 +476,27 @@ foreach ($l in 0..$Level) {
       Write-Line ("  [ok]   {0,-5} {1}" -f $r.id, $r.title) 'DarkGray'
     }
     else {
-      Write-Line ("  [FAIL] {0,-5} {1}  ({2})" -f $r.id, $r.title, $r.severity) 'Red'
-      Write-Line ("         > {0}" -f $r.detail) 'Red'
+      Write-Line ("  [todo] {0,-5} {1}  ({2})" -f $r.id, $r.title, $r.severity) 'Yellow'
+      Write-Line ("         > {0}" -f $r.detail) 'DarkGray'
       Write-Line ("         fix: {0}" -f $r.fix) 'Yellow'
     }
   }
   Write-Line ''
 }
-$fb = if ($achieved -lt 0) { '未达 L0' } else { "L$achieved" }
-Write-Line ("must {0}/{1}   should {2}/{3}   may {4}/{5}   skipped {6}   score {7}/100   达成 {8}" -f `
-    $bySeverity['must'].pass, $bySeverity['must'].total,
-    $bySeverity['should'].pass, $bySeverity['should'].total,
-    $bySeverity['may'].pass, $bySeverity['may'].total,
-    $skippedCount,
-    $score, $fb) 'Cyan'
-if ($skippedCount -gt 0) { Write-Line "（skipped 项需要 -Git 且目标为 git 仓库；不计入分数与达成等级）" 'DarkGray' }
-if ($exit -ne 0) { Write-Line "未通过（fail-on: $FailOn）" 'Red' } else { Write-Line "通过（fail-on: $FailOn）" 'Green' }
+if ($Assess) {
+  $fb = if ($achieved -lt 0) { '未达 L0' } else { "L$achieved" }
+  Write-Line ("must {0}/{1}   should {2}/{3}   may {4}/{5}   skipped {6}   score {7}/100   达成 {8}" -f `
+      $bySeverity['must'].pass, $bySeverity['must'].total,
+      $bySeverity['should'].pass, $bySeverity['should'].total,
+      $bySeverity['may'].pass, $bySeverity['may'].total,
+      $skippedCount,
+      $score, $fb) 'Cyan'
+  if ($skippedCount -gt 0) { Write-Line "（跳过项需要 -Git 且目标为 git 仓库；不计入分数与达成等级）" 'DarkGray' }
+  if ($exit -ne 0) { Write-Line "未通过（fail-on: $FailOn）" 'Red' } else { Write-Line "通过（fail-on: $FailOn）" 'Green' }
+}
+else {
+  Write-Line ("已有 {0} · 建议补 {1} · 跳过 {2}" -f $okCount, $todoCount, $skippedCount) 'Cyan'
+  Write-Line '这是自查清单，不是评级；要看得分与达成等级请加 -Assess。' 'DarkGray'
+  if ($exit -ne 0) { Write-Line "（退出码 $exit；判定依据 -FailOn $FailOn）" 'DarkGray' }
+}
 exit $exit

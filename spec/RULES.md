@@ -1,6 +1,6 @@
 # 规则表
 
-> 由 `rules/rules.json` 自动生成，**请勿手改**。规范版本 `1.2.0`。
+> 由 `rules/rules.json` 自动生成，**请勿手改**。规范版本 `1.3.0`。
 > 重新生成：`pwsh ./checker/gen-rules-doc.ps1`
 
 共 **36** 条规则。严重度 `must` / `should` / `may`；`may` 不阻断达成等级。
@@ -41,7 +41,7 @@
 
 | ID | 严重度 | 要求 | 判定 |
 |---|---|---|---|
-| `R010` | should | 存在 CONTRIBUTING | kind: `file-exists` · any=CONTRIBUTING.md, .github/CONTRIBUTING.md, docs/CONTRIBUTING.md · nonEmpty=True |
+| `R010` | may | 存在 CONTRIBUTING（人类读者） | kind: `file-exists` · any=CONTRIBUTING.md, .github/CONTRIBUTING.md, docs/CONTRIBUTING.md · nonEmpty=True |
 | `R011` | should | 存在 CODEOWNERS | kind: `file-exists` · any=.github/CODEOWNERS, CODEOWNERS, docs/CODEOWNERS · nonEmpty=True |
 | `R012` | should | 存在 PR 模板 | kind: `file-exists` · any=.github/PULL_REQUEST_TEMPLATE.md, PULL_REQUEST_TEMPLATE.md, .github/pull_request_template.md · nonEmpty=True |
 | `R013` | should | Issue 模板带合法 frontmatter | kind: `frontmatter-fields` · dir=.github/ISSUE_TEMPLATE · pattern=*.yml · exclude=config.yml · fields=name · fieldsOneOf=(description|about) |
@@ -51,8 +51,8 @@
 
 <details><summary>为什么 / 怎么改</summary>
 
-- **R010** 分支模型、提交格式、评审 SLA 不写下来，每个贡献者都会各写一套。
-  - 修复：写 CONTRIBUTING.md：分支命名、提交规范、PR 流程、评审响应时间。
+- **R010** 这份文件是写给人看的：agent 不会自动加载它（Claude Code 的加载链里没有 CONTRIBUTING），GitHub 也只认固定位置的入口文件（根 / .github / docs，文件名大小写不敏感，.rst 也认，`contributing/` 目录本身不算）。所以它是公开库的常见习惯，不是 agent 就绪的必要条件。
+  - 修复：在根或 .github/ 放一个 CONTRIBUTING.md 作入口，详细内容放 docs/ 或 contributing/ 目录并在入口里指过去；私有库且不收外部 PR 可以不管。
 - **R011** 按路径自动指派评审人，是 agent 改动的第一道人工闸门；需同时开启 Require review from Code Owners。
   - 修复：加 CODEOWNERS，覆盖 .claude/、.github/workflows/、AGENTS.md 与关键业务目录。
 - **R012** 模板是唯一能稳定拿到的结构化信息（改了什么/为什么/怎么验证的）。

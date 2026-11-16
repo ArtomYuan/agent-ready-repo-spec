@@ -30,23 +30,35 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\checker\spec-check.ps1 -Ta
 输出长这样：
 
 ```
-spec-check 1.0.0  target: D:\code\my-repo  (检查到 L3)
+spec-check 1.3.0  target: D:\code\my-repo  (检查到 L3)
+共 36 项：适用 34，跳过 2
 
 L0 — 能被人和 agent 读懂并跑起来
   [ok]   R001  存在 README
-  [FAIL] R002  根目录存在 AGENTS.md  (must)
+  [todo] R002  根目录存在 AGENTS.md  (must)
          > 缺失: AGENTS.md
          fix: 在根目录建 AGENTS.md，只写命令、目录地图、硬约定、禁区、已知的坑
 ...
-must 5/6   should 6/18   may 3/7   score 27/100   达成 未达 L0
-未通过（fail-on: must）
+已有 31 · 建议补 3 · 跳过 2
+这是自查清单，不是评级；要看得分与达成等级请加 -Assess。
 ```
+
+## 先读指导，再用自查
+
+这个库的**正文是指导**：一个 GitHub 仓库该有什么文档、什么结构、该怎么写、agent 该怎么用与怎么管它。
+`rules/`、`checker/`、`templates/` 只是配套的自查工具与样例——不替你做决定，也不替你执行。
+
+| 你想知道 | 去哪 |
+|---|---|
+| 某个文件**到底该怎么写**（README / AGENTS.md / CODEOWNERS / ADR / PR 模板 / CHANGELOG） | [guide/03-文档该怎么写.md](guide/03-文档该怎么写.md) |
+| 指导正文的全貌与其余章节 | [guide/README.md](guide/README.md) |
 
 ## 三种用法
 
 | 你是 | 你需要的 | 入口 |
 |---|---|---|
-| 人，想给自己仓库打分 | 跑一条命令，看 FAIL 和修复建议 | 上面那段 |
+| 人，想写对文档 | 读写法 + 对照反例 | [guide/03-文档该怎么写.md](guide/03-文档该怎么写.md) |
+| 人，想自查有没有遗漏 | 跑一条命令，看 FAIL 和修复建议 | 上面那段 |
 | agent，想学会怎么管一个库 | 读操作手册 → 按 skill 执行 | [AGENTS.md](AGENTS.md) · [spec/agent-playbook.md](spec/agent-playbook.md) |
 | CI，想常驻门禁 | 只跑 `must`，失败即红 | [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) |
 

@@ -162,6 +162,14 @@ try {
   $r6 = Invoke-Spec $na
   Assert 'no-attribution: R029 命中（attribution 被关闭）' ((Get-Rule $r6.json 'R029').ok -eq $false)
 
+  # ---------- 默认输出 vs -Assess ----------
+  Write-Host '输出模式：清单式 / 评级' -ForegroundColor Cyan
+  $plain = (& $checker -Target $good -NoColor 6>&1) -join "`n"
+  $assess = (& $checker -Target $good -NoColor -Assess 6>&1) -join "`n"
+  Assert '默认输出不给分数' (-not ($plain -match 'score \d')) '默认模式仍打印了 score'
+  Assert '默认输出给出"建议补"计数' ($plain -match '建议补') '缺少清单计数行'
+  Assert '-Assess 才给 score' ($assess -match 'score \d+') '未打印 score'
+
   # ---------- 生成物一致性 ----------
   Write-Host '生成物一致性' -ForegroundColor Cyan
   & $genDoc -Check | Out-Null
