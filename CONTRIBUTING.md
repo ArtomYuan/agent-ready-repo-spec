@@ -13,6 +13,10 @@
 
 ## 分支与提交
 
+> **main 受保护**：任何变更——人写的、agent 写的都一样——必须走 PR 并通过 CI。
+> agent 的发布工具是 `tools/publish-pr.ps1`（自动建分支、开 PR、等检查、squash 合并）。
+> 理由与破窗流程见 [docs/adr/0004-all-changes-via-pr.md](docs/adr/0004-all-changes-via-pr.md)。
+
 ```
 main                受保护，只能通过 PR 合入
 feat/<slug>         新规则 / 新能力

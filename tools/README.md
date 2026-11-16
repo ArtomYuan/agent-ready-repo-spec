@@ -1,38 +1,56 @@
 # tools/
 
-## publish-github.ps1
+两个发布工具，用途不同。**这个仓库日常发布只用第一个。**
 
-把整个仓库发布到 GitHub，**不需要 git 命令**（用 Git Data API：blob → tree → commit → ref）。
-一个 commit 提交全部文件，适合首次建库，也适合把本地改动整体推上去。
+## publish-pr.ps1（默认）
+
+走 **分支 → PR → 等 CI → squash 合并**。main 开启保护后，这是唯一能进 main 的路。
 
 ```powershell
 # 令牌在环境变量里
 $env:GITHUB_TOKEN = 'ghp_xxx'
-./tools/publish-github.ps1 -Owner <你的账号>
+./tools/publish-pr.ps1 -Owner ArtomYuan -Message "docs: 修个错字"
 
-# 令牌写在一份凭证文档里（脚本会正则在文档里找 gh*_ / github_pat_*，其余文字无影响）
-./tools/publish-github.ps1 -TokenFile C:\path\to\credentials.md -Owner <你的账号>
+# 令牌在凭证文档里（正则在文档中找 gh*_ / github_pat_*）
+./tools/publish-pr.ps1 -TokenFile C:\path\to\credentials.md -Message "feat(rules): ..."
 
-# 先看计划，不联网
-./tools/publish-github.ps1 -Owner <你的账号> -DryRun
+# 只开 PR 不合并 / 先看计划
+./tools/publish-pr.ps1 -Message "..." -NoMerge
+./tools/publish-pr.ps1 -Message "..." -DryRun
 ```
 
-常用参数：`-Repo`（默认 `agent-ready-repo-spec`）、`-Private`、`-Message`、`-SourceDir`。
+行为：
 
-### 令牌需要什么权限
+1. 以 `main` 最新提交为父提交，把整个工作树做成**一个提交**；
+2. 建分支 `chore/MMdd-HHmm-<slug>`（`-Branch` 可指定）；
+3. 开 PR（标题 = `-Message`，必须是 Conventional Commits 形式，squash 后它就是主分支的提交信息）；
+4. 轮询该提交的 check-runs，**全绿才合并**；任何失败 → 保留 PR 并退出码 3；
+5. 默认 squash 合并，保持线性历史。
+
+退出码：`0` 已合并 / `1` 参数或令牌问题 / `2` API 失败 / `3` 检查未过或超时（PR 仍在）。
+
+## publish-github.ps1（仅用于新建仓库或首次引导）
+
+直推 main。**main 开启保护后它会失败**（这正是保护的意义）。保留它是因为：
+
+- 新仓库还没有任何提交时，GitHub 拒绝 git-blob API（409），需要一次引导提交；
+- 首次建库、还没有分支保护的时候，一条命令把仓库建起来。
+
+## 令牌权限
 
 | 用途 | 最小权限 |
 |---|---|
-| 在个人账号下建仓库 | classic: `repo`；fine-grained: *Administration: Read and write* + *Contents: Read and write* |
+| 建仓库 | classic: `repo`；fine-grained: *Administration: Read and write* + *Contents: Read and write* |
+| 走 PR 发布 | 同上；另需 *Pull requests: Read and write* |
 
-### 安全约定
+## 安全约定
 
-- 令牌**只从** `-Token`、`-TokenFile`、`$env:GITHUB_TOKEN` / `$env:GH_TOKEN` 取，不写进任何文件。
-- 脚本不会打印令牌；报错只回显 API 的 message。
+- 令牌只从 `-Token`、`-TokenFile`、`$env:GITHUB_TOKEN` / `$env:GH_TOKEN` 取，不写进任何文件。
+- 脚本不打印令牌；报错只回显 API 的 message。
 - 上传前排除：`.git/`、`reports/`、`*.local.json`、`*.spec-report.*`。
 
-### 发布之后还得手动做三件事（检查器看不到）
+## 发布之后仍是手动的部分（检查器看不到）
 
-1. **保护 main**：禁止直推、Require review from Code Owners、关闭 force push。
+1. **分支保护**：`Require a pull request`、`Require status checks`、`Do not allow bypassing`。
 2. **Actions 权限**：Settings → Actions → Workflow permissions 设为只读。
-3. **私密漏洞上报**：Security → Private vulnerability reporting 打开（配合 `SECURITY.md`）。
+3. **私密漏洞上报**：Security → Private vulnerability reporting。

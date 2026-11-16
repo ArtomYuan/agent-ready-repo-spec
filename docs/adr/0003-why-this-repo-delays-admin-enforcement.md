@@ -1,6 +1,6 @@
-# ADR-0003：本仓库暂不开启 admin 强制（记录一处规范例外）
+# ADR-0003：本仓库暂不开启 admin 强制（已被 ADR-0004 取代）
 
-- 状态：Accepted
+- 状态：**Superseded by [ADR-0004](0004-all-changes-via-pr.md)**（2026-11-17）
 - 日期：2026-11-17
 - 决策者：@ArtomYuan
 - 相关：[guide/05-Agent参与怎么管理.md](../../guide/05-Agent参与怎么管理.md) · [ADR-0002](0002-checker-is-read-only.md)
