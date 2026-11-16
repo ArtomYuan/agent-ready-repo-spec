@@ -11,6 +11,8 @@
 - 新增模板 [templates/adoption.md.tmpl](templates/adoption.md.tmpl)：采用记录（含"未采用项与理由"）。
 
 ### Changed
+- **发布参数 `-Next` 改为必填**（ADR-0005）：PR 描述固定四段（改了什么 / 下一步 / 非目标 / 怎么验证的），
+  并写进 squash 提交正文。缺 `-Next` 直接发布失败；没有后续时显式写 `"无"`。
 - **发布流程改为走 PR**：新增 `tools/publish-pr.ps1`（分支 → PR → 等 CI → squash 合并）。
   main 开启分支保护（Require a pull request + Required status checks + Do not allow bypassing），
   直推会被拒绝。`tools/publish-github.ps1` 降级为"新仓库首次引导"专用。详见 ADR-0004。
