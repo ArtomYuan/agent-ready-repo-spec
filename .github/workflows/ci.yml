@@ -80,3 +80,18 @@ jobs:
       - name: 用 Windows PowerShell 跑同一套自测
         shell: powershell
         run: ./tests/selftest.ps1
+
+  action-smoke:
+    name: Action 冒烟（uses: ./）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: 用 action.yml 跑一次体检
+        uses: ./
+        with:
+          level: '3'
+          fail-on: 'should'
+          git: 'true'
