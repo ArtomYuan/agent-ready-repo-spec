@@ -60,4 +60,10 @@ CI 整体不可用时，唯一出路是临时关闭保护（需要 admin 令牌�
 ## 相关
 
 - `tools/publish-pr.ps1`（新）、`tools/publish-github.ps1`（保留作引导）
-- 分支保护当前值：`require_pr=true`、`required_checks*`、`enforce_admins=true`、`allow_force_pushes=false`
+- 分支保护（2026-11-17 实测生效）：
+  - `required_pull_request_reviews`：启用，**审批数 0**（允许自己合并，但必须走 PR）
+  - `required_status_checks`：`引擎自测`、`自己体检自己`、`Windows + PowerShell 5.1 兼容`、`提交信息（commitlint）`
+  - `enforce_admins = true`、`allow_force_pushes = false`、`allow_deletions = false`、`required_conversation_resolution = true`
+- **验证记录**：开启后用 admin 令牌构造一个内容完全相同的提交，尝试 `PATCH /git/refs/heads/main`，
+  返回 `422 Changes must be made through a pull request. 4 of 4 required status checks are expected.`，
+  main 的 head 未变——说明"管理员也不能直推"确实成立。
