@@ -72,7 +72,7 @@ foreach ($l in 0..3) {
   [void]$sb.AppendLine('')
 }
 
-$text = $sb.ToString()
+$text = $sb.ToString().Replace("`r`n", "`n")   # 统一 LF：Windows 生成、Linux CI 校验，必须字节一致
 $noBom = New-Object System.Text.UTF8Encoding($false)
 
 if ($Check) {

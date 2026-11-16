@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Fixed
+- `spec/RULES.md` 生成时统一使用 LF 换行。此前在 Windows 上生成的是 CRLF，导致 Linux CI 里
+  `gen-rules-doc.ps1 -Check` 判定不一致而失败。
+
 ## [1.0.0] - 2026-11-16
 
 ### Added
