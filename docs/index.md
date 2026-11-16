@@ -23,6 +23,7 @@
 | 为什么规则是 JSON、文档是生成的 | [adr/0001-rules-as-single-source.md](adr/0001-rules-as-single-source.md) |
 | 检查器的边界与不做什么 | [adr/0002-checker-is-read-only.md](adr/0002-checker-is-read-only.md) |
 | 引擎结构 | [architecture/checker.md](architecture/checker.md) |
+| **证据与实测数据** | [evidence/](evidence/)（按采集日期命名：仓库采样、本仓库自审、官方文档摘录、分支保护实测） |
 
 ## 文档约定
 
