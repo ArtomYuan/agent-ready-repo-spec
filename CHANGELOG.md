@@ -11,6 +11,8 @@
 - 新增模板 [templates/adoption.md.tmpl](templates/adoption.md.tmpl)：采用记录（含"未采用项与理由"）。
 
 ### Changed
+- 修正过期表述：GitHub 仓库描述与 `publish-github.ps1` 默认值不再写死规则条数（原为"31 条"，实际已 36 条）；
+  `README` 顶部改为描述当前输出形态（默认自查清单、`-Assess` 才评级），并新增「能力边界」一句。
 - **发布参数 `-Next` 改为必填**（ADR-0005）：PR 描述固定四段（改了什么 / 下一步 / 非目标 / 怎么验证的），
   并写进 squash 提交正文。缺 `-Next` 直接发布失败；没有后续时显式写 `"无"`。
 - **发布流程改为走 PR**：新增 `tools/publish-pr.ps1`（分支 → PR → 等 CI → squash 合并）。

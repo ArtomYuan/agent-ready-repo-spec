@@ -1,4 +1,4 @@
-﻿# 把本规范库发布到 GitHub（不需要 git 二进制）
+# 把本规范库发布到 GitHub（不需要 git 二进制）
 #
 # 用法：
 #   # 1) 令牌在环境变量里
@@ -24,7 +24,7 @@ param(
   [string]$Token = '',
   [string]$TokenFile = '',
   [string]$SourceDir = '',
-  [string]$Description = '一个有 AI agent 参与的 GitHub 仓库该长什么样：31 条规则 + 体检器',
+  [string]$Description = '一个有 AI agent 参与的 GitHub 仓库该长什么样：规则库（L0–L3）+ 体检器',
   [string]$Message = 'feat: agent-ready-repo-spec 1.0.0',
   [switch]$Private,
   [switch]$DryRun

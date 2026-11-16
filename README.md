@@ -2,7 +2,10 @@
 
 **一个仓库要有哪些文档、什么目录，agent 参与管理时该怎么治理——写成规则，能用一条命令给任意仓库体检。**
 
-不是又一篇 best-practice 文章：规则是**机器可读的 JSON**，检查器会把结论落成 `PASS / FAIL + 修复建议 + 达成等级`，人和 agent 都能直接消费。
+不是又一篇 best-practice 文章：规则是**机器可读的 JSON**，检查器据此输出**自查清单**（已有 / 建议补 / 跳过）+ 每条一句修复建议；加 `-Assess` 才给评分与达成等级。人和 agent 都能直接消费。
+
+> **能力边界**：检查器保证**下限**——不缺件、不断链、不出现双事实源；**不保证上限**——文档写得对不对、架构好不好，它判不了。
+> 全部 `[ok]` 只说明"该有的都有"，不说明"这是个好仓库"。
 
 ```
 L0 — 能被人和 agent 读懂并跑起来
@@ -27,7 +30,7 @@ Windows 上执行策略是 `Restricted` 时：
 powershell -NoProfile -ExecutionPolicy Bypass -File .\checker\spec-check.ps1 -Target D:\code\my-repo
 ```
 
-输出长这样：
+输出长这样（**示例**：对象是一个缺 3 项的普通仓库，不是本库本身）：
 
 ```
 spec-check 1.3.0  target: D:\code\my-repo  (检查到 L3)
