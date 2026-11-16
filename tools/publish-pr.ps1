@@ -4,12 +4,13 @@
 #   建分支 → 提交 → 开 PR → 等 CI → squash 合并
 # 主分支开启保护后，**只有这条路**能进 main。
 #
-# 用法：
-#   ./tools/publish-pr.ps1 -Owner ArtomYuan -Message "docs: 修个错字"
-#   ./tools/publish-pr.ps1 -TokenFile C:\path\credentials.md -Message "feat(rules): ..."
-#   ./tools/publish-pr.ps1 -Message "..." -NoMerge        # 只开 PR，不自动合并
+# 用法（认证一律走 GitHub App）：
+#   ./tools/publish-pr.ps1 -Owner <owner> -AppId <id> -InstallationId <id> -PrivateKeyPath <pem> `
+#                          -Message "docs: 修个错字" -Next "下一步"
+#   ./tools/publish-pr.ps1 ... -NoMerge        # 只开 PR，不自动合并
+#   ./tools/publish-pr.ps1 ... -DryRun         # 只看计划
 #
-# 退出码：0 已合并 / 1 参数或令牌问题 / 2 API 失败 / 3 PR 已开但检查未通过或超时
+# 退出码：0 已合并 / 1 参数或认证问题 / 2 API 失败 / 3 PR 已开但检查未通过、超时或被规则集挡住
 
 [CmdletBinding()]
 param(
@@ -22,8 +23,15 @@ param(
   [string]$Next = '',
   [string]$NotDoing = '',
   [string]$Body = '',
+  # 默认且推荐的认证方式：GitHub App（现场换 installation token，不落盘）
+  [string]$PrivateKeyPath = '',
+  [string]$AppId = '',
+  [string]$InstallationId = '',
+  # 临时兜底，不推荐；常规发布用上面三个参数
   [string]$Token = '',
-  [string]$TokenFile = '',
+  # 联合署名与 assignee 不写死任何人：留空 = 按仓库所属账号自动推导，写 none = 关闭
+  [string]$CoAuthor = '',
+  [string]$Assignee = '',
   [string]$SourceDir = '',
   [string]$MergeMethod = 'squash',
   [int]$TimeoutMinutes = 25,
@@ -59,21 +67,28 @@ if ([string]::IsNullOrEmpty($Branch)) {
   $Branch = 'chore/' + (Get-Date -Format 'MMdd-HHmm') + '-' + $slug.Trim('-')
 }
 
-# ---------- 令牌 ----------
-function Get-TokenFromText([string]$text) {
-  foreach ($p in @('github_pat_[A-Za-z0-9_]{40,}', 'gh[pousr]_[A-Za-z0-9]{36,}')) {
-    $m = [regex]::Match($text, $p); if ($m.Success) { return $m.Value }
-  }
-  return $null
+# ---------- 令牌：GitHub App 是唯一推荐路径 ----------
+# 不再读 -TokenFile / $env:GITHUB_TOKEN：PAT 已废弃，取 token 的路子越多，
+# "这次到底用的是谁的身份"就越说不清。要临时兜底就显式给 -Token。
+$tokenValue = ''
+if (-not [string]::IsNullOrEmpty($PrivateKeyPath) -and -not [string]::IsNullOrEmpty($AppId) -and -not [string]::IsNullOrEmpty($InstallationId)) {
+  $minter = Join-Path $PSScriptRoot 'gh-app-token.ps1'
+  if (-not (Test-Path -LiteralPath $minter)) { [Console]::Error.WriteLine("找不到 $minter"); exit 1 }
+  $minted = & $minter -PrivateKeyPath $PrivateKeyPath -AppId $AppId -InstallationId $InstallationId -Export
+  $tokenValue = ([string]$minted).Trim()
+  if ([string]::IsNullOrEmpty($tokenValue)) { [Console]::Error.WriteLine('App token 换取失败（看 gh-app-token.ps1 的报错）'); exit 1 }
+  Write-Host '认证: GitHub App（现场换 installation token，约 1 小时过期）' -ForegroundColor DarkGray
 }
-$tokenValue = $Token
-if ([string]::IsNullOrEmpty($tokenValue) -and -not [string]::IsNullOrEmpty($TokenFile)) {
-  if (-not (Test-Path -LiteralPath $TokenFile -PathType Leaf)) { [Console]::Error.WriteLine("凭证文件不存在: $TokenFile"); exit 1 }
-  $tokenValue = Get-TokenFromText ([System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $TokenFile).ProviderPath, [Text.Encoding]::UTF8))
+elseif (-not [string]::IsNullOrEmpty($Token)) {
+  $tokenValue = $Token
+  Write-Host '认证: 显式 -Token（临时用法，常规发布请改用 GitHub App）' -ForegroundColor Yellow
 }
-if ([string]::IsNullOrEmpty($tokenValue)) { $tokenValue = $env:GITHUB_TOKEN }
-if ([string]::IsNullOrEmpty($tokenValue)) { $tokenValue = $env:GH_TOKEN }
-if ([string]::IsNullOrEmpty($tokenValue) -and -not $DryRun) { [Console]::Error.WriteLine('缺少令牌'); exit 1 }
+if ([string]::IsNullOrEmpty($tokenValue) -and -not $DryRun) {
+  [Console]::Error.WriteLine('缺少认证信息。推荐（也是默认做法）：')
+  [Console]::Error.WriteLine('  -AppId <appId> -InstallationId <installationId> -PrivateKeyPath <pem>')
+  [Console]::Error.WriteLine('临时兜底：-Token <token>')
+  exit 1
+}
 
 # ---------- 文件清单 ----------
 $excludeDirs = @('.git', 'reports', 'node_modules', '.vs', '.vscode', 'bin', 'obj')
@@ -122,9 +137,38 @@ function Invoke-Gh {
   }
 }
 
-$me = Invoke-Gh GET '/user'
-if ([string]::IsNullOrEmpty($Owner)) { $Owner = $me.login }
-Write-Host "已认证: $($me.login)   目标: $Owner/$Repo" -ForegroundColor Green
+# installation token 调不了 /user；这时必须显式给 -Owner
+$me = Invoke-Gh GET '/user' -AllowFail
+if ($me.__error) {
+  if ([string]::IsNullOrEmpty($Owner)) { [Console]::Error.WriteLine('当前是 App installation token，无法自动推断 Owner，请给 -Owner'); exit 1 }
+  Write-Host "已认证: App installation token   目标: $Owner/$Repo" -ForegroundColor Green
+}
+else {
+  if ([string]::IsNullOrEmpty($Owner)) { $Owner = $me.login }
+  Write-Host "已认证: $($me.login)   目标: $Owner/$Repo" -ForegroundColor Green
+}
+
+# ---------- 联合署名与 assignee：从仓库所属账号推导，不写死名字 ----------
+# 推导不出（组织账号）就明说，而不是随便填一个人。
+$repoInfo = Invoke-Gh GET "/repos/$Owner/$Repo"
+$accountLogin = $repoInfo.owner.login
+$accountId = $repoInfo.owner.id
+$accountType = $repoInfo.owner.type
+
+if ($CoAuthor -eq 'none') { $CoAuthor = '' }
+elseif ([string]::IsNullOrWhiteSpace($CoAuthor)) {
+  if ($accountType -eq 'User') {
+    $CoAuthor = "$accountLogin <$accountId+$accountLogin@users.noreply.github.com>"
+  }
+  else {
+    Write-Host "所属账号是组织（$accountLogin），无法推导联合署名人；用 -CoAuthor 指定，或 -CoAuthor none 关闭" -ForegroundColor Yellow
+  }
+}
+if ($Assignee -eq 'none') { $Assignee = '' }
+elseif ([string]::IsNullOrWhiteSpace($Assignee) -and $accountType -eq 'User') { $Assignee = $accountLogin }
+
+if (-not [string]::IsNullOrWhiteSpace($CoAuthor)) { Write-Host "联合署名: $CoAuthor" -ForegroundColor DarkGray }
+if (-not [string]::IsNullOrWhiteSpace($Assignee)) { Write-Host "assignee: $Assignee" -ForegroundColor DarkGray }
 
 # ---------- 基准提交 ----------
 $baseRef = Invoke-Gh GET "/repos/$Owner/$Repo/git/ref/heads/$Base"
@@ -144,7 +188,7 @@ Write-Progress -Activity '上传文件' -Completed
 
 $treeResp = Invoke-Gh POST "/repos/$Owner/$Repo/git/trees" @{ tree = $tree }
 $commit = Invoke-Gh POST "/repos/$Owner/$Repo/git/commits" @{
-  message = "$Message`n`n下一步：$Next"
+  message = $(if ([string]::IsNullOrWhiteSpace($CoAuthor)) { "$Message`n`n下一步：$Next" } else { "$Message`n`n下一步：$Next`n`nCo-authored-by: $CoAuthor" })
   tree    = $treeResp.sha
   parents = @($baseSha)
 }
@@ -176,16 +220,20 @@ $notDoing
 - 本地：``checker/spec-check.ps1`` + ``tests/selftest.ps1``
 - 本 PR 的 CI 结果见下方 checks
 
+$(if ([string]::IsNullOrWhiteSpace($Assignee)) { '' } else { "cc @$Assignee" })
+
 > 由 ``tools/publish-pr.ps1`` 生成（ADR-0005：下一步为必填项）。
 "@
 }
+$assigneeList = @(); if (-not [string]::IsNullOrWhiteSpace($Assignee)) { $assigneeList = @($Assignee) }
+
 # 复用已存在的 PR（同一 head 分支）：失败重发时不该逼人去手动关 PR / 删分支
 $headQuery = [uri]::EscapeDataString("$Owner`:$branchFull")
 $pr = $null
 $existing = Invoke-Gh GET "/repos/$Owner/$Repo/pulls?state=open&head=$headQuery" -AllowFail
 if (-not $existing.__error -and @($existing).Count -gt 0) {
   $pr = @($existing)[0]
-  Invoke-Gh PATCH "/repos/$Owner/$Repo/pulls/$($pr.number)" @{ title = $Title; body = $Body } | Out-Null
+  Invoke-Gh PATCH "/repos/$Owner/$Repo/pulls/$($pr.number)" @{ title = $Title; body = $Body; assignees = $assigneeList } | Out-Null
   Write-Host "复用已开 PR #$($pr.number)（标题与正文已更新）: $($pr.html_url)" -ForegroundColor Yellow
 }
 else {
@@ -194,18 +242,25 @@ else {
   if (-not $allPrs.__error) { $closed = @($allPrs | Where-Object { $_.state -eq 'closed' -and -not $_.merged_at }) }
   if ($closed.Count -gt 0) {
     $pr = $closed[0]
-    Invoke-Gh PATCH "/repos/$Owner/$Repo/pulls/$($pr.number)" @{ state = 'open'; title = $Title; body = $Body } | Out-Null
+    Invoke-Gh PATCH "/repos/$Owner/$Repo/pulls/$($pr.number)" @{ state = 'open'; title = $Title; body = $Body; assignees = $assigneeList } | Out-Null
     Write-Host "重开既有 PR #$($pr.number)（标题与正文已更新）: $($pr.html_url)" -ForegroundColor Yellow
   }
   else {
     $pr = Invoke-Gh POST "/repos/$Owner/$Repo/pulls" @{
-      title = $Title; head = $branchFull; base = $Base; body = $Body; draft = [bool]$Draft
+      title = $Title; head = $branchFull; base = $Base; body = $Body; draft = [bool]$Draft; assignees = $assigneeList
     }
     Write-Host "已开 PR #$($pr.number): $($pr.html_url)" -ForegroundColor Cyan
   }
 }
 
 if ($NoMerge -or $Draft) { Write-Host '按要求不自动合并。' -ForegroundColor Yellow; exit 0 }
+
+# assignee：POST /pulls 里的 assignees 字段实测被忽略，这里显式补一次（幂等）
+if (-not [string]::IsNullOrWhiteSpace($Assignee)) {
+  $as = Invoke-Gh POST "/repos/$Owner/$Repo/issues/$($pr.number)/assignees" @{ assignees = @($Assignee) } -AllowFail
+  if ($as.__error) { Write-Host "设 assignee 失败（不影响 PR）: $($as.__error)" -ForegroundColor Yellow }
+  else { Write-Host "已设 assignee: $Assignee" -ForegroundColor DarkGray }
+}
 
 # ---------- 等检查 ----------
 $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
