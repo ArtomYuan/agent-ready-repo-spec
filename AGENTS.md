@@ -21,6 +21,7 @@
 | 自测 | `pwsh ./tests/selftest.ps1` | 临时 fixture，无需联网 |
 | 自己体检自己 | `pwsh ./checker/spec-check.ps1 -Target . -Assess` | 提交前必跑，必须达成 L3 |
 | 提交历史体检 | `pwsh ./checker/spec-check.ps1 -Target . -Git` | 需 git；无 git/非仓库时 R050/R051 跳过，不扣分 |
+| **发布（唯一路径）** | `pwsh ./tools/publish-pr.ps1 -Owner ArtomYuan -Message "docs: ..."` | 分支 → PR → 等 CI → squash 合并；main 受保护，直推会被拒 |
 
 Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoProfile -ExecutionPolicy Bypass -File`。
 本仓库**没有** Node/Python 依赖；不要引入包管理器。
@@ -65,6 +66,7 @@ Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoP
 
 - 分支：`feat/<slug>`、`fix/<slug>`、`docs/<slug>`、`chore/<slug>`
 - 描述用 [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)，含自检清单
+- **main 受保护**：所有变更（含 agent 的）都必须走 PR 并通过 CI；直推会被拒绝，详见 [docs/adr/0004-all-changes-via-pr.md](docs/adr/0004-all-changes-via-pr.md)
 - 提交前本地必跑：自测 + 自己体检自己（两条命令见上表）
 
 ## 拿不准时

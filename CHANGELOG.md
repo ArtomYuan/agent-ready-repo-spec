@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+### Changed
+- **发布流程改为走 PR**：新增 `tools/publish-pr.ps1`（分支 → PR → 等 CI → squash 合并）。
+  main 开启分支保护（Require a pull request + Required status checks + Do not allow bypassing），
+  直推会被拒绝。`tools/publish-github.ps1` 降级为"新仓库首次引导"专用。详见 ADR-0004。
+
 ## [1.3.0] - 2026-11-17
 
 定位澄清：本库是**指导性**的，检查器只是自查工具——所以两处都往"少做判决"的方向调。
