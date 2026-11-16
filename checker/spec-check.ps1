@@ -34,7 +34,7 @@ $Weight = @{ 'must' = 5; 'should' = 2; 'may' = 1 }
 
 function Read-Text([string]$path) {
   if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { return $null }
-  return [System.IO.File]::ReadAllText((Resolve-Path -LiteralPath $path).ProviderPath, $Utf8)
+  return [System.IO.File]::ReadAllText([System.IO.Path]::GetFullPath($path), $Utf8)
 }
 
 function Get-Frontmatter([string]$text) {
@@ -84,7 +84,7 @@ function Test-Rule($rule, [string]$root) {
       foreach ($rel in $c.any) {
         $p = Join-Path $root $rel
         if (Test-Path -LiteralPath $p -PathType Leaf) {
-          if ($c.nonEmpty -and ((Get-Item -LiteralPath $p).Length -eq 0)) { continue }
+          if ($c.nonEmpty -and (([System.IO.File]::ReadAllBytes($p)).Length -eq 0)) { continue }
           $found += $rel
         }
       }
@@ -277,7 +277,7 @@ if (-not (Test-Path -LiteralPath $Target -PathType Container)) {
   [Console]::Error.WriteLine("目标目录不存在: $Target")
   exit 2
 }
-$root = (Resolve-Path -LiteralPath $Target).ProviderPath
+$root = [System.IO.Path]::GetFullPath($Target)
 
 if (-not (Test-Path -LiteralPath $RulesPath -PathType Leaf)) {
   [Console]::Error.WriteLine("规则文件不存在: $RulesPath")
