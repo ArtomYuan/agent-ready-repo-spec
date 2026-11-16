@@ -67,6 +67,8 @@ Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoP
 - **PowerShell 数组 splatting 传的是"位置参数"**：`& $script @arr` 会把 `-Name` 当成值喂给第一个位置参数，
   于是出现 `Cannot convert "." to System.Int32`。命名参数必须用哈希表：`& $script @{ Target = '.'; Level = 3 }`。
   本仓库已踩过两次（`tests/selftest.ps1`、`action.yml`）。
+- **提交信息别以大写缩写开头**：`feat: PR 复用 …` 会被 commitlint 的 `subject-case` 判为 sentence-case。
+  改成以中文或小写开头：`feat: 复用 PR …`。
 
 
 ## 提交与 PR

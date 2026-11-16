@@ -1,43 +1,49 @@
-# 指导正文
+# The guidance
 
-这个目录是**指导**，不是判据。用不用、用多少，由采用它的仓库决定；
-但**决定要一次做、要落在被管理的那个库里**——见 [00-接入决策](00-接入决策.md)。
+**English** · [简体中文](README.zh-CN.md)
 
-它回答六件事：
+This directory is **guidance**, not a verdict. Whether — and how much — to use it is up to the repository that adopts it.
+But the decision should be made **once**, and it should **live inside the adopting repository** — see [00-adoption decisions](00-接入决策.md).
 
-1. 接入时**选哪一档**，以及决定记在哪
-2. 一个 GitHub 仓库**应该有什么文档**
-3. 应该有什么**结构**
-4. 这些文档**应该怎么写**
-5. **Agent 应该怎么用**，以及 **agent 参与开发时该怎么管理**
-6. **换会话 / 换 agent 时，状态与待办放哪**
+It answers six questions:
 
-`rules/` `checker/` `templates/` 只是配套的自查工具与样例——**它们不替你做决定，也不替你执行**。
+1. Which tier to adopt, and where to record that decision
+2. What docs a GitHub repository should have
+3. How the repository should be laid out
+4. How each of those docs should be written
+5. How an agent should be used on the repository, and how to govern it when agents write many of the commits
+6. Where state and to-dos live when sessions or agents change
 
-## 章节
+`rules/`, `checker/` and `templates/` are supporting tools and samples — **they do not decide for you and do not act for you**.
 
-| 章 | 内容 | 状态 |
+## Chapters
+
+| Chapter | Content | Language |
 |---|---|---|
-| [**00-接入决策**](00-接入决策.md) | 十一项可选项、一次选好、每个"采用"必须有落点 | ✅ |
-| [**01-该有什么文档**](01-该有什么文档.md) | 三档清单（平台/协作/agent）、十个真实仓库实测、何时可以不要 | ✅ |
-| [**02-目录结构**](02-目录结构.md) | 根目录三色清单、`.github/` 与 `.claude/` 怎么分、monorepo 两种模式 | ✅ |
-| [**03-文档该怎么写**](03-文档该怎么写.md) | README / AGENTS.md / CLAUDE.md / CODEOWNERS / ADR / PR 模板 / CHANGELOG 的写法与判据 | ✅ |
-| [**04-Agent 怎么用**](04-Agent怎么用.md) | 确定性/非确定性指令、给可运行的检查、会话与成本 | ✅ |
-| [**05-Agent 参与怎么管理**](05-Agent参与怎么管理.md) | 谁能改、何时动手、怎么判、怎么留痕与回滚 | ✅ |
-| [**06-信息该放哪**](06-信息该放哪.md) | 一条判据（变化速度→载体）；立项期：范围/顺序/进度；运行期：状态/待办/接手 | ✅ |
+| [**00 · Adoption decisions**](00-接入决策.md) | eleven options, decided once, every "adopted" needs an enforcement point | [中文](00-接入决策.zh-CN.md) |
+| `01 · What docs a repo should have` | three tiers (platform / collaboration / agent), a ten-repo survey, when you can skip | [中文](01-该有什么文档.zh-CN.md) |
+| `02 · Repository layout` | root-directory traffic lights, `.github/` vs `.claude/`, two monorepo patterns | — |
+| [**03 · How to write each doc**](03-文档该怎么写.md) | README / AGENTS.md / CLAUDE.md / CODEOWNERS / ADR / PR template / CHANGELOG: skeleton, counter-examples, criteria | [中文](03-文档该怎么写.zh-CN.md) |
+| `04 · Using an agent` | deterministic vs non-deterministic instructions, giving it a runnable check, session and cost | — |
+| `05 · Governing agent participation` | who may change what, when work may start, how it is judged, how it is recorded and reverted | — |
+| `06 · Where information lives` | one criterion (rate of change → medium); planning: scope/order/progress; running: state/to-dos/handover; releasing | — |
 
-## 怎么读
+> **Translation status**: chapters 00 and 03 exist in English; 01, 02, 04, 05, 06 are still Chinese only.
+> The order and rules are in [ADR-0007](../docs/adr/0007-bilingual-default-english.md).
+> Rule IDs, `check.kind` values and file paths are never translated.
 
-- **第一次接入** → 先读 **00**，把选项定下来并记进自己的仓库，再往下看。
-- 只想快速上手 → 读 **03** 里与你正在写的文件对应的那一节，照着骨架写，用"反例"对照一遍。
-- 要新建仓库 → 按 01 → 02 → 03 的顺序读一遍。
-- 要把仓库交给 agent → 读 **04**；出过事故、或者 agent 提交占比变高 → 读 **05**。
-- **立项：范围、顺序、进度分别放哪** → 读 **06** 第 1 节。\n- **换会话 / 换 agent 接手** → 读 **06** 第 2 节。
-- 想自查"我有没有遗漏" → 用 `checker/spec-check.ps1`（见仓库根 README）。
-  它只报事实，**不评价你选的档位对不对**。
+## How to read
 
-## 一条贯穿全篇的判据
+- **First time adopting** → read **00**, decide the options, record them in your own repo, then continue.
+- Just want to write one file correctly → read the matching section of **03**, follow the skeleton, then check yourself against the counter-examples.
+- Starting a repository → read 01 → 02 → 03.
+- Handing the repo to an agent → **04**; if agent commits are becoming common, **05**.
+- **Planning: where do scope, order and progress go** → **06** §1. **Releasing** → **06** §2.
+- **Switching sessions or agents** → **06** §3.
+- Want to know what is missing → run `checker/spec-check.ps1` (see the repo README). It reports facts; it does **not** grade your chosen tier.
 
-> **文档的每一行，都要能回答"读者读完这一行，下一步做什么"。**
+## One criterion that runs through everything
 
-回答不了的句子，删掉。
+> **Every line of documentation must answer: what does the reader do next?**
+
+If a sentence cannot answer that, delete it.
