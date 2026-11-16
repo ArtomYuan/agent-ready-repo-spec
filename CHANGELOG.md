@@ -20,6 +20,10 @@
 - CI 新增 `action-smoke` job：用 `uses: ./` 跑一遍 `action.yml`（不设为必需检查，避免自锁）。
 
 ### Changed
+- **`publish-pr.ps1` 支持复用已存在的 PR**：同一 `-Branch` 重复发布时，会 force-update 分支、更新标题与正文后
+  复用原 PR（关闭过的会重开）。此前检查失败后重发会撞"PR 已存在"，必须手工关 PR + 删分支。
+- **英文化推进**（ADR-0007）：`guide/README`、`guide/00-接入决策`、`guide/03-文档该怎么写` 的默认文件改为英文，
+  中文镜像为同名 `.zh-CN.md`；根 `README.zh-CN.md` 的链接改指中文镜像。
 - 修正过期表述：GitHub 仓库描述与 `publish-github.ps1` 默认值不再写死规则条数（原为"31 条"，实际已 36 条）；
   `README` 顶部改为描述当前输出形态（默认自查清单、`-Assess` 才评级），并新增「能力边界」一句。
 - **发布参数 `-Next` 改为必填**（ADR-0005）：PR 描述固定四段（改了什么 / 下一步 / 非目标 / 怎么验证的），

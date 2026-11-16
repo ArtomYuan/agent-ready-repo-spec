@@ -55,15 +55,15 @@ L0 — 能被人和 agent 读懂并跑起来
 
 | 你想知道 | 去哪 |
 |---|---|
-| **接入时该选哪一档、决定记在哪** | [guide/00-接入决策.md](guide/00-接入决策.md) · 模板 [templates/adoption.md.tmpl](templates/adoption.md.tmpl) |
-| 某个文件**到底该怎么写**（README / AGENTS.md / CODEOWNERS / ADR / PR 模板 / CHANGELOG） | [guide/03-文档该怎么写.md](guide/03-文档该怎么写.md) |
-| 指导正文的全貌与其余章节 | [guide/README.md](guide/README.md) |
+| **接入时该选哪一档、决定记在哪** | [guide/00-接入决策.md](guide/00-接入决策.zh-CN.md) · 模板 [templates/adoption.md.tmpl](templates/adoption.md.tmpl) |
+| 某个文件**到底该怎么写**（README / AGENTS.md / CODEOWNERS / ADR / PR 模板 / CHANGELOG） | [guide/03-文档该怎么写.md](guide/03-文档该怎么写.zh-CN.md) |
+| 指导正文的全貌与其余章节 | [guide/README.md](guide/README.zh-CN.md) |
 
 ## 三种用法
 
 | 你是 | 你需要的 | 入口 |
 |---|---|---|
-| 人，想写对文档 | 读写法 + 对照反例 | [guide/03-文档该怎么写.md](guide/03-文档该怎么写.md) |
+| 人，想写对文档 | 读写法 + 对照反例 | [guide/03-文档该怎么写.md](guide/03-文档该怎么写.zh-CN.md) |
 | 人，想自查有没有遗漏 | 跑一条命令，看 FAIL 和修复建议 | 上面那段 |
 | agent，想学会怎么管一个库 | 读操作手册 → 按 skill 执行 | [AGENTS.md](AGENTS.md) · [spec/agent-playbook.md](spec/agent-playbook.md) |
 | CI，想常驻门禁 | 只跑 `must`，失败即红 | [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) |
