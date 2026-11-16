@@ -1,0 +1,43 @@
+# 采用记录：agent-ready-repo-spec
+
+> 把本文件复制到**被管理的仓库**（建议 `docs/adoption.md`，或作为一条 ADR）。
+> 规范库只提供选项；**决定与理由写在这里，留在你自己的仓库里**。
+> 规则见 `guide/00-接入决策.md`：每个"采用"都必须有落点，没有落点就等于没采用。
+
+- **specVersion**：{{SPEC_VERSION}}
+- **采用日期**：{{YYYY-MM-DD}}
+- **决策人**：{{@owner}}
+- **目标等级**：{{L0 | L1 | L2 | L3}}
+
+## 决定
+
+| # | 决定 | 选择 | 落点（缺了就不算采用） |
+|---|---|---|---|
+| 1 | 目标等级 | {{L2}} | CI 里 `spec-check.ps1 -Level {{2}}` |
+| 2 | PR 门禁 | {{必须 PR / 必须 PR + 审批 / 关闭}} | 分支保护 `Require a pull request`（审批数 {{0}}） |
+| 3 | 管理员是否可绕过 | {{不允许 / 允许}} | 分支保护 `Do not allow bypassing` |
+| 4 | 必需检查 | {{job 名列表 / 无}} | 分支保护 `Required status checks` + CI 里真实存在的 job |
+| 5 | 提交规范 | {{仅文档约定 / commitlint}} | `AGENTS.md` 一节 / `.commitlintrc.json` + CI job |
+| 6 | agent 归属 | {{默认 Co-Authored-By / 自定义 / 关闭}} | `.claude/settings.json` 的 `attribution` |
+| 7 | agent 指令形态 | {{单根 / 根+子目录 / 路由型}} | `AGENTS.md`（+ 子目录文件） |
+| 8 | 权限基线 | {{deny 清单}} | `.claude/settings.json` 的 `permissions.deny` |
+| 9 | 硬约束形态 | {{只写文档 / hook / CI}} | `.claude/settings.json` 的 `hooks`、或 CI workflow |
+| 10 | 文档集 | {{README / LICENSE / SECURITY / CHANGELOG / ADR / …}} | 对应文件本身 |
+
+## 未采用
+
+> 写清楚"不做"和"为什么"。不写，下一个人会当成漏了，然后顺手补错。
+
+- **{{CONTRIBUTING.md}}**：{{理由，例如：私有库、不收外部 PR}}。{{若条件变化（接受外部贡献），先补它。}}
+- **{{CODE_OF_CONDUCT.md}}**：{{理由}}。
+
+## 排期与复审
+
+- **复审时间**：{{YYYY-MM-DD}}
+- **触发复审的条件**：{{出现第二位维护者 / 开始接受外部 PR / 引入 agent 自动提交 / …}}
+- **破窗流程**：{{如需临时绕过门禁，谁批准、记在哪里}}
+
+## 备注
+
+- 平台设置（分支保护、required checks、Actions 权限）**检查器读不到**，只能靠本记录 + 人工核对；
+  仓库内文件（`settings.json`、CI workflow、`AGENTS.md`）可以被 `checker/spec-check.ps1` 验证。

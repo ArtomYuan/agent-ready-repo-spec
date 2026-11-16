@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+### Added
+- 新增指导章节 [guide/00-接入决策.md](guide/00-接入决策.md)：十一项可选项、一次选好、
+  每个"采用"必须有落点（门禁 / `settings.json` / CI job / `AGENTS.md`），决定留在被管理的仓库里。
+- 新增模板 [templates/adoption.md.tmpl](templates/adoption.md.tmpl)：采用记录（含"未采用项与理由"）。
+
 ### Changed
 - **发布流程改为走 PR**：新增 `tools/publish-pr.ps1`（分支 → PR → 等 CI → squash 合并）。
   main 开启分支保护（Require a pull request + Required status checks + Do not allow bypassing），

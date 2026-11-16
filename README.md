@@ -50,6 +50,7 @@ L0 — 能被人和 agent 读懂并跑起来
 
 | 你想知道 | 去哪 |
 |---|---|
+| **接入时该选哪一档、决定记在哪** | [guide/00-接入决策.md](guide/00-接入决策.md) · 模板 [templates/adoption.md.tmpl](templates/adoption.md.tmpl) |
 | 某个文件**到底该怎么写**（README / AGENTS.md / CODEOWNERS / ADR / PR 模板 / CHANGELOG） | [guide/03-文档该怎么写.md](guide/03-文档该怎么写.md) |
 | 指导正文的全貌与其余章节 | [guide/README.md](guide/README.md) |
 
