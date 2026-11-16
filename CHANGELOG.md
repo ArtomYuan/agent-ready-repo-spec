@@ -5,11 +5,27 @@
 
 ## [Unreleased]
 
+### Action（`action.yml`）
+
+- 首次发布：composite action，`uses: ArtomYuan/agent-ready-repo-spec@<ref>` 一行接入。
+  inputs：`target`（默认 `.`）、`level`（0–3）、`fail-on`（`must` / `should` / `none`）、`assess`、`git`、`format`。
+- 修复：参数改为**哈希表 splatting**。此前用数组 splatting，而数组传的是位置参数，
+  导致 `Cannot convert "." to System.Int32`——action 必然失败。
+- `v1` 是**移动 tag**，跟随最新的 v1.x；生产环境请固定 commit SHA（见 [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) 与 ADR-0006）。
+- **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
 - 新增指导章节 [guide/00-接入决策.md](guide/00-接入决策.md)：十一项可选项、一次选好、
   每个"采用"必须有落点（门禁 / `settings.json` / CI job / `AGENTS.md`），决定留在被管理的仓库里。
 - 新增模板 [templates/adoption.md.tmpl](templates/adoption.md.tmpl)：采用记录（含"未采用项与理由"）。
 
+### Action（`action.yml`）
+
+- 首次发布：composite action，`uses: ArtomYuan/agent-ready-repo-spec@<ref>` 一行接入。
+  inputs：`target`（默认 `.`）、`level`（0–3）、`fail-on`（`must` / `should` / `none`）、`assess`、`git`、`format`。
+- 修复：参数改为**哈希表 splatting**。此前用数组 splatting，而数组传的是位置参数，
+  导致 `Cannot convert "." to System.Int32`——action 必然失败。
+- `v1` 是**移动 tag**，跟随最新的 v1.x；生产环境请固定 commit SHA（见 [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) 与 ADR-0006）。
+- **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
 - **`action.yml`**：composite GitHub Action，`uses: ArtomYuan/agent-ready-repo-spec@<ref>` 一行接入（ADR-0006）。
   inputs：`target` / `level` / `fail-on` / `assess` / `git` / `format`；`v1` 为移动 tag，生产建议固定 SHA。
@@ -43,6 +59,14 @@
 - `specVersion` 1.2.0 → 1.3.0（放宽判定，minor）。
 - 默认输出改为**自查清单**：只报"已有 / 建议补 / 跳过"，不再出现分数、达成等级与"通过/未通过"字样。
 
+### Action（`action.yml`）
+
+- 首次发布：composite action，`uses: ArtomYuan/agent-ready-repo-spec@<ref>` 一行接入。
+  inputs：`target`（默认 `.`）、`level`（0–3）、`fail-on`（`must` / `should` / `none`）、`assess`、`git`、`format`。
+- 修复：参数改为**哈希表 splatting**。此前用数组 splatting，而数组传的是位置参数，
+  导致 `Cannot convert "." to System.Int32`——action 必然失败。
+- `v1` 是**移动 tag**，跟随最新的 v1.x；生产环境请固定 commit SHA（见 [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) 与 ADR-0006）。
+- **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
 - `-Assess` 开关：要评分与达成等级时才加。**退出码不受影响**（仍由 `-FailOn` 决定），`-Format json` 的字段也不变，CI 与下游脚本无需改动。
 - 3 条自测断言覆盖两种输出模式（共 22 项）。
@@ -60,6 +84,14 @@
 - `R041`（提交约定写进 AGENTS.md）**should → may**，并改写理由：Claude Code **默认自带**提交/PR 指令
   （`includeGitInstructions` 默认 `true`），真正的风险是"仓库约定与内置指令打架"，而不是"没写 Conventional Commits"。
 
+### Action（`action.yml`）
+
+- 首次发布：composite action，`uses: ArtomYuan/agent-ready-repo-spec@<ref>` 一行接入。
+  inputs：`target`（默认 `.`）、`level`（0–3）、`fail-on`（`must` / `should` / `none`）、`assess`、`git`、`format`。
+- 修复：参数改为**哈希表 splatting**。此前用数组 splatting，而数组传的是位置参数，
+  导致 `Cannot convert "." to System.Int32`——action 必然失败。
+- `v1` 是**移动 tag**，跟随最新的 v1.x；生产环境请固定 commit SHA（见 [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) 与 ADR-0006）。
+- **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
 - `R029`（L2 · should）**保留 agent 提交归属**：`settings.json` 里不得把 `attribution` 设为 `false`
   或把 `attribution.commit` 设为空串。依据：Claude Code 默认给提交加 `Co-Authored-By: <model> <noreply@anthropic.com>`
@@ -73,6 +105,14 @@
 
 ## [1.1.0] - 2026-11-17
 
+### Action（`action.yml`）
+
+- 首次发布：composite action，`uses: ArtomYuan/agent-ready-repo-spec@<ref>` 一行接入。
+  inputs：`target`（默认 `.`）、`level`（0–3）、`fail-on`（`must` / `should` / `none`）、`assess`、`git`、`format`。
+- 修复：参数改为**哈希表 splatting**。此前用数组 splatting，而数组传的是位置参数，
+  导致 `Cannot convert "." to System.Int32`——action 必然失败。
+- `v1` 是**移动 tag**，跟随最新的 v1.x；生产环境请固定 commit SHA（见 [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) 与 ADR-0006）。
+- **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
 - **4 条提交规则**：
   - `R028`（L2 · should）提交规范要有机器执行载体（commitlint 配置），不能只写在 CONTRIBUTING 里；
@@ -96,6 +136,14 @@
 
 ## [1.0.0] - 2026-11-16
 
+### Action（`action.yml`）
+
+- 首次发布：composite action，`uses: ArtomYuan/agent-ready-repo-spec@<ref>` 一行接入。
+  inputs：`target`（默认 `.`）、`level`（0–3）、`fail-on`（`must` / `should` / `none`）、`assess`、`git`、`format`。
+- 修复：参数改为**哈希表 splatting**。此前用数组 splatting，而数组传的是位置参数，
+  导致 `Cannot convert "." to System.Int32`——action 必然失败。
+- `v1` 是**移动 tag**，跟随最新的 v1.x；生产环境请固定 commit SHA（见 [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) 与 ADR-0006）。
+- **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
 - `rules/rules.json`：31 条规则，分 L0–L3 四级、must/should/may 三档，每条带 `rationale` 与 `fix`。
 - `checker/spec-check.ps1`：无依赖检查引擎，支持 13 种 `check.kind`，输出 `text` / `json` / `md`，
