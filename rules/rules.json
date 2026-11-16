@@ -1,5 +1,5 @@
 {
-  "specVersion": "1.0.0",
+  "specVersion": "1.1.0",
   "name": "agent-ready-repo-spec",
   "description": "机器可读规则集：一个有 AI agent 参与的 GitHub 仓库该长什么样。checker 读本文件，spec/RULES.md 由本文件生成。",
   "levels": {
@@ -190,6 +190,15 @@
       "fix": "填入真实年份与著作权人。"
     },
     {
+      "id": "R028",
+      "level": 2,
+      "severity": "should",
+      "title": "提交规范有机器执行载体",
+      "check": { "kind": "file-exists", "any": ["commitlint.config.js", "commitlint.config.cjs", "commitlint.config.mjs", "commitlint.config.json", ".commitlintrc", ".commitlintrc.json", ".commitlintrc.yml", ".commitlintrc.yaml", ".commitlintrc.js", ".commitlintrc.cjs"] },
+      "rationale": "提交格式只写在 CONTRIBUTING 里等于没写；必须有 commitlint 这类执行载体，否则三个月后历史就变成 feat:/fix:/update/ 的混合体，任何按前缀生成的 CHANGELOG 都会失效。",
+      "fix": "加 commitlint 配置（extends @commitlint/config-conventional），并在 CI 或 commit-msg hook 里跑起来。"
+    },
+    {
       "id": "R030",
       "level": 3,
       "severity": "should",
@@ -287,6 +296,35 @@
       "check": { "kind": "dir-contains", "dir": ".claude/hooks", "pattern": "*.ps1", "regex": "exit\\s+2" },
       "rationale": "阻塞类 hook 不收 exit 2 就等于没检查：exit 0 只进日志，exit 1 是非阻塞错误。",
       "fix": "违规分支改为写 stderr 后 exit 2。"
+    },
+    {
+      "id": "R041",
+      "level": 3,
+      "severity": "should",
+      "title": "AGENTS.md 声明提交格式",
+      "check": { "kind": "file-contains", "file": "AGENTS.md", "regex": "(Conventional Commits|提交信息|Commit Message|commit message)" },
+      "rationale": "agent 写提交信息时只看 AGENTS.md，不看 CONTRIBUTING；格式不在这里出现，历史里就会混进 update/fix bug/修改 这类无法解析的 subject。",
+      "fix": "在 AGENTS.md 的“硬约定”里加一行：提交信息用 Conventional Commits，`feat(scope): ...`，关联 issue。"
+    },
+    {
+      "id": "R050",
+      "level": 3,
+      "severity": "may",
+      "title": "最近提交的 subject 符合 Conventional Commits",
+      "requires": "git",
+      "check": { "kind": "git-commit-subject", "regex": "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\(.+\\))?!?: .+", "maxLength": 72, "depth": 50 },
+      "rationale": "格式只在文档里 = 不生效。history 是唯一无法事后伪造的证据：subject 能解析，CHANGELOG 与 release 才能自动化。",
+      "fix": "把不合规的 subject 在后续提交里改正并说明；长期方案是让 commitlint 在 CI/hook 上拦住新提交（R028）。"
+    },
+    {
+      "id": "R051",
+      "level": 3,
+      "severity": "may",
+      "title": "最近提交是线性历史（无 merge commit）",
+      "requires": "git",
+      "check": { "kind": "git-commit-no-merge", "depth": 50 },
+      "rationale": "线性历史让 revert、cherry-pick、审计都变简单；merge commit 会把一条 PR 的变化混进两条父提交，出问题时难以定位与回滚。",
+      "fix": "仓库设置启用 Squash merge 或 Rebase merge，关闭 Merge commit；已存在的 merge 不必重写。"
     }
   ]
 }

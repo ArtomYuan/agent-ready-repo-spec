@@ -33,8 +33,10 @@ function New-Fixture($base, $name, $files) {
   return $dir
 }
 
-function Invoke-Spec($path, $failOn = 'must') {
-  $raw = & $checker -Target $path -Level 3 -Format json -FailOn $failOn 2>$null
+function Invoke-Spec($path, $failOn = 'must', [switch]$Git) {
+  $prm = @{ Target = $path; Level = 3; Format = 'json'; FailOn = $failOn }
+  if ($Git) { $prm['Git'] = $true }
+  $raw = & $checker @prm 2>$null
   $code = $LASTEXITCODE
   return @{ code = $code; json = (($raw -join "`n") | ConvertFrom-Json) }
 }
@@ -97,9 +99,10 @@ try {
     '.claude/settings.json' = '{"permissions":{"deny":["Read(./.env)","Bash(rm *)"],"allow":[]},"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"pwsh -File .claude/hooks/g.ps1"}]}]}}'
     '.claude/hooks/g.ps1' = "# guard`nif (`$true) { exit 2 }`n"
     '.claude/skills/x/SKILL.md' = "---`nname: x`ndescription: 自测 skill`n---`n`n内容`n"
+    'commitlint.config.js' = "module.exports = { extends: ['@commitlint/config-conventional'] };`n"
   }
   $r = Invoke-Spec $good
-  $bad = @($r.json.results | Where-Object { -not $_.ok })
+  $bad = @($r.json.results | Where-Object { -not $_.skipped -and -not $_.ok })
   Assert 'good: 无 FAIL' ($bad.Count -eq 0) ("失败项: " + (($bad | ForEach-Object { $_.id }) -join ','))
   Assert 'good: 达成 L3' ($r.json.achievedLevel -eq 3) "实际 $($r.json.achievedLevel)"
   Assert 'good: 退出码 0' ($r.code -eq 0) "实际 $($r.code)"
@@ -140,6 +143,15 @@ try {
   }
   $r4 = Invoke-Spec $bh
   Assert 'broken-hook: R034 命中（引用不存在）' ((Get-Rule $r4.json 'R034').ok -eq $false)
+
+  # ---------- fixture 5：提交历史规则默认跳过 ----------
+  Write-Host 'commit 规则（默认跳过）' -ForegroundColor Cyan
+  Assert 'good: 默认不读历史，R050 跳过' ((Get-Rule $r.json 'R050').skipped -eq $true)
+  Assert 'good: 默认不读历史，R051 跳过' ((Get-Rule $r.json 'R051').skipped -eq $true)
+  $r5 = Invoke-Spec $good -Git
+  Assert 'good + -Git（非 git 目录）：R050 仍跳过' ((Get-Rule $r5.json 'R050').skipped -eq $true)
+  Assert 'good + -Git：不因跳过而扣分' ($r5.json.score -eq 100) "实际 $($r5.json.score)"
+  Assert 'good + -Git：仍达成 L3' ($r5.json.achievedLevel -eq 3) "实际 $($r5.json.achievedLevel)"
 
   # ---------- 生成物一致性 ----------
   Write-Host '生成物一致性' -ForegroundColor Cyan

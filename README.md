@@ -107,7 +107,7 @@ tests/selftest.ps1      fixture 自测
 
 ## 为什么是 PowerShell
 
-规则是 JSON，引擎是薄薄一层。选 PowerShell 因为它**在三大平台的 GitHub Runner 上都预装**，不引入 Node/Python 运行时依赖；想换语言重写，照着 `rules.json` 的 13 种 `check.kind` 实现即可。
+规则是 JSON，引擎是薄薄一层。选 PowerShell 因为它**在三大平台的 GitHub Runner 上都预装**，不引入 Node/Python 运行时依赖；想换语言重写，照着 `rules.json` 的 15 种 `check.kind` 实现即可。
 
 ## 许可
 

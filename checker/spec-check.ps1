@@ -19,7 +19,8 @@ param(
   [ValidateSet('text', 'json', 'md')][string]$Format = 'text',
   [ValidateSet('must', 'should', 'none')][string]$FailOn = 'must',
   [string]$RulesPath = '',
-  [switch]$NoColor
+  [switch]$NoColor,
+  [switch]$Git
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,6 +36,20 @@ $Weight = @{ 'must' = 5; 'should' = 2; 'may' = 1 }
 function Read-Text([string]$path) {
   if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { return $null }
   return [System.IO.File]::ReadAllText([System.IO.Path]::GetFullPath($path), $Utf8)
+}
+
+function Get-GitExe {
+  $c = Get-Command git -ErrorAction SilentlyContinue
+  if ($c) { return $c.Source }
+  return $null
+}
+
+function Invoke-Git([string]$root, [string[]]$gitArgs) {
+  $exe = Get-GitExe
+  if (-not $exe) { return $null }
+  $out = & $exe -C $root @gitArgs 2>$null
+  if ($LASTEXITCODE -ne 0) { return $null }
+  return @($out | Where-Object { $null -ne $_ -and "$_" -ne '' })
 }
 
 function Get-Frontmatter([string]$text) {
@@ -75,7 +90,7 @@ function Get-JsonDepth($obj, [string[]]$segments, [int]$i = 0) {
 function Test-Rule($rule, [string]$root) {
   $c = $rule.check
   $kind = $c.kind
-  $res = @{ ok = $false; detail = '' }
+  $res = @{ ok = $false; detail = ''; skip = $false }
 
   switch ($kind) {
 
@@ -265,6 +280,35 @@ function Test-Rule($rule, [string]$root) {
       }
     }
 
+    'git-commit-subject' {
+      $depth = 50
+      if ($c.PSObject.Properties['depth']) { $depth = [int]$c.depth }
+      $subjects = Invoke-Git $root @('log', "-n$depth", '--pretty=format:%s')
+      if ($null -eq $subjects) { $res.skip = $true; $res.detail = 'git 不可用或不是 git 仓库，跳过'; break }
+      if ($subjects.Count -eq 0) { $res.skip = $true; $res.detail = '仓库还没有提交，跳过'; break }
+      $maxLen = 72
+      if ($c.PSObject.Properties['maxLength']) { $maxLen = [int]$c.maxLength }
+      $bad = @()
+      foreach ($s in $subjects) {
+        if (-not [regex]::IsMatch($s, $c.regex)) { $bad += "格式:$s" }
+        elseif ($s.Length -gt $maxLen) { $bad += "太长($($s.Length)):$s" }
+      }
+      $res.ok = ($bad.Count -eq 0)
+      $res.detail = if ($res.ok) { "最近 $($subjects.Count) 条提交全部合规" } else { "不合规 $($bad.Count)/$($subjects.Count) 条，例：$($bad[0])" }
+    }
+
+    'git-commit-no-merge' {
+      $depth = 50
+      if ($c.PSObject.Properties['depth']) { $depth = [int]$c.depth }
+      $all = Invoke-Git $root @('log', "-n$depth", '--pretty=format:%s')
+      if ($null -eq $all) { $res.skip = $true; $res.detail = 'git 不可用或不是 git 仓库，跳过'; break }
+      if ($all.Count -eq 0) { $res.skip = $true; $res.detail = '仓库还没有提交，跳过'; break }
+      $merges = Invoke-Git $root @('log', "-n$depth", '--merges', '--pretty=format:%h %s')
+      $mc = 0; if ($null -ne $merges) { $mc = $merges.Count }
+      $res.ok = ($mc -eq 0)
+      $res.detail = if ($res.ok) { "最近 $($all.Count) 条提交无 merge" } else { "发现 $mc 个 merge commit，例：$($merges[0])" }
+    }
+
     default { $res.ok = $false; $res.detail = "未知检查类型: $kind" }
   }
 
@@ -289,31 +333,47 @@ catch { [Console]::Error.WriteLine("规则文件解析失败: $($_.Exception.Mes
 $selected = @($spec.rules | Where-Object { $_.level -le $Level })
 $results = @()
 foreach ($r in $selected) {
+  $skip = $false; $skipReason = ''
+  $requires = ''
+  if ($r.PSObject.Properties['requires']) { $requires = [string]$r.requires }
+  if ($requires -eq 'git') {
+    if (-not $Git) { $skip = $true; $skipReason = '需要 -Git（默认不读提交历史）' }
+    elseif (-not (Get-GitExe)) { $skip = $true; $skipReason = 'git 不可用' }
+  }
+  if ($skip) {
+    $results += [pscustomobject]@{
+      id = $r.id; level = $r.level; severity = $r.severity; title = $r.title
+      ok = $false; skipped = $true; detail = $skipReason; fix = $r.fix; rationale = $r.rationale
+    }
+    continue
+  }
   $out = Test-Rule $r $root
+  $skippedNow = [bool]$out.skip
   $results += [pscustomobject]@{
     id = $r.id; level = $r.level; severity = $r.severity; title = $r.title
-    ok = [bool]$out.ok; detail = $out.detail; fix = $r.fix; rationale = $r.rationale
+    ok = [bool]$out.ok; skipped = $skippedNow; detail = $out.detail; fix = $r.fix; rationale = $r.rationale
   }
 }
 
 $bySeverity = @{}
 foreach ($s in 'must', 'should', 'may') {
-  $set = @($results | Where-Object { $_.severity -eq $s })
+  $set = @($results | Where-Object { $_.severity -eq $s -and -not $_.skipped })
   $pass = @($set | Where-Object { $_.ok }).Count
   $bySeverity[$s] = @{ total = $set.Count; pass = $pass; fail = ($set.Count - $pass) }
 }
+$skippedCount = @($results | Where-Object { $_.skipped }).Count
 $totalW = 0; $passW = 0
-foreach ($r in $results) { $w = $Weight[$r.severity]; $totalW += $w; if ($r.ok) { $passW += $w } }
+foreach ($r in $results) { if ($r.skipped) { continue }; $w = $Weight[$r.severity]; $totalW += $w; if ($r.ok) { $passW += $w } }
 $score = if ($totalW -gt 0) { [int][math]::Round(100 * $passW / $totalW) } else { 100 }
 
 $achieved = -1
 for ($l = 0; $l -le $Level; $l++) {
-  $blocking = @($results | Where-Object { $_.level -le $l -and $_.severity -ne 'may' -and -not $_.ok })
+  $blocking = @($results | Where-Object { $_.level -le $l -and $_.severity -ne 'may' -and -not $_.skipped -and -not $_.ok })
   if ($blocking.Count -eq 0) { $achieved = $l } else { break }
 }
 
 $threshold = switch ($FailOn) { 'must' { 3 } 'should' { 2 } default { 0 } }
-$fails = @($results | Where-Object { -not $_.ok -and $Rank[$_.severity] -ge $threshold -and $threshold -gt 0 })
+$fails = @($results | Where-Object { -not $_.skipped -and -not $_.ok -and $Rank[$_.severity] -ge $threshold -and $threshold -gt 0 })
 $exit = if ($fails.Count -gt 0) { 1 } else { 0 }
 
 if ($Format -eq 'json') {
@@ -323,6 +383,7 @@ if ($Format -eq 'json') {
     level = $Level
     score = $score
     achievedLevel = $achieved
+    skipped = $skippedCount
     summary = $bySeverity
     results = $results
   }
@@ -345,7 +406,7 @@ if ($Format -eq 'md') {
   [void]$sb.AppendLine('| 规则 | 级别 | 严重度 | 结果 | 说明 |')
   [void]$sb.AppendLine('|---|---|---|---|---|')
   foreach ($r in $results) {
-    $mark = if ($r.ok) { 'PASS' } else { 'FAIL' }
+    $mark = if ($r.skipped) { 'SKIP' } elseif ($r.ok) { 'PASS' } else { 'FAIL' }
     [void]$sb.AppendLine("| $($r.id) $($r.title) | L$($r.level) | $($r.severity) | $mark | $($r.detail) |")
   }
   $bad = @($results | Where-Object { -not $_.ok })
@@ -370,7 +431,10 @@ foreach ($l in 0..$Level) {
   if ($group.Count -eq 0) { continue }
   Write-Line "L$l — $($spec.levels.($l.ToString()))" 'DarkGray'
   foreach ($r in $group) {
-    if ($r.ok) {
+    if ($r.skipped) {
+      Write-Line ("  [skip] {0,-5} {1}  ({2})" -f $r.id, $r.title, $r.detail) 'DarkGray'
+    }
+    elseif ($r.ok) {
       Write-Line ("  [ok]   {0,-5} {1}" -f $r.id, $r.title) 'DarkGray'
     }
     else {
@@ -382,10 +446,12 @@ foreach ($l in 0..$Level) {
   Write-Line ''
 }
 $fb = if ($achieved -lt 0) { '未达 L0' } else { "L$achieved" }
-Write-Line ("must {0}/{1}   should {2}/{3}   may {4}/{5}   score {6}/100   达成 {7}" -f `
+Write-Line ("must {0}/{1}   should {2}/{3}   may {4}/{5}   skipped {6}   score {7}/100   达成 {8}" -f `
     $bySeverity['must'].pass, $bySeverity['must'].total,
     $bySeverity['should'].pass, $bySeverity['should'].total,
     $bySeverity['may'].pass, $bySeverity['may'].total,
+    $skippedCount,
     $score, $fb) 'Cyan'
+if ($skippedCount -gt 0) { Write-Line "（skipped 项需要 -Git 且目标为 git 仓库；不计入分数与达成等级）" 'DarkGray' }
 if ($exit -ne 0) { Write-Line "未通过（fail-on: $FailOn）" 'Red' } else { Write-Line "通过（fail-on: $FailOn）" 'Green' }
 exit $exit

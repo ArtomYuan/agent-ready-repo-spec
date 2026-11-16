@@ -27,22 +27,23 @@ jobs:
       - uses: actions/checkout@v4   # 生产仓库请改用固定 commit SHA
         with:
           persist-credentials: false
+          fetch-depth: 0            # 提交历史规则（R050/R051）需要完整历史
 
       - name: 规则表与 rules.json 一致
         shell: pwsh
         run: ./checker/gen-rules-doc.ps1 -Check
 
-      - name: 本仓库必须达成 L3
+      - name: 本仓库必须达成 L3（含提交历史规则）
         shell: pwsh
-        run: ./checker/spec-check.ps1 -Target . -Level 3 -FailOn should -NoColor
+        run: ./checker/spec-check.ps1 -Target . -Level 3 -FailOn should -Git -NoColor
 
       - name: 机器可读报告（上传为 artifact）
         if: always()
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path reports | Out-Null
-          ./checker/spec-check.ps1 -Target . -Format json > reports/spec-report.json
-          ./checker/spec-check.ps1 -Target . -Format md   > reports/spec-report.md
+          ./checker/spec-check.ps1 -Target . -Format json -Git > reports/spec-report.json
+          ./checker/spec-check.ps1 -Target . -Format md   -Git > reports/spec-report.md
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -50,6 +51,24 @@ jobs:
           name: spec-report
           path: reports/
           retention-days: 14
+
+  commits:
+    name: 提交信息（commitlint）
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 校验 PR 内每条提交信息
+        run: |
+          npm i -g @commitlint/cli@19 @commitlint/config-conventional@19
+          npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose
+
 
   windows:
     name: Windows + PowerShell 5.1 兼容

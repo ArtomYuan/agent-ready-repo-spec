@@ -5,9 +5,28 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-17
+
+### Added
+- **4 条提交规则**：
+  - `R028`（L2 · should）提交规范要有机器执行载体（commitlint 配置），不能只写在 CONTRIBUTING 里；
+  - `R041`（L3 · should）`AGENTS.md` 必须声明提交格式——agent 只看这个文件；
+  - `R050`（L3 · may，opt-in）最近 50 条提交 subject 符合 Conventional Commits 且 ≤72 字符；
+  - `R051`（L3 · may，opt-in）最近 50 条提交是线性历史（无 merge commit）。
+- 新 `check.kind`：`git-commit-subject`、`git-commit-no-merge`（共 15 种）。
+- 新开关 `-Git`：默认**不读**提交历史；未开启、git 缺失、或目标不是 git 仓库时，规则状态为
+  `skipped`——**不计分、不计入达成等级、不触发退出码**，报告里显示 `[skip]`。
+- `.commitlintrc.json` + CI 的 `commits` job：PR 内每条提交过 commitlint。
+- `tests/selftest.ps1` 新增 5 条断言（默认跳过、`-Git` 下非 git 目录仍跳过、跳过不扣分不降级）。
+
+### Changed
+- `specVersion` 1.0.0 → **1.1.0**（新增 should/may 规则，属 minor；不收紧既有判定）。
+- CI 的体检 job 改用 `-Git` 并 `fetch-depth: 0`，提交历史规则在 CI 里真正生效。
+
 ### Fixed
-- `spec/RULES.md` 生成时统一使用 LF 换行。此前在 Windows 上生成的是 CRLF，导致 Linux CI 里
-  `gen-rules-doc.ps1 -Check` 判定不一致而失败。
+- `spec/RULES.md` 生成时统一 LF。此前 Windows 上生成 CRLF，导致 Linux CI 的 `gen-rules-doc.ps1 -Check` 失败。
+- 检查器不再依赖 `Get-Item` / `Resolve-Path`：Linux 上点文件（`.gitignore`）取不到，会让整次体检直接崩溃。
+  改用 `[System.IO.File]::ReadAllBytes()` 与 `[System.IO.Path]::GetFullPath()`。
 
 ## [1.0.0] - 2026-11-16
 

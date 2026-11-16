@@ -23,7 +23,7 @@
 
 `may` **不阻断** `achievedLevel`。这是刻意的：小项目不该被"加分项"判红。
 
-## 判定方式（13 种 `check.kind`）
+## 判定方式（15 种 `check.kind`）
 
 见 [architecture/checker.md](../docs/architecture/checker.md) 的表。要点：
 
@@ -43,6 +43,20 @@ spec-check.ps1 -Target <path> [-Level 0..3] [-Format text|json|md] [-FailOn must
 | `1` | 有未通过项 |
 | `2` | 运行错误（目标不存在、规则文件无法解析） |
 
+## 提交规则（4 条，分三层）
+
+| 规则 | 层级 | 查什么 | 为什么放在这一层 |
+|---|---|---|---|
+| `R028` | L2 · should | 有 `commitlint` 配置这类**执行载体** | 格式只写在文档里 = 不生效 |
+| `R041` | L3 · should | `AGENTS.md` **声明**了提交格式 | agent 写提交信息时只看 AGENTS.md，不看 CONTRIBUTING |
+| `R050` | L3 · may（opt-in） | 最近 50 条 subject 符合 Conventional Commits | 历史是唯一无法事后伪造的证据 |
+| `R051` | L3 · may（opt-in） | 最近 50 条无 merge commit | 线性历史让 revert / cherry-pick / 审计都简单 |
+
+`R050`/`R051` 需要 `-Git`，且目标必须是 git 仓库；否则 `skipped`——**不计分、不阻断退出码**。
+
+> 为什么前两条不直接查 `git log`？因为体检要对**任意目录**可跑（解压的源码包、模板目录、
+> 别人的仓库快照），不能因为没装 git 就判红。原则是：**能查就查，查不到说“跳过”，绝不说“通过”。**
+
 ## 版本策略
 
 - `specVersion` 遵循 SemVer。
@@ -54,7 +68,7 @@ spec-check.ps1 -Target <path> [-Level 0..3] [-Format text|json|md] [-FailOn must
 
 以下内容是有意排除的，因为无法稳定判定，且容易变成走过场：
 
-- 提交信息是否符合某个格式（应由 commitlint 在 CI 里管）
+- 提交信息**内容**写得好不好（只判格式与载体，见下节“提交规则”）
 - 测试覆盖率阈值
 - 代码风格
 - “文档写得好不好”

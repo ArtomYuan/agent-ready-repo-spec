@@ -19,6 +19,7 @@
 | 生成规则表 | `pwsh ./checker/gen-rules-doc.ps1` | 改完 `rules/rules.json` 必跑 |
 | 自测 | `pwsh ./tests/selftest.ps1` | 临时 fixture，无需联网 |
 | 自己体检自己 | `pwsh ./checker/spec-check.ps1 -Target .` | 提交前必跑，必须 L3 全绿 |
+| 提交历史体检 | `pwsh ./checker/spec-check.ps1 -Target . -Git` | 需 git；无 git/非仓库时 R050/R051 跳过，不扣分 |
 
 Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoProfile -ExecutionPolicy Bypass -File`。
 本仓库**没有** Node/Python 依赖；不要引入包管理器。
@@ -28,7 +29,7 @@ Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoP
 - `rules/rules.json` — 规则唯一事实源。改规则只改这里。
 - `spec/RULES.md` — 生成物，**不要手改**；改了会被 CI 发现不一致。
 - `spec/agent-playbook.md` — agent 操作手册（先读这个再动手）。
-- `checker/spec-check.ps1` — 引擎。13 种 `check.kind`，见文件内 `switch`。
+- `checker/spec-check.ps1` — 引擎。15 种 `check.kind`，见文件内 `switch`；`-Git` 才读提交历史。
 - `checker/gen-rules-doc.ps1` — 从 JSON 生成 Markdown 表。
 - `templates/` — 复制到目标仓库的模板，含 `{{PLACEHOLDER}}`。
 - `docs/` — 设计说明与 ADR。

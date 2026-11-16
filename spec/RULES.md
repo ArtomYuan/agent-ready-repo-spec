@@ -1,16 +1,16 @@
 # 规则表
 
-> 由 `rules/rules.json` 自动生成，**请勿手改**。规范版本 `1.0.0`。
+> 由 `rules/rules.json` 自动生成，**请勿手改**。规范版本 `1.1.0`。
 > 重新生成：`pwsh ./checker/gen-rules-doc.ps1`
 
-共 **31** 条规则。严重度 `must` / `should` / `may`；`may` 不阻断达成等级。
+共 **35** 条规则。严重度 `must` / `should` / `may`；`may` 不阻断达成等级。
 
 | 级别 | 含义 | 规则数 |
 |---|---|---|
 | L0 | 能被人和 agent 读懂并跑起来 | 5 |
 | L1 | 能接受第三方贡献且不被打断 | 7 |
-| L2 | 能对外、能生产、决策可追溯 | 8 |
-| L3 | agent 提交占多数时的治理与防腐 | 11 |
+| L2 | 能对外、能生产、决策可追溯 | 9 |
+| L3 | agent 提交占多数时的治理与防腐 | 14 |
 
 ## L0 · 能被人和 agent 读懂并跑起来
 
@@ -80,6 +80,7 @@
 | `R025` | must | settings.local.json 未被提交 | kind: `file-absent` · any=.claude/settings.local.json |
 | `R026` | should | permissions.deny 非空 | kind: `json-nonempty` · file=.claude/settings.json · path=permissions.deny |
 | `R027` | may | LICENSE 不是占位文本 | kind: `file-not-contains` · file=LICENSE · regex=<name of author>|<owner>|TODO|Placeholder |
+| `R028` | should | 提交规范有机器执行载体 | kind: `file-exists` · any=commitlint.config.js, commitlint.config.cjs, commitlint.config.mjs, commitlint.config.json, .commitlintrc, .commitlintrc.json, .commitlintrc.yml, .commitlintrc.yaml, .commitlintrc.js, .commitlintrc.cjs |
 
 <details><summary>为什么 / 怎么改</summary>
 
@@ -99,6 +100,8 @@
   - 修复：至少 deny：Read(./.env)、Read(./secrets/**)、Bash(rm *)、Bash(git reset *)。
 - **R027** 占位 LICENSE 在法律上等于没有协议。
   - 修复：填入真实年份与著作权人。
+- **R028** 提交格式只写在 CONTRIBUTING 里等于没写；必须有 commitlint 这类执行载体，否则三个月后历史就变成 feat:/fix:/update/ 的混合体，任何按前缀生成的 CHANGELOG 都会失效。
+  - 修复：加 commitlint 配置（extends @commitlint/config-conventional），并在 CI 或 commit-msg hook 里跑起来。
 
 </details>
 
@@ -117,6 +120,9 @@
 | `R038` | may | ADR 文件名符合 NNNN- 规则 | kind: `name-pattern` · dir=docs/adr · pattern=*.md · regex=^\d{4}-[a-z0-9-]+\.md$ |
 | `R039` | may | PR 模板含自检清单 | kind: `file-contains` · file=.github/PULL_REQUEST_TEMPLATE.md · regex=[-*]\s*\[\s*\] |
 | `R040` | may | hook 脚本使用 exit 2 阻塞 | kind: `dir-contains` · dir=.claude/hooks · pattern=*.ps1 · regex=exit\s+2 |
+| `R041` | should | AGENTS.md 声明提交格式 | kind: `file-contains` · file=AGENTS.md · regex=(Conventional Commits|提交信息|Commit Message|commit message) |
+| `R050` | may | 最近提交的 subject 符合 Conventional Commits | kind: `git-commit-subject` · regex=^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?!?: .+ · maxLength=72 · depth=50 |
+| `R051` | may | 最近提交是线性历史（无 merge commit） | kind: `git-commit-no-merge` · depth=50 |
 
 <details><summary>为什么 / 怎么改</summary>
 
@@ -142,6 +148,12 @@
   - 修复：在模板加 - [ ] 项：未触碰禁区、已更新 CHANGELOG、已补 ADR。
 - **R040** 阻塞类 hook 不收 exit 2 就等于没检查：exit 0 只进日志，exit 1 是非阻塞错误。
   - 修复：违规分支改为写 stderr 后 exit 2。
+- **R041** agent 写提交信息时只看 AGENTS.md，不看 CONTRIBUTING；格式不在这里出现，历史里就会混进 update/fix bug/修改 这类无法解析的 subject。
+  - 修复：在 AGENTS.md 的“硬约定”里加一行：提交信息用 Conventional Commits，`feat(scope): ...`，关联 issue。
+- **R050** 格式只在文档里 = 不生效。history 是唯一无法事后伪造的证据：subject 能解析，CHANGELOG 与 release 才能自动化。
+  - 修复：把不合规的 subject 在后续提交里改正并说明；长期方案是让 commitlint 在 CI/hook 上拦住新提交（R028）。
+- **R051** 线性历史让 revert、cherry-pick、审计都变简单；merge commit 会把一条 PR 的变化混进两条父提交，出问题时难以定位与回滚。
+  - 修复：仓库设置启用 Squash merge 或 Rebase merge，关闭 Merge commit；已存在的 merge 不必重写。
 
 </details>
 
