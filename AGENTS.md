@@ -46,8 +46,10 @@ Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoP
 - 检查器不引入第三方依赖；新 `check.kind` 必须在 `tests/selftest.ps1` 有对应 fixture。
 - 提交信息：Conventional Commits，`feat(rules): ...` / `fix(checker): ...`。
 - 文档里的路径必须真实存在（R037 会检查 `AGENTS.md`）。
-- **语言约定（ADR-0007）**：默认英文，中文镜像加 `.zh-CN` 后缀；**翻译完成前，中文仍是实际维护的那一份**
-  （改内容先改中文，再同步英文入口），冲突时以英文为准。规则 ID、`check.kind`、文件路径**不翻译**。
+- **语言约定（ADR-0007 + ADR-0008）**：文件名默认不带后缀、中文加 `.zh-CN`；
+  **两版平权**——地位相同，改内容必须在**同一 PR** 内同步；冲突时**以证据裁定**（`docs/evidence/`、外部链接、跑一遍命令），
+  **不以语言裁定**。默认文件名只表示主要读者的语言，不代表等级。
+  规则 ID、`check.kind`、文件路径、命令**不翻译**。
 
 ## 禁区（由 hooks 与 R025/R036 共同约束）
 
