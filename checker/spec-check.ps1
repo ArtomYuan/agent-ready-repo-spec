@@ -47,9 +47,17 @@ function Get-GitExe {
 function Invoke-Git([string]$root, [string[]]$gitArgs) {
   $exe = Get-GitExe
   if (-not $exe) { return $null }
-  $out = & $exe -C $root @gitArgs 2>$null
-  if ($LASTEXITCODE -ne 0) { return $null }
-  return @($out | Where-Object { $null -ne $_ -and "$_" -ne '' })
+  # 先判 .git，避免在非仓库上白跑一次 git（也避免 PS 5.1 把 native stderr 当终止错误）
+  if (-not (Test-Path -LiteralPath (Join-Path $root '.git'))) { return $null }
+  $prevEap = $ErrorActionPreference
+  $ErrorActionPreference = 'Continue'
+  try {
+    $out = & $exe -C $root @gitArgs 2>&1
+    if ($LASTEXITCODE -ne 0) { return $null }
+    return @($out | Where-Object { $null -ne $_ -and "$_" -ne '' } | ForEach-Object { "$_" })
+  }
+  catch { return $null }
+  finally { $ErrorActionPreference = $prevEap }
 }
 
 function Get-Frontmatter([string]$text) {
