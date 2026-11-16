@@ -19,6 +19,8 @@ param(
   [string]$Branch = '',
   [string]$Title = '',
   [string]$Message = '',
+  [string]$Next = '',
+  [string]$NotDoing = '',
   [string]$Body = '',
   [string]$Token = '',
   [string]$TokenFile = '',
@@ -39,6 +41,17 @@ $SourceDir = (Resolve-Path -LiteralPath $SourceDir).ProviderPath
 if ([string]::IsNullOrEmpty($Message)) { $Message = $Title }
 if ([string]::IsNullOrEmpty($Message)) { [Console]::Error.WriteLine('必须给 -Message（同时用作 PR 标题，请写成 Conventional Commits 形式）'); exit 1 }
 if ([string]::IsNullOrEmpty($Title)) { $Title = $Message }
+
+# ADR-0005：下一步必填。确实没有后续时显式写 -Next "无"
+if ([string]::IsNullOrWhiteSpace($Next)) {
+  [Console]::Error.WriteLine(@'
+缺少 -Next（下一步 / 本次未完的部分）。
+  为什么必填：PR 描述是新会话接手时唯一能读到"下一步做什么"的地方（见 guide/06）。
+  确实没有后续时，显式写：-Next "无"
+  例：-Next "写 templates/work-item 模板"
+'@)
+  exit 1
+}
 
 if ([string]::IsNullOrEmpty($Branch)) {
   $slug = ($Message -replace '^[a-z]+(\([^)]*\))?!?:\s*', '') -replace '[^\w\u4e00-\u9fa5-]+', '-' -replace '-+', '-'
@@ -78,6 +91,8 @@ if ($DryRun) {
   Write-Host '== DRY RUN ==' -ForegroundColor Cyan
   Write-Host "目标: github.com/$Owner/$Repo   base=$Base  branch=$Branch"
   Write-Host "标题: $Title"
+  Write-Host "下一步: $Next"
+  if (-not [string]::IsNullOrWhiteSpace($NotDoing)) { Write-Host "非目标: $NotDoing" }
   Write-Host "文件: $($files.Count) 个，$([math]::Round((($files | Measure-Object size -Sum).Sum / 1KB), 1)) KB"
   exit 0
 }
@@ -129,7 +144,7 @@ Write-Progress -Activity '上传文件' -Completed
 
 $treeResp = Invoke-Gh POST "/repos/$Owner/$Repo/git/trees" @{ tree = $tree }
 $commit = Invoke-Gh POST "/repos/$Owner/$Repo/git/commits" @{
-  message = $Message
+  message = "$Message`n`n下一步：$Next"
   tree    = $treeResp.sha
   parents = @($baseSha)
 }
@@ -146,7 +161,23 @@ else { Write-Host "已建分支: $branchFull" }
 
 # ---------- 开 PR ----------
 if ([string]::IsNullOrEmpty($Body)) {
-  $Body = "## 改了什么`n$Title`n`n## 怎么验证的`n- 本地：``checker/spec-check.ps1`` + ``tests/selftest.ps1`` 全绿`n- 本 PR 的 CI 结果见下方 checks`n`n> 由 ``tools/publish-pr.ps1`` 自动创建。"
+  $notDoing = if ([string]::IsNullOrWhiteSpace($NotDoing)) { '未声明（如无特别排除项可忽略这一节）' } else { $NotDoing }
+  $Body = @"
+## 改了什么
+$Title
+
+## 下一步
+$Next
+
+## 非目标
+$notDoing
+
+## 怎么验证的
+- 本地：``checker/spec-check.ps1`` + ``tests/selftest.ps1``
+- 本 PR 的 CI 结果见下方 checks
+
+> 由 ``tools/publish-pr.ps1`` 生成（ADR-0005：下一步为必填项）。
+"@
 }
 $pr = Invoke-Gh POST "/repos/$Owner/$Repo/pulls" @{
   title = $Title; head = $branchFull; base = $Base; body = $Body; draft = [bool]$Draft
@@ -179,7 +210,7 @@ while ((Get-Date) -lt $deadline) {
     $m = Invoke-Gh PUT "/repos/$Owner/$Repo/pulls/$($pr.number)/merge" @{
       merge_method  = $MergeMethod
       commit_title  = "$Title (#$($pr.number))"
-      commit_message = ''
+      commit_message = "下一步：$Next"
     } -AllowFail
     if ($m.__error) {
       [Console]::Error.WriteLine("合并失败（可能被分支保护挡住）: $($m.__error)")
