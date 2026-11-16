@@ -1,0 +1,18 @@
+# 默认责任人（改成你组织里的真实团队，必须是人类账号，不能是 bot/agent）
+*                       @example-org/maintainers
+
+# 规则是产品本身：改规则必须由维护者评审
+/rules/                 @example-org/spec-owners
+/spec/                  @example-org/spec-owners
+/checker/               @example-org/spec-owners
+
+# agent 执行面：权限与 hook 的改动单独把关
+/.claude/               @example-org/agent-ops
+/AGENTS.md              @example-org/agent-ops
+/CLAUDE.md              @example-org/agent-ops
+
+# 平台与自动化
+/.github/workflows/     @example-org/agent-ops
+
+# 文档
+/docs/                  @example-org/docs-owners

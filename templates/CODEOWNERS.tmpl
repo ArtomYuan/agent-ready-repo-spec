@@ -1,0 +1,13 @@
+# 默认责任人。owner 必须是人类账号/团队，不能是 bot 或 agent。
+*                       @{{ORG}}/maintainers
+
+# 治理面：agent 不得自行修改
+/.claude/               @{{ORG}}/agent-ops
+/AGENTS.md              @{{ORG}}/agent-ops
+/.github/workflows/     @{{ORG}}/agent-ops
+
+# 文档
+/docs/                  @{{ORG}}/docs-owners
+
+# 关键业务（按仓库实际情况增删）
+/{{SRC_DIR}}/{{CRITICAL_AREA}}/   @{{ORG}}/{{AREA_OWNER}}

@@ -1,0 +1,45 @@
+# AGENTS.md
+
+> 本文件是 agent 的唯一事实源。人类入口见 [README.md](README.md)。
+
+## 项目是什么
+
+<!-- 2–3 行。只写 agent 无法从代码推断的定位与边界。 -->
+
+## 命令（唯一权威，勿自行发明）
+
+| 用途 | 命令 | 备注 |
+|---|---|---|
+| 安装 | `{{INSTALL_CMD}}` | |
+| 开发 | `{{DEV_CMD}}` | |
+| 测试 | `{{TEST_CMD}}` | 改完必跑 |
+| 静态检查 | `{{LINT_CMD}}` | 提交前必跑 |
+
+## 目录地图
+
+- `{{SRC_DIR}}` — 业务代码
+- `{{TEST_DIR}}` — 测试
+- `docs/` — 文档；`docs/adr/` — 决策记录
+
+## 硬约定
+
+- 提交信息：Conventional Commits，`{{TYPE}}({{SCOPE}}): ...`
+- 分支：`feat/<slug>`、`fix/<slug>`、`chore/<slug>`
+- 新依赖：说明理由 + 评估维护状态 + PR 描述里单列
+- 公共 API / 数据格式变更：更新 `CHANGELOG.md` 与 `docs/reference/`
+- 架构/选型变更：先写 ADR 再实现
+
+## 禁区（由 hooks 与 CI 强制）
+
+- 不改 `{{PROTECTED_PATHS}}`
+- 不读 `.env*`、`secrets/`
+- 不执行 `git push --force`、`git reset --hard`、`rm -rf`
+
+## 已知的坑
+
+<!-- 每踩一次坑就加一条。这一节是投入产出比最高的部分。 -->
+- `{{GOTCHA_1}}`
+
+## 拿不准时
+
+停下来问，并列 2–3 个选项与取舍。不要猜一个看起来合理的实现。

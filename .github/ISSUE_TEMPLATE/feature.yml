@@ -1,0 +1,49 @@
+name: 规则建议
+description: 提议新增一条规则，或调整某条规则的级别/严重度
+title: "[rule] "
+labels: [rule-proposal]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 这条规则要解决什么真实问题
+      description: 最好给出你在哪个仓库、因为什么反复踩坑
+    validations:
+      required: true
+  - type: dropdown
+    id: level
+    attributes:
+      label: 建议级别
+      options:
+        - L0（能读能跑）
+        - L1（能接受贡献）
+        - L2（能对外/生产）
+        - L3（agent 主参与的治理）
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 建议严重度
+      options:
+        - must
+        - should
+        - may
+    validations:
+      required: true
+  - type: textarea
+    id: check
+    attributes:
+      label: 判定方式
+      description: 已有的 check.kind 够用就写 kind + 参数；不够就说明新 kind 的语义
+      placeholder: |
+        { "kind": "file-exists", "any": ["docs/index.md"] }
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: 修复建议文案
+      description: 一句话告诉用户/agent 怎么改
+    validations:
+      required: true

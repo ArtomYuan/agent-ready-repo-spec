@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: 安全漏洞（私密）
+    url: https://github.com/example-org/agent-ready-repo-spec/security/advisories/new
+    about: 不要用公开 issue 报漏洞，请走私密上报入口。
+  - name: 使用问题 / 讨论
+    url: https://github.com/example-org/agent-ready-repo-spec/discussions
+    about: 不确定是不是 bug 的，先来讨论区。

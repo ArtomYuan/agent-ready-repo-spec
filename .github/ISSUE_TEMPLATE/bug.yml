@@ -1,0 +1,49 @@
+name: Bug 报告
+description: 检查器报错、规则误报或漏报
+title: "[bug] "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提交前请先跑一次 `pwsh ./checker/spec-check.ps1 -Target <你的仓库> -Format json`，把关键输出贴上来。
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 问题类型
+      options:
+        - 误报（好仓库被判 FAIL）
+        - 漏报（坏仓库被判 PASS）
+        - 引擎报错 / 崩溃
+        - 输出格式问题
+        - 文档与实际不符
+    validations:
+      required: true
+  - type: input
+    id: rule
+    attributes:
+      label: 相关规则 ID
+      description: 如 R033；不确定就留空
+      placeholder: R___
+  - type: textarea
+    id: repro
+    attributes:
+      label: 最小复现
+      description: 目标仓库的关键目录结构（**不要贴密钥**）+ 使用的命令
+      placeholder: |
+        tree -L 2 的输出（关键部分）
+        pwsh ./checker/spec-check.ps1 -Target ... -Level 3
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望 vs 实际
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: specVersion / commit
+    validations:
+      required: true

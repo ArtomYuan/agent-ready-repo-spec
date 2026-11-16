@@ -1,0 +1,63 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    name: 引擎自测
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4   # 生产仓库请改用固定 commit SHA
+        with:
+          persist-credentials: false
+      - name: 用 fixture 验证引擎行为
+        shell: pwsh
+        run: ./tests/selftest.ps1
+
+  spec:
+    name: 自己体检自己
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4   # 生产仓库请改用固定 commit SHA
+        with:
+          persist-credentials: false
+
+      - name: 规则表与 rules.json 一致
+        shell: pwsh
+        run: ./checker/gen-rules-doc.ps1 -Check
+
+      - name: 本仓库必须达成 L3
+        shell: pwsh
+        run: ./checker/spec-check.ps1 -Target . -Level 3 -FailOn should -NoColor
+
+      - name: 机器可读报告（上传为 artifact）
+        if: always()
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path reports | Out-Null
+          ./checker/spec-check.ps1 -Target . -Format json > reports/spec-report.json
+          ./checker/spec-check.ps1 -Target . -Format md   > reports/spec-report.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spec-report
+          path: reports/
+          retention-days: 14
+
+  windows:
+    name: Windows + PowerShell 5.1 兼容
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: 用 Windows PowerShell 跑同一套自测
+        shell: powershell
+        run: ./tests/selftest.ps1

@@ -1,0 +1,22 @@
+# 个人 agent 配置（含本机路径/令牌，绝不提交）
+.claude/settings.local.json
+CLAUDE.local.md
+.cursor/rules.local.md
+
+# 体检产物
+/reports/
+*.spec-report.md
+*.spec-report.json
+
+# 编辑器与系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 临时文件
+*.tmp
+*.bak
+*.log
+tmp/
