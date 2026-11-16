@@ -13,7 +13,7 @@ jobs:
     name: 引擎自测
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4   # 生产仓库请改用固定 commit SHA
+      - uses: actions/checkout@v7   # 生产仓库请改用固定 commit SHA
         with:
           persist-credentials: false
       - name: 用 fixture 验证引擎行为
@@ -24,7 +24,7 @@ jobs:
     name: 自己体检自己
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4   # 生产仓库请改用固定 commit SHA
+      - uses: actions/checkout@v7   # 生产仓库请改用固定 commit SHA
         with:
           persist-credentials: false
 
@@ -44,7 +44,7 @@ jobs:
           ./checker/spec-check.ps1 -Target . -Format json > reports/spec-report.json
           ./checker/spec-check.ps1 -Target . -Format md   > reports/spec-report.md
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: spec-report
@@ -55,7 +55,7 @@ jobs:
     name: Windows + PowerShell 5.1 兼容
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: 用 Windows PowerShell 跑同一套自测
