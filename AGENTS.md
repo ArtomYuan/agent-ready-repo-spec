@@ -29,6 +29,7 @@ Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoP
 ## 目录地图
 
 - `rules/rules.json` — 规则唯一事实源。改规则只改这里。
+- `action.yml` — GitHub Action 入口（composite）；inputs 见文件，改名即破坏性变更。
 - `spec/RULES.md` — 生成物，**不要手改**；改了会被 CI 发现不一致。
 - `spec/agent-playbook.md` — agent 操作手册（先读这个再动手）。
 - `checker/spec-check.ps1` — 引擎。16 种 `check.kind`，见文件内 `switch`；`-Git` 才读提交历史。
@@ -45,6 +46,8 @@ Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoP
 - 检查器不引入第三方依赖；新 `check.kind` 必须在 `tests/selftest.ps1` 有对应 fixture。
 - 提交信息：Conventional Commits，`feat(rules): ...` / `fix(checker): ...`。
 - 文档里的路径必须真实存在（R037 会检查 `AGENTS.md`）。
+- **语言约定（ADR-0007）**：默认英文，中文镜像加 `.zh-CN` 后缀；**翻译完成前，中文仍是实际维护的那一份**
+  （改内容先改中文，再同步英文入口），冲突时以英文为准。规则 ID、`check.kind`、文件路径**不翻译**。
 
 ## 禁区（由 hooks 与 R025/R036 共同约束）
 
@@ -61,6 +64,10 @@ Windows 上执行策略为 `Restricted` 时，把 `pwsh` 换成 `powershell -NoP
 - `ConvertFrom-Json` 在 5.1 默认深度 2，嵌套结构要显式 `-Depth 8`。
 - Windows 执行策略 `Restricted` 会直接拒绝 `.ps1`；CI 与 hook 都必须带 `-ExecutionPolicy Bypass`。
 - `Get-ChildItem -Filter` 与 `-Include` 语义不同，本仓库统一用 `-Filter` + 名称过滤。
+- **PowerShell 数组 splatting 传的是"位置参数"**：`& $script @arr` 会把 `-Name` 当成值喂给第一个位置参数，
+  于是出现 `Cannot convert "." to System.Int32`。命名参数必须用哈希表：`& $script @{ Target = '.'; Level = 3 }`。
+  本仓库已踩过两次（`tests/selftest.ps1`、`action.yml`）。
+
 
 ## 提交与 PR
 

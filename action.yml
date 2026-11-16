@@ -1,0 +1,54 @@
+name: agent-ready-repo-spec
+description: Audit a repository against agent-ready-repo-spec (L0–L3 self-check, no runtime dependencies)
+author: ArtomYuan
+
+branding:
+  icon: check-circle
+  color: gray-dark
+
+inputs:
+  target:
+    description: Path to the repository to audit (relative to the workspace)
+    required: false
+    default: '.'
+  level:
+    description: Only run rules up to this level (0–3)
+    required: false
+    default: '3'
+  fail-on:
+    description: Exit non-zero when rules of this severity fail (must | should | none)
+    required: false
+    default: 'must'
+  assess:
+    description: Also print score and achieved level (default is a plain checklist)
+    required: false
+    default: 'false'
+  git:
+    description: Also check commit history (requires a git checkout with history)
+    required: false
+    default: 'false'
+  format:
+    description: Output format (text | md | json)
+    required: false
+    default: 'text'
+
+runs:
+  using: composite
+  steps:
+    - name: Run spec-check
+      shell: pwsh
+      run: |
+        # 注意：数组 splatting 是"位置参数"，命名参数必须用哈希表
+        $cliArgs = @{
+          Target  = '${{ inputs.target }}'
+          Level   = [int]'${{ inputs.level }}'
+          FailOn  = '${{ inputs.fail-on }}'
+          Format  = '${{ inputs.format }}'
+          NoColor = $true
+        }
+        if ('${{ inputs.assess }}' -eq 'true') { $cliArgs['Assess'] = $true }
+        if ('${{ inputs.git }}'    -eq 'true') { $cliArgs['Git']    = $true }
+
+        $script = Join-Path '${{ github.action_path }}' 'checker/spec-check.ps1'
+        & $script @cliArgs
+        exit $LASTEXITCODE

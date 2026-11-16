@@ -1,6 +1,20 @@
 # 接进你自己的 CI
 
-## 最小可用（推荐先只卡 must）
+## 最快：一行接入（GitHub Action）
+
+```yaml
+      - uses: actions/checkout@<PINNED_SHA>
+      - uses: ArtomYuan/agent-ready-repo-spec@<PINNED_SHA>   # 试用可直接写 @v1
+        with:
+          level: '3'
+          fail-on: 'must'
+```
+
+inputs：`target`（默认 `.`）、`level`（0–3）、`fail-on`（`must` / `should` / `none`）、`assess`、`git`、`format`。
+**`v1` 是移动 tag**，生产环境请固定 commit SHA——与本文件其余示例的规则一致。
+理由与取舍见 [ADR-0006](../adr/0006-github-action-distribution.md)。
+
+## 最小可用（自己控制脚本时，推荐先只卡 must）
 
 ```yaml
 # .github/workflows/spec.yml

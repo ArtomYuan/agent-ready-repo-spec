@@ -10,6 +10,15 @@
   每个"采用"必须有落点（门禁 / `settings.json` / CI job / `AGENTS.md`），决定留在被管理的仓库里。
 - 新增模板 [templates/adoption.md.tmpl](templates/adoption.md.tmpl)：采用记录（含"未采用项与理由"）。
 
+### Added
+- **`action.yml`**：composite GitHub Action，`uses: ArtomYuan/agent-ready-repo-spec@<ref>` 一行接入（ADR-0006）。
+  inputs：`target` / `level` / `fail-on` / `assess` / `git` / `format`；`v1` 为移动 tag，生产建议固定 SHA。
+- **`guide/06` 新增「发布期」一节**：什么时候该发（三个触发、三个不该发的理由）、semver 判定、
+  Release notes 的五段结构，以及"什么时候才值得为发布写 runbook"。
+- **双语结构**（ADR-0007）：`README.md` 改为英文，中文镜像 `README.zh-CN.md`；约定"默认英文、
+  中文加 `.zh-CN`、英文为事实源"，并给出逐章翻译顺序。
+- CI 新增 `action-smoke` job：用 `uses: ./` 跑一遍 `action.yml`（不设为必需检查，避免自锁）。
+
 ### Changed
 - 修正过期表述：GitHub 仓库描述与 `publish-github.ps1` 默认值不再写死规则条数（原为"31 条"，实际已 36 条）；
   `README` 顶部改为描述当前输出形态（默认自查清单、`-Assess` 才评级），并新增「能力边界」一句。
