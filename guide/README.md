@@ -21,14 +21,14 @@ It answers six questions:
 | Chapter | Content | Language |
 |---|---|---|
 | [**00 · Adoption decisions**](00-接入决策.md) | eleven options, decided once, every "adopted" needs an enforcement point | [中文](00-接入决策.zh-CN.md) |
-| `01 · What docs a repo should have` | three tiers (platform / collaboration / agent), a ten-repo survey, when you can skip | [中文](01-该有什么文档.zh-CN.md) |
-| `02 · Repository layout` | root-directory traffic lights, `.github/` vs `.claude/`, two monorepo patterns | — |
+| [**01 · What docs a repo should have**](01-该有什么文档.md) | three tiers (platform / collaboration / agent), a ten-repo survey, when you can skip | [中文](01-该有什么文档.zh-CN.md) |
+| [**02 · Repository layout**](02-目录结构.md) | root-directory traffic lights, `.github/` vs `.claude/`, three AGENTS.md shapes | [中文](02-目录结构.zh-CN.md) |
 | [**03 · How to write each doc**](03-文档该怎么写.md) | README / AGENTS.md / CLAUDE.md / CODEOWNERS / ADR / PR template / CHANGELOG: skeleton, counter-examples, criteria | [中文](03-文档该怎么写.zh-CN.md) |
 | `04 · Using an agent` | deterministic vs non-deterministic instructions, giving it a runnable check, session and cost | — |
 | `05 · Governing agent participation` | who may change what, when work may start, how it is judged, how it is recorded and reverted | — |
 | `06 · Where information lives` | one criterion (rate of change → medium); planning: scope/order/progress; running: state/to-dos/handover; releasing | — |
 
-> **Translation status**: chapters 00 and 03 exist in English; 01, 02, 04, 05, 06 are still Chinese only.
+> **Translation status**: chapters 00–03 are in English; 04, 05, 06 are still Chinese only.
 > The order and rules are in [ADR-0007](../docs/adr/0007-bilingual-default-english.md).
 > Rule IDs, `check.kind` values and file paths are never translated.
 
