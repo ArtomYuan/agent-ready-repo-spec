@@ -1,5 +1,5 @@
 {
-  "specVersion": "1.1.0",
+  "specVersion": "1.2.0",
   "name": "agent-ready-repo-spec",
   "description": "机器可读规则集：一个有 AI agent 参与的 GitHub 仓库该长什么样。checker 读本文件，spec/RULES.md 由本文件生成。",
   "levels": {
@@ -190,13 +190,22 @@
       "fix": "填入真实年份与著作权人。"
     },
     {
-      "id": "R028",
+      "id": "R029",
       "level": 2,
       "severity": "should",
-      "title": "提交规范有机器执行载体",
+      "title": "保留 agent 提交归属（未关闭 attribution）",
+      "check": { "kind": "json-forbid", "file": ".claude/settings.json", "checks": [ { "path": "attribution", "forbid": [false] }, { "path": "attribution.commit", "forbid": [""] } ] },
+      "rationale": "Claude Code 默认给提交加 git trailer（`Co-Authored-By: <model> <noreply@anthropic.com>`），这是 agent 参与最便宜的审计手段；把它关掉，事后就分不清哪次提交是模型写的。",
+      "fix": "删掉 attribution 的 false / 空字符串；要改文案就保留 trailer，例如 `attribution.commit: \"Co-Authored-By: Claude <noreply@anthropic.com>\"`。"
+    },
+    {
+      "id": "R028",
+      "level": 2,
+      "severity": "may",
+      "title": "提交规范有机器执行载体（可选升级）",
       "check": { "kind": "file-exists", "any": ["commitlint.config.js", "commitlint.config.cjs", "commitlint.config.mjs", "commitlint.config.json", ".commitlintrc", ".commitlintrc.json", ".commitlintrc.yml", ".commitlintrc.yaml", ".commitlintrc.js", ".commitlintrc.cjs"] },
-      "rationale": "提交格式只写在 CONTRIBUTING 里等于没写；必须有 commitlint 这类执行载体，否则三个月后历史就变成 feat:/fix:/update/ 的混合体，任何按前缀生成的 CHANGELOG 都会失效。",
-      "fix": "加 commitlint 配置（extends @commitlint/config-conventional），并在 CI 或 commit-msg hook 里跑起来。"
+      "rationale": "GitHub 自家仓库大多不强制提交格式（actions/checkout 只在 CONTRIBUTING 里给一条外部链接），Claude Code 也不内置格式校验——所以这条不是行业基线，而是**可选升级**：只有当你希望按前缀自动生成 CHANGELOG / 自动发版时才需要它。",
+      "fix": "加 commitlint 配置（extends @commitlint/config-conventional），并在 CI 或 commit-msg hook 里跑起来；不需要自动化的仓库可以不管这条。"
     },
     {
       "id": "R030",
@@ -300,11 +309,11 @@
     {
       "id": "R041",
       "level": 3,
-      "severity": "should",
-      "title": "AGENTS.md 声明提交格式",
-      "check": { "kind": "file-contains", "file": "AGENTS.md", "regex": "(Conventional Commits|提交信息|Commit Message|commit message)" },
-      "rationale": "agent 写提交信息时只看 AGENTS.md，不看 CONTRIBUTING；格式不在这里出现，历史里就会混进 update/fix bug/修改 这类无法解析的 subject。",
-      "fix": "在 AGENTS.md 的“硬约定”里加一行：提交信息用 Conventional Commits，`feat(scope): ...`，关联 issue。"
+      "severity": "may",
+      "title": "仓库自己的提交约定写进 AGENTS.md",
+      "check": { "kind": "file-contains", "file": "AGENTS.md", "regex": "(提交信息|提交约定|Commit Message|commit message|Conventional Commits)" },
+      "rationale": "Claude Code 默认自带一套提交/PR 指令（includeGitInstructions=true）。仓库若另有约定，必须写进 AGENTS.md，否则两套指令打架；要么在这里声明，要么把内置指令关掉（includeGitInstructions=false）。",
+      "fix": "在 AGENTS.md 的“硬约定”里写一行提交约定；若关闭了内置指令，则必须写清楚完整规则。"
     },
     {
       "id": "R050",

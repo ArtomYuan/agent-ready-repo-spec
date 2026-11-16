@@ -288,6 +288,24 @@ function Test-Rule($rule, [string]$root) {
       }
     }
 
+    'json-forbid' {
+      $p = Join-Path $root $c.file
+      $t = Read-Text $p
+      if ($null -eq $t) { $res.skip = $true; $res.detail = '文件不存在，跳过'; break }
+      try { $obj = $t | ConvertFrom-Json } catch { $res.skip = $true; $res.detail = 'JSON 解析失败，跳过'; break }
+      $bad = @()
+      foreach ($chk in $c.checks) {
+        $val = Get-JsonDepth $obj ($chk.path -split '\.')
+        if ($null -eq $val) { continue }
+        foreach ($f in $chk.forbid) {
+          if ($val -is [bool]) { if ($val -eq [bool]$f) { $bad += "$($chk.path)=$val" } }
+          elseif ("$val" -eq "$f") { $bad += "$($chk.path)='$val'" }
+        }
+      }
+      $res.ok = ($bad.Count -eq 0)
+      $res.detail = if ($res.ok) { '归属未被关闭' } else { "被关闭: $($bad -join ', ')" }
+    }
+
     'git-commit-subject' {
       $depth = 50
       if ($c.PSObject.Properties['depth']) { $depth = [int]$c.depth }

@@ -47,8 +47,9 @@ spec-check.ps1 -Target <path> [-Level 0..3] [-Format text|json|md] [-FailOn must
 
 | 规则 | 层级 | 查什么 | 为什么放在这一层 |
 |---|---|---|---|
-| `R028` | L2 · should | 有 `commitlint` 配置这类**执行载体** | 格式只写在文档里 = 不生效 |
-| `R041` | L3 · should | `AGENTS.md` **声明**了提交格式 | agent 写提交信息时只看 AGENTS.md，不看 CONTRIBUTING |
+| `R028` | L2 · **may** | 有 `commitlint` 配置这类**执行载体** | 业界不是基线（GitHub 自家只给一条外链，Claude Code 不内置校验），只在要自动生成 CHANGELOG/发版时才值得 |
+| `R041` | L3 · **may** | 仓库自己的提交约定写进 `AGENTS.md` | Claude Code 默认自带提交/PR 指令，仓库另有约定不写明就会两套打架 |
+| `R029` | L2 · should | agent 提交归属未被关闭（`attribution`） | 官方默认写 `Co-Authored-By` git trailer，关掉就失去审计线索 |
 | `R050` | L3 · may（opt-in） | 最近 50 条 subject 符合 Conventional Commits | 历史是唯一无法事后伪造的证据 |
 | `R051` | L3 · may（opt-in） | 最近 50 条无 merge commit | 线性历史让 revert / cherry-pick / 审计都简单 |
 
@@ -56,6 +57,19 @@ spec-check.ps1 -Target <path> [-Level 0..3] [-Format text|json|md] [-FailOn must
 
 > 为什么前两条不直接查 `git log`？因为体检要对**任意目录**可跑（解压的源码包、模板目录、
 > 别人的仓库快照），不能因为没装 git 就判红。原则是：**能查就查，查不到说“跳过”，绝不说“通过”。**
+
+### 这些规则的依据来自哪里
+
+| 规则 | 上游依据 |
+|---|---|
+| `R029` 归属 | Claude Code `attribution.commit` 默认写 `Co-Authored-By: <model> <noreply@anthropic.com>` git trailer；`includeCoAuthoredBy` 已废弃，改用 `attribution` |
+| `R041` 约定声明 | Claude Code `includeGitInstructions` 默认 `true`，自带提交/PR 指令；仓库另有约定必须声明，否则两套指令打架 |
+| `R028` 执行载体 | **不是**基线：`actions/checkout` 的 CONTRIBUTING 只给一条外部链接，`github/docs` 无提交格式文档 → 定为 `may` |
+| `R050/R051` 历史 | 无上游依据，属本规范的可选加项（opt-in，需 `-Git`） |
+
+对应的反面案例也写在规则里：Anthropic 的 `claude-code` 仓库**没有** `CONTRIBUTING.md`，
+GitHub 的 `cli/cli` 有 `AGENTS.md` 但内容讲的是**贡献资格与授权**（不许提未经邀请的上游 PR）、
+安全披露路由和验证命令——**都不是提交格式**。这说明"提交格式"从来不是平台强制的部分。
 
 ## 版本策略
 

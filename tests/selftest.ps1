@@ -153,6 +153,15 @@ try {
   Assert 'good + -Git：不因跳过而扣分' ($r5.json.score -eq 100) "实际 $($r5.json.score)"
   Assert 'good + -Git：仍达成 L3' ($r5.json.achievedLevel -eq 3) "实际 $($r5.json.achievedLevel)"
 
+  # ---------- fixture 6：关闭 attribution 应被点名 ----------
+  Write-Host 'fixture: no-attribution（R029）' -ForegroundColor Cyan
+  $na = New-Fixture $tmp 'no-attribution' @{
+    'README.md' = "# x`n"
+    '.claude/settings.json' = '{"permissions":{"deny":["Bash(rm *)"]},"attribution":false}'
+  }
+  $r6 = Invoke-Spec $na
+  Assert 'no-attribution: R029 命中（attribution 被关闭）' ((Get-Rule $r6.json 'R029').ok -eq $false)
+
   # ---------- 生成物一致性 ----------
   Write-Host '生成物一致性' -ForegroundColor Cyan
   & $genDoc -Check | Out-Null

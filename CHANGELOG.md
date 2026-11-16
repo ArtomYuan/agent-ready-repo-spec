@@ -5,6 +5,27 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-17
+
+按 GitHub 与 Anthropic 的**实际做法**校准提交规则（此前把个人偏好当成了行业基线）。
+
+### Changed
+- `R028`（提交规范执行载体）**should → may**。依据：`actions/checkout` 的 `CONTRIBUTING.md` 只给了一条外部链接，
+  `github/docs` 根本没有提交格式文档，Claude Code 也不内置格式校验——它不是行业基线，只是"要自动发版时才需要"的升级项。
+- `R041`（提交约定写进 AGENTS.md）**should → may**，并改写理由：Claude Code **默认自带**提交/PR 指令
+  （`includeGitInstructions` 默认 `true`），真正的风险是"仓库约定与内置指令打架"，而不是"没写 Conventional Commits"。
+
+### Added
+- `R029`（L2 · should）**保留 agent 提交归属**：`settings.json` 里不得把 `attribution` 设为 `false`
+  或把 `attribution.commit` 设为空串。依据：Claude Code 默认给提交加 `Co-Authored-By: <model> <noreply@anthropic.com>`
+  git trailer，这是 agent 参与最便宜的审计手段。
+- 新 `check.kind`：`json-forbid`（共 16 种）。
+- spec 文档新增「上游依据」小节，逐条写明每条提交规则对应哪家的做法。
+
+### Notes
+- 早期指南里自创的 `Agent: <name> <model>` trailer **作废**：官方机制是标准 git trailer + `attribution` 设置，
+  自造 trailer 会让 `git interpret-trailers` 与后续工具链读不到。
+
 ## [1.1.0] - 2026-11-17
 
 ### Added

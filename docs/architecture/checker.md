@@ -7,11 +7,11 @@ spec-check.ps1
 │   ├── Read-Text            统一 UTF-8 读取
 │   ├── Get-Frontmatter      解析 --- ... --- 顶部字段
 │   └── Get-JsonDepth        按点路径取嵌套属性
-├── Test-Rule                分发到 15 种 check.kind
+├── Test-Rule                分发到 16 种 check.kind
 └── main                     过滤 level → 逐条检查 → 汇总 → 输出 → 退出码
 ```
 
-## 15 种 `check.kind`
+## 16 种 `check.kind`
 
 | kind | 参数 | 判定 |
 |---|---|---|
@@ -28,6 +28,7 @@ spec-check.ps1
 | `name-pattern` | `dir`, `pattern`, `regex` | 文件名模式（ADR 编号） |
 | `dir-contains` | `dir`, `pattern`, `regex` | 目录内至少一个文件命中 |
 | `md-refs-exist` | `file`, `ignore[]` | Markdown 里引用的路径存在（防文档腐烂） |
+| `json-forbid` | `file`, `checks[{path,forbid[]}]` | JSON 里某路径**不得**等于给定值（如 attribution=false） |
 | `git-commit-subject` | `regex`, `maxLength`, `depth` | 最近 N 条提交 subject 匹配格式（需 `-Git`） |
 | `git-commit-no-merge` | `depth` | 最近 N 条提交无 merge（需 `-Git`） |
 
