@@ -179,10 +179,31 @@ $notDoing
 > 由 ``tools/publish-pr.ps1`` 生成（ADR-0005：下一步为必填项）。
 "@
 }
-$pr = Invoke-Gh POST "/repos/$Owner/$Repo/pulls" @{
-  title = $Title; head = $branchFull; base = $Base; body = $Body; draft = [bool]$Draft
+# 复用已存在的 PR（同一 head 分支）：失败重发时不该逼人去手动关 PR / 删分支
+$headQuery = [uri]::EscapeDataString("$Owner`:$branchFull")
+$pr = $null
+$existing = Invoke-Gh GET "/repos/$Owner/$Repo/pulls?state=open&head=$headQuery" -AllowFail
+if (-not $existing.__error -and @($existing).Count -gt 0) {
+  $pr = @($existing)[0]
+  Invoke-Gh PATCH "/repos/$Owner/$Repo/pulls/$($pr.number)" @{ title = $Title; body = $Body } | Out-Null
+  Write-Host "复用已开 PR #$($pr.number)（标题与正文已更新）: $($pr.html_url)" -ForegroundColor Yellow
 }
-Write-Host "已开 PR #$($pr.number): $($pr.html_url)" -ForegroundColor Cyan
+else {
+  $allPrs = Invoke-Gh GET "/repos/$Owner/$Repo/pulls?state=all&head=$headQuery" -AllowFail
+  $closed = @()
+  if (-not $allPrs.__error) { $closed = @($allPrs | Where-Object { $_.state -eq 'closed' -and -not $_.merged_at }) }
+  if ($closed.Count -gt 0) {
+    $pr = $closed[0]
+    Invoke-Gh PATCH "/repos/$Owner/$Repo/pulls/$($pr.number)" @{ state = 'open'; title = $Title; body = $Body } | Out-Null
+    Write-Host "重开既有 PR #$($pr.number)（标题与正文已更新）: $($pr.html_url)" -ForegroundColor Yellow
+  }
+  else {
+    $pr = Invoke-Gh POST "/repos/$Owner/$Repo/pulls" @{
+      title = $Title; head = $branchFull; base = $Base; body = $Body; draft = [bool]$Draft
+    }
+    Write-Host "已开 PR #$($pr.number): $($pr.html_url)" -ForegroundColor Cyan
+  }
+}
 
 if ($NoMerge -or $Draft) { Write-Host '按要求不自动合并。' -ForegroundColor Yellow; exit 0 }
 
