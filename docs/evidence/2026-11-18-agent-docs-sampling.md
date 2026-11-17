@@ -81,7 +81,10 @@ only at native or third-party API boundaries; see the cancellation guidance.
 3. 骨架里可以补一节 **`## Automation map`**——openai 的做法解决了"仓库里一堆 workflow，没人知道哪个管什么"。
 4. `guide/02` 的"路由型"目前只有体积数字，可以把 vscode 的 8 行原文作为对照。
 
-## 原始样本
+## 复现与局限
 
-抓取的原文保存在本机 `D:\agent-workspace\_samples\`（不入库），文件名形如
-`kubernetes_kubernetes__AGENTS.md`。需要长期保留时应改为引用 upstream 固定 commit。
+- **引用方式**：`https://github.com/{owner}/{repo}/blob/{commit}/AGENTS.md`。本报告记的是 2026-11-18 默认分支的快照
+  （行数 / 体积见第一节），上游随时会改；复现时按**行数与二级标题数**近似匹配，而不是逐字比对。
+- **样本性质**：非随机、非分层的便利样本，且偏向 GitHub / Anthropic 生态（12 个里 4 个是这两家的仓库）。
+  它支撑"存在哪些形态"，**不支撑**"多数仓库如此"这类比例结论——正文凡出现比例，都必须写明样本量。
+- **原始文本不入库**：抓取件含第三方仓库全文，长期引用请用上面的固定 commit 链接，不复制进本库。

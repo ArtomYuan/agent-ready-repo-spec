@@ -1,6 +1,8 @@
 # 证据 · 分支保护与"直推被拒"实测
 
 - **采集时间**：2026-11-17
+- **有效性**：`required_status_checks` 里的 4 个旧 context 是那次自锁的原因，ADR-0010 之后已换成 `链接检查` / `双语配对`；
+  下面 `enforce_admins` 等数值仍然有效。引用本文件时请连 ADR-0010 一起看。
 - **对象**：`ArtomYuan/agent-ready-repo-spec`
 - **方法**：GitHub REST API（`branches/main/protection`、`git/refs`）
 
