@@ -264,3 +264,22 @@ required_status_checks 里的 context 列表  ⇄  当前 workflow 里实际存�
 - 谁有权改 ruleset / 分支保护（人名或团队，不是"管理员"这种模糊说法）；
 - 自锁时的最短恢复路径：要么改必需检查清单，要么临时关掉 `Require status checks` 这条规则；
 - 恢复后**补一条 ADR**，写明为什么自锁、谁解开的——否则下次还会踩。
+
+---
+
+## 附：本章对应的自查项
+
+只做导航——判据本身在 [spec/checklist.md](../spec/checklist.md)。
+
+| 条目 | 本章解释它什么 |
+|---|---|
+| `R011` | 治理面单独设 owner——agent 改动的第一道人工闸门 |
+| `R029` | 保留 agent 归属，让"哪次提交是模型写的"始终可回答 |
+| `R041` | agent 工具自带一套提交指令时，以谁的为准 |
+| `R050` | 提交历史是唯一无法事后伪造的证据 |
+
+> **还不是条目，但应该是。** 本章论证的那几道门（必须 PR、必需检查、禁止 admin 绕过、回滚路径）
+> 全是**结构性**事实、可判定，因此本该进 checklist，但现在没有。这是**覆盖缺口**，不是"决定不收"；
+> 见 [guide/07](07-该开哪些设置.zh-CN.md) 与 [ADR-0010](../docs/adr/0010-required-checks-self-lock.md) 里的真实事故。
+
+证据：[docs/evidence/2026-11-17-protection-probe.md](../docs/evidence/2026-11-17-protection-probe.md)。

@@ -271,3 +271,23 @@ The two must match one-to-one. One extra → pending forever
 - name who may edit the ruleset / branch protection (a person or team, not "the admins");
 - the shortest recovery path: repoint the required-check list, or temporarily disable the `Require status checks` rule;
 - after recovery, **write an ADR** saying why it locked and who unlocked it — otherwise it happens again.
+
+---
+
+## Appendix: rules this chapter decides
+
+Navigation only — the criteria themselves live in [spec/checklist.md](../spec/checklist.md).
+
+| Rule | What this chapter explains about it |
+|---|---|
+| `R011` | giving the governance surface its own owners — the first human gate on agent changes |
+| `R029` | keeping agent attribution, so "which commit came from a model" stays answerable |
+| `R041` | whose commit conventions win when the agent tool ships its own |
+| `R050` | commit history as the one piece of evidence that cannot be written after the fact |
+
+> **Not a rule yet — and it should be.** The gates this chapter argues for (required PR, required checks, no admin
+> bypass, revert path) are all *structural*, i.e. verifiable, so they belong in the checklist. They are not there.
+> That is a coverage gap, not a decision to leave them out; see [guide/07](07-该开哪些设置.md) and the incident in
+> [ADR-0010](../docs/adr/0010-required-checks-self-lock.md).
+
+Evidence: [docs/evidence/2026-11-17-protection-probe.md](../docs/evidence/2026-11-17-protection-probe.md).

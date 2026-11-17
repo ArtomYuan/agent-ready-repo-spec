@@ -183,3 +183,19 @@ Precedence: repository overlay instructions override defaults in this agent when
 | 根文件短、按目录分层、`claudeMdExcludes`、per-directory skills | [Set up Claude Code in a monorepo](https://code.claude.com/docs/en/large-codebases) |
 | 加载顺序与作用域 | [How Claude remembers your project](https://code.claude.com/docs/en/memory) |
 | 覆盖层 + 优先级声明的真实写法 | `cli/cli` 的 `.github/agents/agentic-workflows.md`（实测） |
+
+---
+
+## 附：本章对应的自查项
+
+只做导航——判据本身在 [spec/checklist.md](../spec/checklist.md)。
+
+| 条目 | 本章解释它什么 |
+|---|---|
+| `R005` | "给检查"——没有可运行的检查，就没有拒绝 agent 改动的依据 |
+| `R024` `R026` | 权限基线：共享配置进版本库、`deny` 非空 |
+| `R030` `R031` `R032` | 什么该进 `AGENTS.md`，什么必须分层放别处 |
+| `R034` `R040` | 真能拦住的 hook：脚本存在，且违规分支 `exit 2` |
+| `R035` | 能被自动命中的 skill（`name` + `description`） |
+
+证据：[docs/evidence/2026-11-17-claude-code-docs.md](../docs/evidence/2026-11-17-claude-code-docs.md)。

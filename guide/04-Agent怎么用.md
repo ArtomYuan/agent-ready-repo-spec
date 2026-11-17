@@ -187,3 +187,19 @@ in the background by default — **many of these switches are not yours to make*
 | Short root file, per-directory layering, `claudeMdExcludes`, per-directory skills | [Set up Claude Code in a monorepo](https://code.claude.com/docs/en/large-codebases) |
 | Load order and scope | [How Claude remembers your project](https://code.claude.com/docs/en/memory) |
 | A real overlay-with-precedence example | `cli/cli`'s `.github/agents/agentic-workflows.md` (sampled) |
+
+---
+
+## Appendix: rules this chapter decides
+
+Navigation only — the criteria themselves live in [spec/checklist.md](../spec/checklist.md).
+
+| Rule | What this chapter explains about it |
+|---|---|
+| `R005` | "give it a check" — without a runnable check there is nothing to reject an agent's change by |
+| `R024` `R026` | the permission baseline: shared config in the repo, `deny` non-empty |
+| `R030` `R031` `R032` | what belongs in `AGENTS.md`, and what has to be layered elsewhere |
+| `R034` `R040` | hooks that actually block: the script exists, and the failing branch exits 2 |
+| `R035` | skills that can be hit automatically (`name` + `description`) |
+
+Evidence: [docs/evidence/2026-11-17-claude-code-docs.md](../docs/evidence/2026-11-17-claude-code-docs.md).
