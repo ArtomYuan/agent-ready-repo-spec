@@ -1,6 +1,6 @@
 # ADR-0001：规则用 JSON 做唯一事实源，Markdown 由它生成
 
-- 状态：Accepted
+- 状态：Superseded by [ADR-0009](0009-spec-only-no-tooling.md)（2026-11-17）：规则改为以 `spec/checklist.md` 为唯一事实源，JSON 与检查器已下线
 - 日期：2026-11-16
 - 决策者：@example-org/spec-owners、agent（claude-code，提案）
 

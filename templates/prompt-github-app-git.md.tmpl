@@ -5,8 +5,8 @@
 >
 > **为什么把 Git 放在正文里**：App token 只是"能推"，**流程要靠 git 落地**——
 > 分支、作者、联合署名、PR 正文，这些都在 git/gh 这一层才看得见。纯 API 发布能走通，但留痕弱、reviewer 看不见过程。
-> 相关章节：[guide/05](../guide/05-Agent参与怎么管理.md)、[guide/06](../guide/06-信息该放哪.md)、
-> token 工具 [tools/gh-app-token.ps1](../tools/gh-app-token.ps1)。
+> 相关章节：[guide/05](../guide/05-Agent参与怎么管理.md)、[guide/06](../guide/06-信息该放哪.md)。
+> 换 token 用什么语言都行：JWT 与 RS256 是标准，不依赖特定运行时。
 
 ---
 
@@ -22,9 +22,10 @@
 
 1. JWT 的 `iss` 必须是**数字型 App ID**，**严禁用 Client ID**（Client ID 是 OAuth 网页授权用的，拿来换 installation token 一律 401）。
 2. 时间戳必须是 **UTC 秒级、10 位整数**：`iat = now - 60`，`exp = now + 540`（有效期不超过 10 分钟）。
-   **算 epoch 必须用 UTC**。踩过的坑：`New-TimeSpan -Start ([datetime]'1970-01-01T00:00:00Z')` 里那个字面量 `Kind=Local`，
-   相减漏掉时区偏移，epoch 整整差 8 小时，`iat` 落在 8 小时前 → GitHub 返回 `401 Bad credentials`。
-   正确写法：`[int][DateTimeOffset]::UtcNow.ToUnixTimeSeconds()`。
+   **算 epoch 必须用 UTC**，不要用"本地时间的两个 datetime 相减"。真实踩过的坑：某次把
+   `([datetime]'1970-01-01T00:00:00Z')` 当本地时间相减，漏掉时区偏移，epoch 整整差 8 小时，
+   `iat` 落在 8 小时前 → GitHub 返回 `401 Bad credentials`，而签名本身完全正确。
+   **教训**：签名对不对、时间在不在窗口内，是两件独立的检查。
 3. 用 JWT 调 `POST /app/installations/{{INSTALLATION_ID}}/access_tokens` 换 installation token，给它设环境变量 `GH_TOKEN`
    （GitHub CLI 与 git credential 都认这个变量）。
 4. **token 只活 1 小时**：每个任务开始前重换一次，不要复用上一次的。

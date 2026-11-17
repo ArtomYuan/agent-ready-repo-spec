@@ -2,40 +2,30 @@
 
 <!-- 一句话，然后列 2–5 条要点 -->
 
-## 为什么
+## 下一步
 
-<!-- 关联 issue；没有 issue 先开一个。规则类改动说明它覆盖了哪个真实问题 -->
+<!-- 新会话接手时唯一能读到"接下来做什么"的地方。确实没有就写"无" -->
 
-Closes #
+## 非目标
 
-## 影响面
-
-- [ ] 规则判定条件变化（→ 必须升 `specVersion` + 更新 `CHANGELOG.md`）
-- [ ] 检查器输出/退出码变化（→ 会在下游 CI 生效，需说明兼容性）
-- [ ] 新增 `check.kind`（→ 需要 ADR + selftest 用例）
-- [ ] 仅文档/模板（→ 无行为变化）
+<!-- 刻意没做的部分 + 原因。不写，下一个人会当成漏了 -->
 
 ## 怎么验证的
 
-<!-- 贴真实输出，不要写“已测试” -->
+<!-- 贴真实输出或可复现步骤，不要写"已测试" -->
 
-```
-$ pwsh ./tests/selftest.ps1
-...
-
-$ pwsh ./checker/spec-check.ps1 -Target .
-...
-```
+- 核对过 [spec/checklist.md](../spec/checklist.md) 的相关条目：<哪几条，结论>
+- 双语两版是否同步：<是 / 不适用>
+- 新增/删除的路径是否都有引用方已更新：<是 / 不适用>
 
 ## 自检清单
 
-- [ ] `rules/rules.json` 是唯一改动源，`spec/RULES.md` 由脚本重新生成（未手改）
-- [ ] `pwsh ./tests/selftest.ps1` 全绿
-- [ ] `pwsh ./checker/spec-check.ps1 -Target .` 达成 L3 且无 FAIL
-- [ ] `CHANGELOG.md` 已更新；语义变化已升 `specVersion`
-- [ ] 未引入 Node/Python 依赖
-- [ ] `.ps1` 保存为 UTF-8 with BOM
+- [ ] `spec/checklist.md` 是规则唯一改动源（没有第二份清单）
+- [ ] 中英两版在同一 PR 内同步（[ADR-0008](../docs/adr/0008-bilingual-equal-status.md)）
+- [ ] `CHANGELOG.md` 已更新；判据变化已升 `specVersion`
+- [ ] 没有引入可执行物（脚本 / 依赖清单 / workflow 校验）
+- [ ] 文档里的路径都存在
 
 ## 需要 reviewer 特别看的地方
 
-<!-- 明说“我不确定的部分”。这一节比上面所有节都重要 -->
+<!-- 明说"我不确定的部分"。这一节比上面所有节都重要 -->

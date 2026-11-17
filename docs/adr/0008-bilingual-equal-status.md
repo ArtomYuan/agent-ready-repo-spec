@@ -4,7 +4,7 @@
 - 日期：2026-11-17
 - 决策者：@ArtomYuan
 - 取代：[ADR-0007](0007-bilingual-default-english.md) 的**第 2 条**（"英文是事实源、以英文为准"）
-- 相关：[README](../README.md) · [README.zh-CN](../README.zh-CN.md) · [guide/](../guide/)
+- 相关：[README](../../README.md) · [README.zh-CN](../../README.zh-CN.md) · [guide/](../../guide/)
 
 ## 背景
 

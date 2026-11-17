@@ -3,7 +3,7 @@
 - 状态：Accepted
 - 日期：2026-11-17
 - 决策者：@ArtomYuan
-- 相关：[guide/06-信息该放哪.md](../../guide/06-信息该放哪.md) · [evidence/2026-11-17-repo-self-audit.md](evidence/2026-11-17-repo-self-audit.md) · [ADR-0004](0004-all-changes-via-pr.md)
+- 相关：[guide/06-信息该放哪.md](../../guide/06-信息该放哪.md) · [evidence/2026-11-17-repo-self-audit.md](../evidence/2026-11-17-repo-self-audit.md) · [ADR-0004](0004-all-changes-via-pr.md)
 
 ## 背景
 

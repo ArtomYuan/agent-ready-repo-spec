@@ -40,7 +40,7 @@ It answers six questions:
 - Handing the repo to an agent → **04**; if agent commits are becoming common, **05**.
 - **Planning: where do scope, order and progress go** → **06** §1. **Releasing** → **06** §2.
 - **Switching sessions or agents** → **06** §3.
-- Want to know what is missing → run `checker/spec-check.ps1` (see the repo README). It reports facts; it does **not** grade your chosen tier.
+- Want to know what is missing → walk [spec/checklist.md](../spec/checklist.md). It reports facts; it does **not** grade your chosen tier.
 
 ## One criterion that runs through everything
 

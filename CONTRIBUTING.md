@@ -4,46 +4,49 @@
 
 | 类型 | 例子 | 需要的材料 |
 |---|---|---|
-| **新规则** | 发现某个反复出现的仓库问题没有被覆盖 | `rules.json` 条目 + `rationale` + `fix` + fixture |
-| **规则纠错** | 某条规则误报/漏报 | 一个能复现的最小目录结构 |
-| **新 `check.kind`** | 现有 13 种表达不了 | 引擎实现 + `tests/selftest.ps1` 用例 + ADR |
-| **文档** | 例子跑不通、表述有歧义 | 直接改，PR 里说明 |
+| **规则纠错** | 某条清单条目太严 / 太松 / 根本无法判定 | 一个真实仓库的反例，说明为什么这条判据不成立 |
+| **新条目** | 发现某个反复出现的问题没有被覆盖 | 条目 + `id` + 级别 + 判据 + "为什么" + "怎么改" |
+| **章节补充** | 某个判据只有结论、没有例子 | 正例与反例各一个 |
+| **模板改进** | 模板缺字段、或多出没人填的字段 | 直接改，PR 里说明取舍 |
 
-**不接受**：为了让某个仓库“过关”而放宽规则；给检查器加第三方依赖；把规则判定藏进脚本黑盒（必须能在 `rules.json` 里读懂）。
+**不接受**：
+
+- 为了让某个仓库"过关"而放宽判据；
+- 给这个库加入可执行物（脚本、依赖清单、CI 校验）——见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)；
+- 只改中文或只改英文（两版必须同一 PR 内同步，见 [ADR-0008](docs/adr/0008-bilingual-equal-status.md)）。
 
 ## 分支与提交
 
-> **main 受保护**：任何变更——人写的、agent 写的都一样——必须走 PR 并通过 CI。
-> agent 的发布工具是 `tools/publish-pr.ps1`（自动建分支、开 PR、等检查、squash 合并）。
-> 理由与破窗流程见 [docs/adr/0004-all-changes-via-pr.md](docs/adr/0004-all-changes-via-pr.md)。
+> **main 受保护**：任何变更——人写的、agent 写的都一样——必须走 PR。
+> 理由见 [docs/adr/0004-all-changes-via-pr.md](docs/adr/0004-all-changes-via-pr.md)。
 
 ```
 main                受保护，只能通过 PR 合入
-feat/<slug>         新规则 / 新能力
-fix/<slug>          修误报、修 bug
-docs/<slug>         文档
-chore/<slug>        构建、模板、杂项
+feat/<slug>         新条目 / 新章节
+fix/<slug>          改判据、修表述
+docs/<slug>         纯文档
+chore/<slug>        模板、杂项
 ```
 
-提交信息用 Conventional Commits，scope 取 `rules` / `checker` / `spec` / `docs` / `templates`：
+提交信息用 Conventional Commits，scope 取 `spec` / `guide` / `templates` / `docs`：
 
 ```
-feat(rules): 增加 R041 检查 docs/index.md 的死链
-fix(checker): md-refs-exist 忽略纯扩展名 token
+feat(spec): 新增 R042 检查 docs/ 下的死链
+fix(guide): 03 章的反例表格与正文不一致
 ```
 
 ## 改规则的流程
 
-1. 改 `rules/rules.json`（**只改这里**）。
-2. `pwsh ./checker/gen-rules-doc.ps1` 重新生成 `spec/RULES.md`。
-3. 若是新 `check.kind`，在 `tests/selftest.ps1` 加 fixture 与断言。
-4. `pwsh ./tests/selftest.ps1` 全绿。
-5. `pwsh ./checker/spec-check.ps1 -Target .` 自己体检自己，**L3 必须全绿**。
-6. 更新 `CHANGELOG.md`；判定条件变化则升 `specVersion`。
+1. 改 **[spec/checklist.md](spec/checklist.md)**（**只改这里**，不要再引入第二份清单）。
+2. 若判据变严或条目升级为 `must`：升 `specVersion`（[spec/README.md](spec/README.md) 有策略）。
+3. 中英两版相关章节同步更新（`guide/*.md` 与 `guide/*.zh-CN.md`）。
+4. 更新 `CHANGELOG.md`。
+5. 若这是一条"为什么这么定"的决策（而非单纯修错），补一条 ADR。
 
 ## PR
 
-用 [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)，必须填“怎么验证的”并贴真实输出。
+用 [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)。
+必须填"怎么验证的"，并说明你核对了清单里的哪几条。
 
 ## 评审 SLA
 
