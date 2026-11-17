@@ -7,7 +7,11 @@ agents write many of the commits.
 - **Documentation only — no rule engine.** No checker, no generator, no package manifest. The one piece of automation is the platform-level required checks in [`.github/workflows/docs.yml`](.github/workflows/docs.yml) (link check + bilingual pairing); they validate the docs themselves and never the rules — see [ADR-0009](docs/adr/0009-spec-only-no-tooling.md).
 - **No language, no tool, no runtime required.** You read it, copy the templates, and walk the checklist.
 - **Bilingual, both first-class** ([ADR-0008](docs/adr/0008-bilingual-equal-status.md)): English and Chinese are peers,
-  maintained in the same PR. Chinese mirror: [README.zh-CN.md](README.zh-CN.md).
+  maintained in the same PR. Neither is a "mirror". Chinese entry: [README.zh-CN.md](README.zh-CN.md).
+  **Coverage today, stated honestly:** `guide/` (all eight chapters), `README`, `examples/README` and `SECURITY` are
+  bilingual — that is what the `双语配对` required check enforces. `spec/`, `docs/`, `CONTRIBUTING.md` and
+  `CHANGELOG.md` are **Chinese-only**, and one of them is the file you actually have to act on:
+  [spec/checklist.md](spec/checklist.md). See [ADR-0008 §现状](docs/adr/0008-bilingual-equal-status.md).
 
 ## How to use it
 

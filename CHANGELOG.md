@@ -55,6 +55,19 @@
 - 两版都补了一行 `CODEOWNERS 目前不生效`（ruleset 未开 `Require review from Code Owners`）——此前只有英文版有。
 - `guide/README.{md,.zh-CN.md}`：去掉对已删除目录 `rules/`、`checker/` 的引用。
 
+### Added —— 规则 ↔ 章节 ↔ 证据 三向可追溯
+
+- `spec/checklist.md` 新增「章节索引」：八章各自解释哪些条目、主要证据在哪，并**明写两个不对称**
+  （有章节没条目：00 章的采用记录、05/07 章论证的门禁；有条目没章节：`R050`/`R051` 没有正面讲的一节）。
+  只做导航、不含判据——判据仍然只有下面那张分级表。
+- `guide/01`、`02`、`04`、`05`、`06`、`07` 各补一节「附：本章对应的自查项」（中英共 12 个文件），照 `guide/03` 已有的样式。
+  此前八章里**只有 03 章引用了规则 ID（6 个），其余七章引用数为 0**：章节给结论、清单给判据，两边互不认识。
+- `guide/05`、`07` 的附录里直写"本章论证的门禁还不是条目，这是覆盖缺口，不是决定不收"。
+- `README.md` / `README.zh-CN.md` / `ADR-0008` 新增双语**覆盖范围**的如实声明：
+  `guide/` + `README` + `examples/README` + `SECURITY` 双语（`双语配对` 执行的就是这个范围），
+  `spec/`（含 `checklist.md`）、`docs/`、`CONTRIBUTING.md`、`CHANGELOG.md`、`AGENTS.md`、`templates/` 仅中文。
+  ADR-0008 给出两条出路（缩小声明范围 / 给 `checklist.md` 补英文版）并**不替这个选择背书**。
+
 ### Fixed —— 证据口径
 
 - `guide/06`：`ROADMAP*` / `STATUS|PROGRESS|PLAN*` 的 `0/10` 明确限定为**根目录**统计，
