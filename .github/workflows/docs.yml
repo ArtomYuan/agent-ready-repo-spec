@@ -1,7 +1,7 @@
 # 本仓库唯一的自动化：跑在 GitHub 的 runner 上，读者本地不需要装任何东西。
 #
 # 为什么只留这两个 job：
-#   - 它们检查的是**文档自身**的一致性（链接是否断、中英是否配对），与本库主题直接相关；
+#   - 它们检查的是**文档自身**的一致性（链接是否断、中英是否成对、两版标题数是否相等），与本库主题直接相关；
 #   - 一旦有人想本地复现，用任何语言写几行都行，不存在"必须装某门运行时"的绑定；
 #   - 曾经的检查器/生成器/测试都已删除（ADR-0009），这里不再承载"规则引擎"。
 #
@@ -51,3 +51,26 @@ jobs:
           done
           if [ "$missing" -eq 0 ]; then echo "guide/ 双语配对完整"; fi
           exit "$missing"
+      - name: 双语标题数一致（AGENTS.md 的硬约定：改一侧必须同步另一侧）
+        shell: bash
+        run: |
+          set -euo pipefail
+          count() { local n; n=$(grep -cE '^#{1,6} ' "$1" 2>/dev/null || true); echo "${n:-0}"; }
+          bad=0
+          check_pair() {
+            local en="$1" zh="$2" a b
+            [ -f "$en" ] && [ -f "$zh" ] || return 0
+            a=$(count "$en"); b=$(count "$zh")
+            if [ "$a" -ne "$b" ]; then
+              echo "::error file=$en::标题数不一致：$en=$a，$zh=$b —— 改一侧必须在同一个 PR 内同步另一侧"
+              bad=1
+            fi
+          }
+          for f in guide/*.md; do
+            case "$f" in *.zh-CN.md) continue ;; esac
+            check_pair "$f" "${f%.md}.zh-CN.md"
+          done
+          check_pair README.md README.zh-CN.md
+          check_pair examples/README.md examples/README.zh-CN.md
+          if [ "$bad" -eq 0 ]; then echo "双语标题数一致"; fi
+          exit "$bad"
