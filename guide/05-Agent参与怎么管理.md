@@ -263,8 +263,13 @@ The two must match one-to-one. One extra → pending forever
    in a later PR. **Never rename and re-point in the same PR.**
 2. Before touching `workflows/`, write down in `AGENTS.md` which contexts the ruleset depends on — otherwise the next
    person (or agent) has no idea what they are dismantling.
-3. Editing a ruleset needs `administration` permission, which **an App token usually does not have**. So the adoption
-   record must state who can edit the ruleset — otherwise nobody can undo a self-lock.
+3. Editing a ruleset needs `administration` permission, which **an App token usually does not have** — and the reason
+   it is missing is rarely the one you would guess: ticking the permission on the App does **not** make it available.
+   The installation has to approve the widened set first; until it does, the key is simply **absent** from
+   `token.permissions`. Measured in
+   [docs/evidence/2026-11-18-github-app-permission-propagation.md](../docs/evidence/2026-11-18-github-app-permission-propagation.md).
+   So **check `token.permissions`, not the App's settings page**, and have the adoption record state who can edit the
+   ruleset — otherwise nobody can undo a self-lock.
 
 **Break-glass (treat as `must` in any repository adopting this spec)**
 
