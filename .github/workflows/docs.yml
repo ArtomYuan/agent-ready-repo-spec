@@ -1,0 +1,53 @@
+# 本仓库唯一的自动化：跑在 GitHub 的 runner 上，读者本地不需要装任何东西。
+#
+# 为什么只留这两个 job：
+#   - 它们检查的是**文档自身**的一致性（链接是否断、中英是否配对），与本库主题直接相关；
+#   - 一旦有人想本地复现，用任何语言写几行都行，不存在"必须装某门运行时"的绑定；
+#   - 曾经的检查器/生成器/测试都已删除（ADR-0009），这里不再承载"规则引擎"。
+#
+# 依赖一律固定到 commit SHA：tag 可以被移动，SHA 不能。
+
+name: docs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    name: 链接检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: 相对链接是否都能解析（--offline：不访问外网，避免外部站点抖动导致假红）
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2
+        with:
+          args: >-
+            --offline --no-progress --accept 200,204,206,429
+            './**/*.md'
+            './**/*.tmpl'
+          fail: true
+
+  pairing:
+    name: 双语配对
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: guide/ 下每个 *.md 都要有对应的 *.zh-CN.md
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for f in guide/*.md; do
+            case "$f" in *.zh-CN.md) continue ;; esac
+            if [ ! -f "${f%.md}.zh-CN.md" ]; then
+              echo "::error file=$f::缺少中文镜像 ${f%.md}.zh-CN.md"
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 0 ]; then echo "guide/ 双语配对完整"; fi
+          exit "$missing"

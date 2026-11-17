@@ -4,7 +4,7 @@
 - 日期：2026-11-17
 - 决策者：@ArtomYuan
 - 取代：[ADR-0003](0003-why-this-repo-delays-admin-enforcement.md)（暂不开启 admin 强制）
-- 相关：[guide/05-Agent参与怎么管理.md](../../guide/05-Agent参与怎么管理.md) · [tools/README.md](../../tools/README.md)
+- 相关：[guide/05-Agent参与怎么管理.md](../../guide/05-Agent参与怎么管理.md) · tools（已随 ADR-0009 下线）
 
 ## 背景
 

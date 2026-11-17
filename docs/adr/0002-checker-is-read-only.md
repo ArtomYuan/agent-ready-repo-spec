@@ -1,6 +1,6 @@
 # ADR-0002：检查器只读，不做自动修复
 
-- 状态：Accepted
+- 状态：Superseded by [ADR-0009](0009-spec-only-no-tooling.md)（2026-11-17）：检查器已删除
 - 日期：2026-11-16
 - 决策者：@example-org/spec-owners
 

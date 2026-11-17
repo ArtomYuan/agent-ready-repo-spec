@@ -3,7 +3,7 @@
 - 状态：**Superseded by [ADR-0008](0008-bilingual-equal-status.md)**（2026-11-17）——本 ADR 仅保留第 1、3 条（文件名约定、翻译顺序）
 - 日期：2026-11-17
 - 决策者：@ArtomYuan
-- 相关：[README](../README.md) · [README.zh-CN](../README.zh-CN.md) · [guide/](../guide/)
+- 相关：[README](../../README.md) · [README.zh-CN](../../README.zh-CN.md) · [guide/](../../guide/)
 
 ## 背景
 

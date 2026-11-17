@@ -2,8 +2,6 @@
 * text=auto eol=lf
 
 # 显式声明语言（便于 GitHub 统计与 diff 高亮）
-*.ps1   text eol=crlf
-*.psm1  text eol=crlf
 *.md    text eol=lf
 *.json  text eol=lf
 *.yml   text eol=lf
@@ -19,4 +17,3 @@
 *.gz    binary
 
 # 生成物：在 PR 里折叠，减少噪音
-spec/RULES.md linguist-generated=true

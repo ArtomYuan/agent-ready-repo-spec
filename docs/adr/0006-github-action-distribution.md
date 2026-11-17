@@ -1,9 +1,9 @@
 # ADR-0006：以 GitHub Action 作为分发形态
 
-- 状态：Accepted
+- 状态：Superseded by [ADR-0009](0009-spec-only-no-tooling.md)（2026-11-17）：Action 已删除
 - 日期：2026-11-17
 - 决策者：@ArtomYuan
-- 相关：[README](../README.md) · [guide/00-接入决策.md](../guide/00-接入决策.md) · [action.yml](../action.yml)
+- 相关：[README](../../README.md) · [guide/00-接入决策.md](../../guide/00-接入决策.md) · action.yml
 
 ## 背景
 
