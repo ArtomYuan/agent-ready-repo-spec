@@ -39,8 +39,8 @@
 | `R025` | must | settings.local.json 未被提交 | 个人覆盖含本机路径与令牌，提交即泄露。 | 从索引移除：git rm --cached .claude/settings.local.json，并写进 .gitignore。 |
 | `R026` | should | **若用 Claude Code**：permissions.deny 非空 | 没有 deny 就是全开；密钥路径与破坏性命令必须先封。 | 至少 deny：Read(./.env)、Read(./secrets/**)、Bash(rm *)、Bash(git reset *)。 |
 | `R027` | may | LICENSE 不是占位文本 | 占位 LICENSE 在法律上等于没有协议。 | 填入真实年份与著作权人。 |
-| `R029` | should | 保留 agent 提交归属（未关闭 attribution，与工具无关） | Claude Code 默认给提交加 git trailer（`Co-Authored-By: <model> <noreply@anthropic.com>`），这是 agent 参与最便宜的审计手段；把它关掉，事后就分不清哪次提交是模型写的。 | 删掉 attribution 的 false / 空字符串；要改文案就保留 trailer，例如 `attribution.commit: "Co-Authored-By: Claude <noreply@anthropic.com>"`。 |
 | `R028` | may | 提交规范有机器执行载体（可选升级） | GitHub 自家仓库大多不强制提交格式（actions/checkout 只在 CONTRIBUTING 里给一条外部链接），Claude Code 也不内置格式校验——所以这条不是行业基线，而是**可选升级**：只有当你希望按前缀自动生成 CHANGELOG / 自动发版时才需要它。 | 加 commitlint 配置（extends @commitlint/config-conventional），并在 CI 或 commit-msg hook 里跑起来；不需要自动化的仓库可以不管这条。 |
+| `R029` | should | 保留 agent 提交归属（未关闭 attribution，与工具无关） | Claude Code 默认给提交加 git trailer（`Co-Authored-By: <model> <noreply@anthropic.com>`），这是 agent 参与最便宜的审计手段；把它关掉，事后就分不清哪次提交是模型写的。 | 删掉 attribution 的 false / 空字符串；要改文案就保留 trailer，例如 `attribution.commit: "Co-Authored-By: Claude <noreply@anthropic.com>"`。 |
 
 ## L3 · 有 agent 参与开发
 

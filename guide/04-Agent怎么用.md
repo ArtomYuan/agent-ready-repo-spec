@@ -174,3 +174,16 @@ in the background by default — **many of these switches are not yours to make*
 
 > These are not a score. A full checklist doesn't mean the practice is in place, and an incomplete one isn't a problem —
 > **the reason matters more than the tick.**
+
+---
+
+## 7. Sources
+
+| Claim | Source |
+|---|---|
+| Deterministic vs non-deterministic instructions; "let the model judge most of the time" | [Best practices · Deterministic and non-deterministic instructions](https://code.claude.com/docs/en/best-practices) |
+| "Give Claude a check it can run" with a pass/fail result; the four tightening levels | ibid · Give Claude a check to run |
+| Rules with no exceptions → hook / deny / managed settings; `onFailure: block` | ibid · Enforce the rules that can't have exceptions |
+| Short root file, per-directory layering, `claudeMdExcludes`, per-directory skills | [Set up Claude Code in a monorepo](https://code.claude.com/docs/en/large-codebases) |
+| Load order and scope | [How Claude remembers your project](https://code.claude.com/docs/en/memory) |
+| A real overlay-with-precedence example | `cli/cli`'s `.github/agents/agentic-workflows.md` (sampled) |

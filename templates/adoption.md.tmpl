@@ -13,7 +13,7 @@
 
 | # | 决定 | 选择 | 落点（缺了就不算采用） |
 |---|---|---|---|
-| 1 | 目标等级 | {{L2}} | CI 里 `spec-check.ps1 -Level {{2}}` |
+| 1 | 目标等级 | {{L2}} | 采用记录本身 + 每次体检按目标等级对照 checklist |
 | 2 | PR 门禁 | {{必须 PR / 必须 PR + 审批 / 关闭}} | 分支保护 `Require a pull request`（审批数 {{0}}） |
 | 3 | 管理员是否可绕过 | {{不允许 / 允许}} | 分支保护 `Do not allow bypassing` |
 | 4 | 必需检查 | {{job 名列表 / 无}} | 分支保护 `Required status checks` + CI 里真实存在的 job |
@@ -39,5 +39,5 @@
 
 ## 备注
 
-- 平台设置（分支保护、required checks、Actions 权限）**检查器读不到**，只能靠本记录 + 人工核对；
-  仓库内文件（`settings.json`、CI workflow、`AGENTS.md`）可以被 `checker/spec-check.ps1` 验证。
+- 平台设置（分支保护、required checks、Actions 权限）没有任何工具读得到，只能靠本记录 + 人工核对；
+  仓库内文件（`settings.json`、CI workflow、`AGENTS.md`）可以直接打开核对——本规范不提供检查器（ADR-0009）。
