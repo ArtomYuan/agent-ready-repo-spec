@@ -9,7 +9,7 @@
 | 先看看这东西讲什么 | [README.md](../README.md) |
 | 知道 L0–L3 到底要求什么 | [spec/checklist.md](../spec/checklist.md) |
 | 决定接哪一档、怎么把决定记下来 | [guide/00-接入决策.zh-CN.md](../guide/00-接入决策.zh-CN.md) |
-| 写某一份具体文档 | [guide/03-文档该怎么写.zh-CN.md](../guide/03-文档该怎么写.zh-CN.md) |
+| 写某一份具体文档 | [guide/03-文档该怎么写.zh-CN.md](../guide/03-文档该怎么写.zh-CN.md) |`n| 该点哪些仓库设置 | [guide/07-该开哪些设置.zh-CN.md](../guide/07-该开哪些设置.zh-CN.md) |`n| 看填好的 `AGENTS.md` 成品（两种形态） | [examples/](../examples/README.zh-CN.md) |
 | 贡献一条规则或改一章 | [CONTRIBUTING.md](../CONTRIBUTING.md) |
 
 ## 我是 agent，要替人管一个库
