@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-11-18
+
 ### Fixed —— 扫掉 ADR-0009 的残留引用
 
 - `SECURITY.md` **整篇重写**：原文描述的是已删除的检查器（"检查器是**只读**的"、`rules.json` 里的正则、
@@ -121,7 +123,7 @@
   而 `SECURITY.md` 承诺"只对最新 `specVersion` 提供修复"、`spec/README.md` 定了 SemVer 策略，
   却没有任何一个可用的 tag 或 Release 能锚定"最新"是哪一个——下游仓库无法固定引用。
 
-### Added —— 11 条 GitHub 管理面与 agent 治理条目（合并即发 **1.5.0**）
+### Added —— 11 条 GitHub 管理面与 agent 治理条目
 
 新增条目全是 `should` / `may`，按版本策略属 **minor**。它们补的是同一个缺口：本库的立意是
 "agent 参与 GitHub 开发**或管理**"，但 37 条里约六成在问"文件在不在"，**"管理"这一半只存在于 `guide/07` 的正文里，一条规则都没有**。
