@@ -37,6 +37,15 @@
 - 两版都补了一行 `CODEOWNERS 目前不生效`（ruleset 未开 `Require review from Code Owners`）——此前只有英文版有。
 - `guide/README.{md,.zh-CN.md}`：去掉对已删除目录 `rules/`、`checker/` 的引用。
 
+### Fixed —— 证据口径
+
+- `guide/06`：`ROADMAP*` / `STATUS|PROGRESS|PLAN*` 的 `0/10` 明确限定为**根目录**统计，
+  并说明 `microsoft/vscode` 把 roadmap 放在功能目录的反例要解决的是"计划与代码一起腐烂"，不是"该不该有"。
+- `guide/01`：`AGENTS.md` 由"已经是主流"改为"已经常见（本次抽样的 10 个头部仓库里 6 个有）"，并注明样本非随机、偏开源大仓。
+- `docs/evidence/2026-11-18-agent-docs-sampling.md`：原"原始样本存本机 `_samples/`、不入库"一段换成
+  「复现与局限」——固定 commit 链接格式、样本偏向、比例结论必须标样本量、第三方全文不入库。
+- `docs/evidence/2026-11-17-protection-probe.md`：加「有效性」一行，说明 4 个旧 context 已被 ADR-0010 取代。
+
 ## [1.4.0] - 2026-11-18
 
 ### Changed —— 这个库不再包含任何可执行物
