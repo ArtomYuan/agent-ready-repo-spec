@@ -256,8 +256,12 @@ required_status_checks 里的 context 列表  ⇄  当前 workflow 里实际存�
 1. **重命名 job 走三步**：先加新名 job（旧名保留）→ 改 ruleset 指向新名 → 下一个 PR 删旧 job。
    **不要在一个 PR 里同时改名和改规则。**
 2. 动 `workflows/` 之前，把"哪些 context 被 ruleset 依赖"写进 `AGENTS.md`——否则下一个人（或 agent）不知道自己在拆什么。
-3. 记住改 ruleset 需要 `administration` 权限：**用 App token 干活的人通常没有**。
-   所以采用记录里必须写清"谁能改 ruleset"，否则自锁之后没人能解。
+3. 记住改 ruleset 需要 `administration` 权限：**用 App token 干活的人通常没有**，而且缺的原因多半不是你猜的那个——
+   在 App 设置里勾上权限**并不会让它生效**，installation 必须先批准这次扩权；批准之前，
+   `token.permissions` 里连这个 key 都不存在。实测见
+   [docs/evidence/2026-11-18-github-app-permission-propagation.md](../docs/evidence/2026-11-18-github-app-permission-propagation.md)。
+   所以：**查 `token.permissions`，别看 App 设置页的勾选**；并且采用记录里必须写清"谁能改 ruleset"，
+   否则自锁之后没人能解。
 
 **破窗**（`must` 级，任何采用本规范的仓库都该写下来）：
 

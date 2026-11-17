@@ -6,6 +6,18 @@
 
 ## [Unreleased]
 
+### Fixed —— 把"这一步改不了"的真正原因写对
+
+- `CHANGELOG.md` 1.5.0 节里那句"GitHub App 没有 Repository **metadata** 权限，`PATCH /repos` 返回 **422**，
+  这一步改不了"**三处都不对**：改描述需要的是 `administration`，不是 `metadata`（后者一直是 `read`）；
+  实际报错是 `403 Resource not accessible by integration`；真正原因是 **installation 没批准 App 新申请的权限**，
+  而不是 App 没申请。已就地改正——改的是已发布节里的**状态句**，不是变更事实本身。
+- 新增证据 [`docs/evidence/2026-11-18-github-app-permission-propagation.md`](docs/evidence/2026-11-18-github-app-permission-propagation.md)：
+  App **申请**的权限 / installation **批准**的权限 / token **实际拿到**的权限，三处逐一回读——
+  `administration` 只在第一处出现。批准之前重签 token 无效。
+- `guide/05`（中英）自锁附录第 3 条补上这个陷阱：**判断 token 有没有某项权限，看 `token.permissions`
+  里有没有那个 key，别看 App 设置页的勾选。**
+
 ### Fixed —— 昨天写下的条数今天就过期了
 
 - `docs/adr/0008`：两条出路里的"给 `spec/checklist.md`（**37 条**）出英文版"与"这张 **37 行**大表"改成
@@ -124,7 +136,9 @@
   顺带删掉一条悬挂注释：`# 生成物：在 PR 里折叠` 下面已经没有规则（`spec/RULES.md` 随 ADR-0009 一起删了）。
 - **仓库元数据**（不在 diff 里，走 API 改）：About 描述去掉"体检器"（ADR-0009 已删）；
   topics 去掉 `powershell` / `code-quality` / `developer-tools`——本库既没有 PowerShell，也不做代码质量检查。
-  **待人工执行**：GitHub App 没有 Repository metadata 权限，`PATCH /repos` 返回 422，这一步改不了。
+  **未执行**：`PATCH /repos` 返回 `403 Resource not accessible by integration`——App 申请了 `administration`，
+  但 installation 没批准这次扩权，token 里根本没有这个 key。原因与恢复路径见
+  [证据](docs/evidence/2026-11-18-github-app-permission-propagation.md)。
 - **版本锚点**（不在 diff 里，走 API 建，**已完成**）：新增 tag `v1.4.0`（→ `7b66cc3`）与对应 Release；
   给 `v1` 补了 Release 页并标 *Superseded / 请勿使用*。
   此前唯一的 tag 是 `v1` → `d60c3cc`，即**含 `checker/` 与 `action.yml` 的旧树**（ADR-0009 之前的形态）；
