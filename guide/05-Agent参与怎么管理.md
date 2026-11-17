@@ -221,3 +221,53 @@ directory** is much harder to bypass than spreading them out.
 
 > These are not a score. A full checklist doesn't mean governance works —
 > **being able to say why you skipped something matters more than ticking everything.**
+---
+
+## 10. Sources
+
+| Claim | Source |
+|---|---|
+| "the last word goes to branch protection and the person who approves the merge" | [Best practices](https://code.claude.com/docs/en/best-practices) |
+| how far deny rules, sandbox and managed settings actually bind | [Permissions](https://code.claude.com/docs/en/permissions) · [Settings](https://code.claude.com/docs/en/settings) |
+| hook determinism, `exit 2`, `onFailure: block` | [Hooks reference](https://code.claude.com/docs/en/hooks) |
+| worktree isolation and `.worktreeinclude` | [Worktrees](https://code.claude.com/docs/en/worktrees) |
+| the default `Co-Authored-By` trailer and `attribution` | [Settings reference · Git and attribution](https://code.claude.com/docs/en/settings-reference) |
+| eligibility gates before starting, "done ≠ may submit" | `AGENTS.md` in `cli/cli` (measured) |
+| read the AI policy first, no auto-generated issues, de-duplication command | `AGENTS.md` in `python/cpython` (measured) |
+| overlay + explicit precedence; capabilities and constraints under one governed directory | `.github/agents/agentic-workflows.md` in `cli/cli`, `.github/` in `microsoft/vscode` (measured) |
+| branch protection and the CODEOWNERS toggle | [About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) |
+
+---
+## Appendix: a self-lock you will hit — required checks pointing at deleted jobs
+
+**Symptom**: four checks on the PR sit at `Expected — Waiting for status to be reported` forever. Nothing fails,
+nothing passes, the merge button stays grey. You suspect a quota — it is not.
+
+**Cause**: `required status checks` stores **names**, not jobs. Each name must be reported by *something*.
+Delete the workflow or rename a job and the old names have no producer, so they stay **pending forever** —
+GitHub will not time out and will not accept results from an earlier commit (only this PR's head commit counts).
+
+**Why it is dangerous**: renaming or deleting CI looks like housekeeping. It is a **self-lock**: main becomes
+unmergeable, and no tool will warn you that you just deleted the producer.
+
+**How to check (30 seconds)**
+
+```
+the context list in required_status_checks  ⇄  the job names that actually exist in the workflows
+The two must match one-to-one. One extra → pending forever
+```
+
+**Prevention**
+
+1. **Rename a job in three steps**: add the new-named job (keep the old one) → repoint the ruleset → delete the old job
+   in a later PR. **Never rename and re-point in the same PR.**
+2. Before touching `workflows/`, write down in `AGENTS.md` which contexts the ruleset depends on — otherwise the next
+   person (or agent) has no idea what they are dismantling.
+3. Editing a ruleset needs `administration` permission, which **an App token usually does not have**. So the adoption
+   record must state who can edit the ruleset — otherwise nobody can undo a self-lock.
+
+**Break-glass (treat as `must` in any repository adopting this spec)**
+
+- name who may edit the ruleset / branch protection (a person or team, not "the admins");
+- the shortest recovery path: repoint the required-check list, or temporarily disable the `Require status checks` rule;
+- after recovery, **write an ADR** saying why it locked and who unlocked it — otherwise it happens again.

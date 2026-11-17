@@ -230,3 +230,37 @@ Precedence: repository overlay instructions override defaults in this agent when
 | 先读 AI 政策、不许自动开 issue、去重命令 | `python/cpython` 的 `AGENTS.md`（实测） |
 | 覆盖层 + 优先级声明；agent 能力与约束同目录受管 | `cli/cli` 的 `.github/agents/agentic-workflows.md`、`microsoft/vscode` 的 `.github/`（实测） |
 | 分支保护、CODEOWNERS 开关 | [About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) |
+---
+
+## 附：一种你一定会遇到的自锁 —— 必需检查指向了已删除的 job
+
+**现象**：PR 上四个检查永远显示 `Expected — Waiting for status to be reported`，永远不失败也不通过，
+合并按钮一直是灰的。你会怀疑是不是"运行额度用完了"——不是。
+
+**原因**：`required status checks` 里存的是**名字**，不是 job 本身。它要求"必须有某个东西上报这个名字"。
+一旦你删掉 workflow、或改了 job 名，旧名字就再没有生产者，于是**永久 pending**——
+GitHub 不会超时放行，也不会拿历史提交上跑过的结果顶替（只看这次 PR 的 head commit）。
+
+**为什么危险**：改名/删 CI 通常被当成"清理"，看起来无害。但它是**自锁**：
+main 从此不可合并，而没有任何工具会提醒你"你刚把生产者删了"。
+
+**判断方法**（30 秒）：
+
+```
+required_status_checks 里的 context 列表  ⇄  当前 workflow 里实际存在的 job 名
+两者必须一一对应。多一个 → 永久 pending
+```
+
+**预防**
+
+1. **重命名 job 走三步**：先加新名 job（旧名保留）→ 改 ruleset 指向新名 → 下一个 PR 删旧 job。
+   **不要在一个 PR 里同时改名和改规则。**
+2. 动 `workflows/` 之前，把"哪些 context 被 ruleset 依赖"写进 `AGENTS.md`——否则下一个人（或 agent）不知道自己在拆什么。
+3. 记住改 ruleset 需要 `administration` 权限：**用 App token 干活的人通常没有**。
+   所以采用记录里必须写清"谁能改 ruleset"，否则自锁之后没人能解。
+
+**破窗**（`must` 级，任何采用本规范的仓库都该写下来）：
+
+- 谁有权改 ruleset / 分支保护（人名或团队，不是"管理员"这种模糊说法）；
+- 自锁时的最短恢复路径：要么改必需检查清单，要么临时关掉 `Require status checks` 这条规则；
+- 恢复后**补一条 ADR**，写明为什么自锁、谁解开的——否则下次还会踩。
