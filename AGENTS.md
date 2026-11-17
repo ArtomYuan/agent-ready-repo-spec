@@ -63,6 +63,8 @@
 `Expected — Waiting for status to be reported`，main 从此不可合并。
 正确顺序是先加新名 job → 改 ruleset → 下个 PR 删旧 job。详见 [guide/05 附录](guide/05-Agent参与怎么管理.md)；真实事故复盘见 [ADR-0010](docs/adr/0010-required-checks-self-lock.md)。
 
+`双语配对` 校验两件事：中英两版**文件成对**，且**标题数一致**（后者是上面「双语平权」那条硬约定的唯一执行点）。
+
 ## 拿不准时
 
 停下来问，并列 2–3 个选项与取舍。**不要**为了"看起来更专业"而给文档库加工具——那正是 ADR-0009 推翻的做法。

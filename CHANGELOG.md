@@ -46,6 +46,13 @@
   「复现与局限」——固定 commit 链接格式、样本偏向、比例结论必须标样本量、第三方全文不入库。
 - `docs/evidence/2026-11-17-protection-probe.md`：加「有效性」一行，说明 4 个旧 context 已被 ADR-0010 取代。
 
+### Changed —— `双语配对` 同时校验中英标题数
+
+- `.github/workflows/docs.yml` 的 `双语配对` job 新增一步：对 `guide/*.md` 全部配对、`README.md`、`examples/README.md`
+  比较两侧 `^#{1,6} ` 的计数，不等即报 `::error` 并列出两个数字。
+- **job 名未变**（仍是 `双语配对`），因此 ruleset 不需要改动——改名会撞上 ADR-0010 记录的自锁。
+- 覆盖的约定：`AGENTS.md`「改内容必须在同一个 PR 内同步两边，只改一侧视为未完成」此前没有任何执行点。
+
 ## [1.4.0] - 2026-11-18
 
 ### Changed —— 这个库不再包含任何可执行物
