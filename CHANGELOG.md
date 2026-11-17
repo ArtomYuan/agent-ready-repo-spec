@@ -53,6 +53,20 @@
 - **job 名未变**（仍是 `双语配对`），因此 ruleset 不需要改动——改名会撞上 ADR-0010 记录的自锁。
 - 覆盖的约定：`AGENTS.md`「改内容必须在同一个 PR 内同步两边，只改一侧视为未完成」此前没有任何执行点。
 
+### Changed —— 版本锚点与仓库元数据
+
+- `.gitattributes`：`*.md` / `*.tmpl` / `*.yml` 标 `linguist-documentation`。此前仓库首页语言条显示 **Go Template**
+  （`templates/` 下 8 个 `.tmpl` 被 linguist 当成代码），与"纯文档库"的定位互相打脸。
+  顺带删掉一条悬挂注释：`# 生成物：在 PR 里折叠` 下面已经没有规则（`spec/RULES.md` 随 ADR-0009 一起删了）。
+- **仓库元数据**（不在 diff 里，走 API 改）：About 描述去掉"体检器"（ADR-0009 已删）；
+  topics 去掉 `powershell` / `code-quality` / `developer-tools`——本库既没有 PowerShell，也不做代码质量检查。
+  **待人工执行**：GitHub App 没有 Repository metadata 权限，`PATCH /repos` 返回 422，这一步改不了。
+- **版本锚点**（不在 diff 里，走 API 建，**已完成**）：新增 tag `v1.4.0`（→ `7b66cc3`）与对应 Release；
+  给 `v1` 补了 Release 页并标 *Superseded / 请勿使用*。
+  此前唯一的 tag 是 `v1` → `d60c3cc`，即**含 `checker/` 与 `action.yml` 的旧树**（ADR-0009 之前的形态）；
+  而 `SECURITY.md` 承诺"只对最新 `specVersion` 提供修复"、`spec/README.md` 定了 SemVer 策略，
+  却没有任何一个可用的 tag 或 Release 能锚定"最新"是哪一个——下游仓库无法固定引用。
+
 ## [1.4.0] - 2026-11-18
 
 ### Changed —— 这个库不再包含任何可执行物
