@@ -6,6 +6,24 @@
 
 ## [Unreleased]
 
+### Fixed —— 扫掉 ADR-0009 的残留引用
+
+- `SECURITY.md` **整篇重写**：原文描述的是已删除的检查器（"检查器是**只读**的"、`rules.json` 里的正则、
+  `md-refs-exist`、`-Level 3`、`Test-Path` 只作用于 `-Target`），上报口径也还是"误报 / 漏报 / 引擎本身的执行问题"。
+  新口径按"**没有可执行代码，可执行的是文本**"重写：文档被 agent 当作指令执行、模板照抄成假闸门、外部行为漂移。
+  影响类型从三种改为四种：**判据错了 / 模板有害 / 引用失效 / 指令注入**。
+- `SECURITY.md` 改为英文默认版，新增 `SECURITY.zh-CN.md`（ADR-0008 第 4 条：默认文件名 = 主要读者的语言；
+  此前 `SECURITY.md` 是中文单语，英文读者从 README 点进去会掉进另一种语言）。
+- `CONTRIBUTING.md`：示例提交信息把 `R042` 写成"检查 `docs/` 下的死链"，与唯一事实源不符（`R042` = AGENTS.md 声明输出语言）。
+- `spec/checklist.md`：删掉文件末尾悬挂的 `## 不同级别的差异`（标题下只有一句孤立的话，是旧 README 的残留），
+  换成"判完一条之后"——给出三种结论，以及"跳过 + 理由"该落在哪。
+- `spec/checklist.md` `R002` 的"怎么改"：从 5 段改为指向 [guide/03 §2](guide/03-文档该怎么写.zh-CN.md) 的八段骨架与
+  `templates/AGENTS.md.tmpl`，消除清单与模板之间的段落数漂移。
+- `README.md` / `README.zh-CN.md`：证据描述从"十个真实仓库"改为两批按日期存档的采样
+  （10 个仓库的文件面 + 12 个仓库的 agent 指令面）。
+- `guide/README.{md,zh-CN.md}`："回答六件事"改为八件事并与八章一一对应（07 章此前不在列表里）；
+  英文版 `How to read` 里残留的一句中文括注改回英文。
+
 ### Fixed —— 渲染、失效落点与双语漂移
 
 - 修掉 **10 处字面 `` `n `` 转义残留**（`CHANGELOG.md`、`docs/index.md`、`guide/README.md`、`guide/README.zh-CN.md`）：

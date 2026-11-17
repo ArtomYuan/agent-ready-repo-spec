@@ -24,7 +24,7 @@
 | [guide/](guide/README.zh-CN.md) | 八章：接入决策 · 该有什么文档 · 目录结构 · 每份文档怎么写 · agent 怎么用 · agent 参与怎么管理 · 信息该放哪 · 该开哪些设置 |
 | [spec/](spec/README.md) | 怎么读这套规范：成熟度级别、严重度、版本策略 · **[checklist.md](spec/checklist.md)** · agent 的阅读顺序 |
 | [templates/](templates/) | 复制到你自己仓库的文件，含 `{{PLACEHOLDER}}` |
-| [docs/](docs/index.md) | ADR（每条决策为什么这么定）、十个真实仓库的实测证据、文档地图 |
+| [docs/](docs/index.md) | ADR（每条决策为什么这么定）、按日期存档的两批实测证据（10 个仓库的文件面 + 12 个仓库的 agent 指令面）、文档地图 |
 
 ## 一条贯穿全篇的判据
 
@@ -35,6 +35,6 @@
 ## 贡献、安全、许可
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) —— 什么样的贡献有价值，以及流程
-- [SECURITY.md](SECURITY.md) —— 私密上报，不要开公开 issue
+- [安全策略](SECURITY.zh-CN.md) —— 私密上报，不要开公开 issue（[English](SECURITY.md)）
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 - MIT，见 [LICENSE](LICENSE)
