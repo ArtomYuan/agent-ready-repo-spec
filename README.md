@@ -4,7 +4,7 @@ A **guidance library**: what a GitHub repository should look like when an agent 
 which docs it needs, how to lay it out, how to write each file, how to use an agent, and how to govern it when
 agents write many of the commits.
 
-- **Documentation only.** No checker, no scripts, no CI gate, no package manifest — see [ADR-0009](docs/adr/0009-spec-only-no-tooling.md).
+- **Documentation only — no rule engine.** No checker, no generator, no package manifest. The one piece of automation is the platform-level required checks in [`.github/workflows/docs.yml`](.github/workflows/docs.yml) (link check + bilingual pairing); they validate the docs themselves and never the rules — see [ADR-0009](docs/adr/0009-spec-only-no-tooling.md).
 - **No language, no tool, no runtime required.** You read it, copy the templates, and walk the checklist.
 - **Bilingual, both first-class** ([ADR-0008](docs/adr/0008-bilingual-equal-status.md)): English and Chinese are peers,
   maintained in the same PR. Chinese mirror: [README.zh-CN.md](README.zh-CN.md).

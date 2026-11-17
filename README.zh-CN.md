@@ -3,7 +3,7 @@
 一套**指导性规范**：当 agent 参与一个 GitHub 仓库的开发时，这个仓库该长什么样——需要哪些文档、怎么布局、
 每份文件怎么写、agent 该怎么用、以及 agent 提交换多时该怎么管。
 
-- **只有文档。** 没有检查器、没有脚本、没有 CI 门禁、没有依赖清单——见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)。
+- **只有文档，没有规则引擎。** 没有检查器、没有生成器、没有依赖清单；唯一的自动化是 [`.github/workflows/docs.yml`](.github/workflows/docs.yml) 里的两个必需检查（链接检查 / 双语配对），它们只校验**文档自身**的一致性，不校验规则——见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)。
 - **不要求任何语言、工具或运行时。** 你读它、复制模板、对着清单逐条比对就行。
 - **中英平权**（[ADR-0008](docs/adr/0008-bilingual-equal-status.md)）：两版地位相同，同一 PR 内同步维护。
   英文版：[README.md](README.md)

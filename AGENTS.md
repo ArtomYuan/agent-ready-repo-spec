@@ -6,7 +6,7 @@
 
 一个**纯规范文档库**：讲清楚"一个 agent 参与的 GitHub 仓库该长什么样、文档该怎么写、agent 参与时该怎么管理"。
 
-- **不含任何可执行物**：没有检查器、没有脚本、没有 CI 校验、没有包管理器清单。见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)。
+- **不含规则引擎**：没有检查器、没有生成器、没有包管理器清单。唯一的自动化是平台自带的两个必需检查（链接检查 / 双语配对，见 [`.github/workflows/docs.yml`](.github/workflows/docs.yml)），它们只校验文档自身的一致性，**不校验规则**。见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)。
 - **不绑定任何语言或工具**：不默认读者用 Claude、Codex 或 Cursor，也不要求读者装任何运行时。
 - 使用者做的是：读文档 → 复制模板 → 对着 [spec/checklist.md](spec/checklist.md) 逐条比对。
 
@@ -25,8 +25,8 @@
   改内容必须在**同一个 PR** 内同步两边；只改一侧视为未完成。冲突时以**证据**裁定，不以语言裁定。
 - **不翻译**：规则 ID（`R0xx`）、文件路径、命令、模板占位符。
 - **文档里的路径必须真实存在**——读者会顺着点。
-- **不要引入可执行物**：不加 `.ps1`/`.js`/`.py`、不加 `package.json`/`requirements.txt`、不加 workflow 校验。
-  需要自动化的人应当另建仓库消费本清单。
+- **不要引入可执行物或规则校验**：不加 `.ps1`/`.js`/`.py`、不加 `package.json`/`requirements.txt`、不加**校验规则（checklist）** 的 workflow。
+  `docs.yml` 只校验文档自身（链接、双语配对），不在禁区之列。需要自动化的人应当另建仓库消费本清单。
 - 提交信息用 Conventional Commits，scope 取 `guide` / `spec` / `templates` / `docs`。
 
 ## 禁区
