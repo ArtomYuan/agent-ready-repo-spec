@@ -23,7 +23,7 @@
 - [ ] `spec/checklist.md` 是规则唯一改动源（没有第二份清单）
 - [ ] 中英两版在同一 PR 内同步（[ADR-0008](../docs/adr/0008-bilingual-equal-status.md)）
 - [ ] `CHANGELOG.md` 已更新；判据变化已升 `specVersion`
-- [ ] 没有引入可执行物（脚本 / 依赖清单 / workflow 校验）
+- [ ] 没有引入可执行物或规则校验（脚本 / 依赖清单 / 对 `checklist.md` 的机器校验；`docs.yml` 的文档一致性检查不在此列）
 - [ ] 文档里的路径都存在
 
 ## 需要 reviewer 特别看的地方

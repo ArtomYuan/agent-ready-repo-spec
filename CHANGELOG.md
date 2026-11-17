@@ -19,11 +19,23 @@
   bot noreply 邮箱改用 `{{BOT_USER_ID}}`；自检项不再写死"五个检查"。
 - `guide/04-Agent怎么用.md`：补回英文版缺失的「7. Sources」整节，中英标题数恢复一致。
 - 计数与引用：`README.md` 36→37；`AGENTS.md` 七章→八章；`guide/01` 与
-  `docs/evidence/2026-11-17-repo-sampling.md` 的根 LogDo 比例 4/10→3/10；
+  `docs/evidence/2026-11-17-repo-sampling.md` 的根 `CHANGELOG.md` 比例 4/10→3/10；
   `guide/README` 去掉 `check.kind`、`rules/`、`checker/` 残留引用；`guide/06.zh-CN.md` 第 3 节子编号 2.x→3.x；
   `guide/02.zh-CN.md` 改链中文版 01 章；`bug.yml` 占位版本 1.3.0→1.4.0。
 - `guide/05.zh-CN.md`：admin 强制状态改为"已开启"（原句引用的是已被 ADR-0004 取代的 ADR-0003）；
   `guide/07.zh-CN.md`：`bypass_actors` 与 `administration` 权限不再混为一谈。
+
+### Changed —— 口径统一：没有规则引擎，只有文档一致性检查
+
+- `README.md` / `README.zh-CN.md` / `AGENTS.md` / `CONTRIBUTING.md` / `.github/PULL_REQUEST_TEMPLATE.md`：
+  "没有 CI 门禁 / 没有 CI 校验 / 不加 workflow 校验"统一改为"**没有规则引擎**，只保留 `docs.yml` 的链接检查与双语配对，
+  它们校验文档自身、不校验规则"。
+- 理由：旧表述与本库现状矛盾（`docs.yml` 就是必需检查），且会诱导 agent 把 `docs.yml` 当作违规物删掉——
+  那正好复现 ADR-0010 的必需检查自锁。ADR-0009 早已留出"平台自带必需检查"的口子，此处只是把口径补齐。
+- `guide/00`：中文版"未采用项"改为"对 `checklist.md` 的机器校验 + agent 权限基线"；
+  英文版原有的"未采用 approvals ≥ 1"与 `guide/07` §8 记录的 ruleset 冲突，一并修正。
+- 两版都补了一行 `CODEOWNERS 目前不生效`（ruleset 未开 `Require review from Code Owners`）——此前只有英文版有。
+- `guide/README.{md,.zh-CN.md}`：去掉对已删除目录 `rules/`、`checker/` 的引用。
 
 ## [1.4.0] - 2026-11-18
 

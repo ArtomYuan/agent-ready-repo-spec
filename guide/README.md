@@ -14,7 +14,7 @@ It answers six questions:
 5. How an agent should be used on the repository, and how to govern it when agents write many of the commits
 6. Where state and to-dos live when sessions or agents change
 
-`rules/`, `checker/` and `templates/` are supporting tools and samples — **they do not decide for you and do not act for you**.
+`templates/` holds samples only — **it does not decide for you and does not act for you**; this library ships no checker ([ADR-0009](../docs/adr/0009-spec-only-no-tooling.md)).
 
 ## Chapters
 

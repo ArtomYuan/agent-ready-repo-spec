@@ -12,7 +12,7 @@
 **不接受**：
 
 - 为了让某个仓库"过关"而放宽判据；
-- 给这个库加入可执行物（脚本、依赖清单、CI 校验）——见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)；
+- 给这个库加入可执行物或规则校验（脚本、依赖清单、对 `checklist.md` 的机器校验）——见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)；
 - 只改中文或只改英文（两版必须同一 PR 内同步，见 [ADR-0008](docs/adr/0008-bilingual-equal-status.md)）。
 
 ## 分支与提交
