@@ -61,7 +61,7 @@
 
 **改 job 名之前必须看这里**：ruleset 存的是**字符串**，删掉或改名，那一项就永远
 `Expected — Waiting for status to be reported`，main 从此不可合并。
-正确顺序是先加新名 job → 改 ruleset → 下个 PR 删旧 job。详见 [guide/05 附录](guide/05-Agent参与怎么管理.md)。
+正确顺序是先加新名 job → 改 ruleset → 下个 PR 删旧 job。详见 [guide/05 附录](guide/05-Agent参与怎么管理.md)；真实事故复盘见 [ADR-0010](docs/adr/0010-required-checks-self-lock.md)。
 
 ## 拿不准时
 
