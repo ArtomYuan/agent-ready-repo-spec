@@ -283,11 +283,17 @@ Navigation only — the criteria themselves live in [spec/checklist.md](../spec/
 | `R011` | giving the governance surface its own owners — the first human gate on agent changes |
 | `R029` | keeping agent attribution, so "which commit came from a model" stays answerable |
 | `R041` | whose commit conventions win when the agent tool ships its own |
+| `R044` | why the governance files need their own owner, and why an agent must not edit them |
+| `R048` | declaring agent participation at the PR level, alongside the commit-level trailer |
+| `R049` | keeping an agent's change individually revertable |
 | `R050` | commit history as the one piece of evidence that cannot be written after the fact |
+| `R060` | the gates themselves: required PR, required checks, no admin bypass |
+| `R062` | the blast radius of whatever credential the agent is holding |
 
-> **Not a rule yet — and it should be.** The gates this chapter argues for (required PR, required checks, no admin
-> bypass, revert path) are all *structural*, i.e. verifiable, so they belong in the checklist. They are not there.
-> That is a coverage gap, not a decision to leave them out; see [guide/07](07-该开哪些设置.md) and the incident in
-> [ADR-0010](../docs/adr/0010-required-checks-self-lock.md).
+> **This used to be a coverage gap; `1.5.0` closed it.** The gates this chapter argues for were always *structural* —
+> verifiable, therefore checklist material — but had no rule ID. They do now: `R060` (protection), `R043`
+> (required-check names, see [guide/07](07-该开哪些设置.md)), `R044` (code owners), `R049` (revert path).
+> Why they stopped at `should`, and what that costs, is recorded in
+> [ADR-0011](../docs/adr/0011-github-management-rules.md).
 
 Evidence: [docs/evidence/2026-11-17-protection-probe.md](../docs/evidence/2026-11-17-protection-probe.md).

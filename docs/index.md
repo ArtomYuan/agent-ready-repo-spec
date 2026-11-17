@@ -29,6 +29,7 @@
 | 为什么这个库只有文档、不含可执行物 | [adr/0009-spec-only-no-tooling.md](adr/0009-spec-only-no-tooling.md) |
 | 为什么全部变更必须走 PR | [adr/0004-all-changes-via-pr.md](adr/0004-all-changes-via-pr.md) |
 | 必需检查自锁的真实事故与恢复步骤 | [adr/0010-required-checks-self-lock.md](adr/0010-required-checks-self-lock.md) |
+| 为什么把"GitHub 管理面"提升成可判定条目（`R043`、`R060`–`R063`） | [adr/0011-github-management-rules.md](adr/0011-github-management-rules.md) |
 | 中英两版谁是事实源 | [adr/0008-bilingual-equal-status.md](adr/0008-bilingual-equal-status.md) |
 | **证据与实测数据** | [evidence/](evidence/)（按采集日期命名：仓库采样、本仓库自审、官方文档摘录、分支保护实测） |
 
