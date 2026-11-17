@@ -16,4 +16,8 @@
 *.zip   binary
 *.gz    binary
 
-# 生成物：在 PR 里折叠，减少噪音
+# 本库是纯文档库（ADR-0009）：没有可执行物，所以语言统计条不该把它读成代码项目。
+# 不标的话，templates/ 下 8 个 *.tmpl 会被 linguist 认成 Go Template，仓库首页就显示"Go Template"。
+*.md    linguist-documentation
+*.tmpl  linguist-documentation
+*.yml   linguist-documentation
