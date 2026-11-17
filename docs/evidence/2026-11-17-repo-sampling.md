@@ -24,7 +24,7 @@
 | modelcontextprotocol/servers | ✅ | ✅ | ✅ | ✅ | ✅ | — | `docs/` | ✅ | ✅ | — |
 | sindresorhus/got | ✅ | ✅ | — | — | — | — | `documentation/` | ✅ | — | — |
 
-**汇总**：README 10/10、LICENSE 10/10、`.github/` 10/10、根目录 CONTRIBUTING 6/10、CoC 4/10、SECURITY 4/10、根 CHANGELOG 4/10、`AGENTS.md` **6/10**、`CLAUDE.md` **1/10**（唯一一个是 Anthropic 自家仓库）。
+**汇总**：README 10/10、LICENSE 10/10、`.github/` 10/10、根目录 CONTRIBUTING 6/10、CoC 3/10、SECURITY 3/10、根 CHANGELOG 3/10、`AGENTS.md` **6/10**、`CLAUDE.md` **1/10**（唯一一个是 Anthropic 自家仓库）。
 
 ## 2. 路线图 / 状态 / 发布
 

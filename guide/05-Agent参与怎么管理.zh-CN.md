@@ -45,7 +45,7 @@
 
 - 这一项决定了上面整张表在"赶时间"时还算不算数。绕过的动机通常不是恶意，而是"我急着发"——而 agent 让改动变便宜之后，这个动机出现得更频繁。
 - 例外可以存在，但要**被授权并被记录**：开 `Do not allow bypassing`，在 Rulesets 的 bypass list 里点名"谁可以在什么条件下绕过"，并把"为什么允许"写进 ADR。**"视团队"不是一种设置，是一种遗忘。**
-- 本仓库当前未开启 admin 强制，理由与代价记在 `docs/adr/0003-why-this-repo-delays-admin-enforcement.md`——**规范允许例外，但要求例外被写下来。**
+- 本仓库**已开启** admin 强制（`enforce_admins = true`，见 [ADR-0004](../docs/adr/0004-all-changes-via-pr.md) 与 [分支保护实测](../docs/evidence/2026-11-17-protection-probe.md)）；破窗流程要写成"谁能改 ruleset + 最短恢复路径"，见 [ADR-0010](../docs/adr/0010-required-checks-self-lock.md)——**规范允许例外，但要求例外被写下来。**
 
 ### 1.2 治理面单独设 owner
 

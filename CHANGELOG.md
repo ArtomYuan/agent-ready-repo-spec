@@ -6,7 +6,24 @@
 
 ## [Unreleased]
 
-（下一批改动写这里）
+### Fixed —— 渲染、失效落点与双语漂移
+
+- 修掉 **10 处字面 `` `n `` 转义残留**（`CHANGELOG.md`、`docs/index.md`、`guide/README.md`、`guide/README.zh-CN.md`）：
+  列表项与表格行曾被拼进上一行，页面上是乱码。
+- `examples/small-repo/CONTRIBUTING.md`、`examples/medium-repo/CONTRIBUTING.md`：删掉 2 个 `0x0C` 控制字符，
+  分支名此前渲染成 `eat/<slug>`、`ix/<slug>`。
+- `templates/adoption.md.tmpl`、`guide/00`：采用记录的"落点"不再指向已删除的 `spec-check.ps1` / `-Level`。
+- `templates/settings.json.tmpl`：deny 补 `Edit(./AGENTS.md)`、`Edit(./CLAUDE.md)`——治理面此前可被 agent 直接改。
+- `templates/AGENTS.md.tmpl`：补「语言约定」一节（`R042` 的唯一落点）；`[README.md](README.md)` 改纯文本，不再被判为断链。
+- `templates/prompt-github-app-git.md.tmpl`：`iss` 放宽为 App ID / Client ID（官方推荐 Client ID）；`GH_TOKEN` 只对 `gh` 生效；
+  bot noreply 邮箱改用 `{{BOT_USER_ID}}`；自检项不再写死"五个检查"。
+- `guide/04-Agent怎么用.md`：补回英文版缺失的「7. Sources」整节，中英标题数恢复一致。
+- 计数与引用：`README.md` 36→37；`AGENTS.md` 七章→八章；`guide/01` 与
+  `docs/evidence/2026-11-17-repo-sampling.md` 的根 LogDo 比例 4/10→3/10；
+  `guide/README` 去掉 `check.kind`、`rules/`、`checker/` 残留引用；`guide/06.zh-CN.md` 第 3 节子编号 2.x→3.x；
+  `guide/02.zh-CN.md` 改链中文版 01 章；`bug.yml` 占位版本 1.3.0→1.4.0。
+- `guide/05.zh-CN.md`：admin 强制状态改为"已开启"（原句引用的是已被 ADR-0004 取代的 ADR-0003）；
+  `guide/07.zh-CN.md`：`bypass_actors` 与 `administration` 权限不再混为一谈。
 
 ## [1.4.0] - 2026-11-18
 
@@ -26,7 +43,11 @@
   可直接粘给 agent 的提示词模板——凭证、JWT 硬规则（`iss` 用数字 App ID、UTC 时间戳）、
   git 身份两种方案（含 `GH007`）、联合署名、分支与 PR 四步、报错对照表、交付前自检。
 
-- **`R042`（L3 · may）：AGENTS.md 声明输出语言**——agent 的语言默认跟着代码注释或上次输出走，不声明就会出现两种语言；它管的是"有没有声明"，不是"声明成什么语言"，因无真实事故支撑只到 `may`。`n- **[examples/](examples/README.md)**：两份填好的对照样本（`small-repo` 路由型 ~9 行、`medium-repo` 约束+命令+验证+自动化地图），每节标注取自哪个真实仓库；显式把 `Co-authored-by` 与文件语言两处分歧摆出来让使用者选。`n- **[guide/07-该开哪些设置](guide/07-该开哪些设置.md)**（中英两版）：合并方式、ruleset 九条、谁能绕过、Actions 默认值、安全项，以及"必需检查写错名字会锁死 main"那条；末节诚实记录本仓库自己**尚未核实**的项。`n- **[docs/evidence/2026-11-18-agent-docs-sampling.md](docs/evidence/2026-11-18-agent-docs-sampling.md)**：12 个高星仓库的 agent 指令文件采样（四种形态、两处与本规范冲突的做法）。`n- **[templates/prompt-locale.md.tmpl](templates/prompt-locale.md.tmpl)**：让 agent 按使用者母语工作的提示词片段，
+- **`R042`（L3 · may）：AGENTS.md 声明输出语言**——agent 的语言默认跟着代码注释或上次输出走，不声明就会出现两种语言；它管的是"有没有声明"，不是"声明成什么语言"，因无真实事故支撑只到 `may`。
+- **[examples/](examples/README.md)**：两份填好的对照样本（`small-repo` 路由型 ~9 行、`medium-repo` 约束+命令+验证+自动化地图），每节标注取自哪个真实仓库；显式把 `Co-authored-by` 与文件语言两处分歧摆出来让使用者选。
+- **[guide/07-该开哪些设置](guide/07-该开哪些设置.md)**（中英两版）：合并方式、ruleset 九条、谁能绕过、Actions 默认值、安全项，以及"必需检查写错名字会锁死 main"那条；末节诚实记录本仓库自己**尚未核实**的项。
+- **[docs/evidence/2026-11-18-agent-docs-sampling.md](docs/evidence/2026-11-18-agent-docs-sampling.md)**：12 个高星仓库的 agent 指令文件采样（四种形态、两处与本规范冲突的做法）。
+- **[templates/prompt-locale.md.tmpl](templates/prompt-locale.md.tmpl)**：让 agent 按使用者母语工作的提示词片段，
   含"不翻译清单"（规则 ID / 路径 / 命令 / 标识符）与译文冲突时的处置。
 - `guide/03` 的 `AGENTS.md` 骨架从六节扩为七节，新增「语言约定」一节（中英两版同步）。
 

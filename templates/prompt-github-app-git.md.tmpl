@@ -20,14 +20,14 @@
 
 ## 2. 换取 Token 的硬规则
 
-1. JWT 的 `iss` 必须是**数字型 App ID**，**严禁用 Client ID**（Client ID 是 OAuth 网页授权用的，拿来换 installation token 一律 401）。
+1. JWT 的 `iss` 填 **App ID 或 Client ID 均可**（GitHub 现行文档推荐 Client ID）——401 通常不是 `iss` 的锅：先查 `iat`/`exp` 的时区、私钥与 App 是否配对、App 是否已安装到目标仓库。
 2. 时间戳必须是 **UTC 秒级、10 位整数**：`iat = now - 60`，`exp = now + 540`（有效期不超过 10 分钟）。
    **算 epoch 必须用 UTC**，不要用"本地时间的两个 datetime 相减"。真实踩过的坑：某次把
    `([datetime]'1970-01-01T00:00:00Z')` 当本地时间相减，漏掉时区偏移，epoch 整整差 8 小时，
    `iat` 落在 8 小时前 → GitHub 返回 `401 Bad credentials`，而签名本身完全正确。
    **教训**：签名对不对、时间在不在窗口内，是两件独立的检查。
 3. 用 JWT 调 `POST /app/installations/{{INSTALLATION_ID}}/access_tokens` 换 installation token，给它设环境变量 `GH_TOKEN`
-   （GitHub CLI 与 git credential 都认这个变量）。
+   （`gh` 认它；**原生 git 不认**——git 侧用下一条的 `http.extraheader`，或先跑一次 `gh auth setup-git`）。
 4. **token 只活 1 小时**：每个任务开始前重换一次，不要复用上一次的。
 5. **绝不能把 token 拼进 remote URL**（会明文落到 `.git/config`）。用一次性的 header：
    `git -c "http.extraheader=AUTHORIZATION: basic <base64('x-access-token:'+$GH_TOKEN)>" push ...`
@@ -40,7 +40,7 @@
 
 ```
 git config user.name  "{{APP_NAME}}[bot]"
-git config user.email "{{APP_ID}}+{{APP_NAME}}[bot]@users.noreply.github.com"
+git config user.email "{{BOT_USER_ID}}+{{APP_NAME}}[bot]@users.noreply.github.com"
 ```
 
 **方案 B —— 未开启隐私保护**
@@ -50,6 +50,7 @@ git config user.name  "{{APP_NAME}}[bot]"
 git config user.email "{{REAL_EMAIL}}"
 ```
 
+> `{{BOT_USER_ID}}` 是 bot **用户**的数字 id（`GET /users/{{APP_NAME}}[bot]` 取 `id`），**不是 App ID**；两者不同，填错只会得到一个"看起来对"的邮箱。
 > 判断依据：向开启了邮箱隐私保护的账号仓库 push 时，用真实邮箱会被拒并报 **GH007**。
 > 拿不准就用方案 A——noreply 邮箱在任何设置下都成立。
 
@@ -103,7 +104,7 @@ git config core.quotepath false    # 中文文件名不显示成 \xxx
 
 | 现象 | 原因 | 处理 |
 |---|---|---|
-| `401 Bad credentials`，JWT 刚生成就失败 | `iat`/`exp` 算错（时区），或 `iss` 用了 Client ID | 用 UTC 秒；`iss` 用数字 App ID |
+| `401 Bad credentials`，JWT 刚生成就失败 | `iat`/`exp` 算错（时区），或私钥与 App 不配对、App 未安装到该仓库 | 用 UTC 秒；核对私钥指纹与安装关系 |
 | `401` 但仓库能读 | 拿 installation token 去调 `GET /user` | 显式给 owner，别依赖 `/user` |
 | `push` 报 `GH007` | 账号开了邮箱隐私保护，却用了真实邮箱 | 改用方案 A 的 noreply 邮箱 |
 | `405 New changes require approval from someone other than the last pusher` | 仓库 ruleset/分支保护要求"非最后推送者批准" | 请人类批准；不要绕过 |
@@ -117,7 +118,7 @@ git config core.quotepath false    # 中文文件名不显示成 \xxx
 - [ ] `git log -1 --format='%an <%ae>'` 显示的是 `{{APP_NAME}}[bot]`？
 - [ ] 提交正文里有 `Co-authored-by:`（如果第 4 节保留了）？
 - [ ] PR 的 `base` = `{{BASE_BRANCH}}`、`assignee` = `{{USER}}`、正文含纯文本 `@{{USER}}`？
-- [ ] CI 五个检查列出名字与结论，而不是"应该能过"？
+- [ ] 把 ruleset 要求的每个必需检查都列出名字与结论（数量随仓库变），而不是"应该能过"？
 - [ ] 合并被挡住时，说清"卡在哪条规则、需要谁批准"？
 
 ---
@@ -132,6 +133,7 @@ git config core.quotepath false    # 中文文件名不显示成 \xxx
 | `{{APP_NAME}}` | App 名（决定 bot 显示名） | `KujiraAgent` |
 | `{{USER}}` | 人类账号（署名 + assignee + PR 正文 @） | `ArtomYuan` |
 | `{{USER_ID}}` | 人类账号数字 ID（拼 noreply 邮箱用） | `8846758` |
+| `{{BOT_USER_ID}}` | bot 用户的数字 id（拼 noreply 邮箱用，非 App ID） | `250000000` |
 | `{{REAL_EMAIL}}` | 未开隐私保护时的真实邮箱 | `you@example.com` |
 | `{{TARGET_ACCOUNT}}` | 目标仓库所属账号 | `ArtomYuan` |
 | `{{BASE_BRANCH}}` | 目标主干 | `main` |

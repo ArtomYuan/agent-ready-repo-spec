@@ -31,17 +31,19 @@ It answers six questions:
 
 > **Both languages are first-class** (ADR-0008): every chapter exists in English and in Chinese, maintained in the same PR. Neither is a "mirror".
 > The order and rules are in [ADR-0007](../docs/adr/0007-bilingual-default-english.md).
-> Rule IDs, `check.kind` values and file paths are never translated.
+> Rule IDs, file paths, commands and template placeholders are never translated.
 
 ## How to read
 
-- **Want to see a finished file, not a skeleton** → [examples/](../examples/README.md)（两份对照：路由型 / 分层型）`n- **First time adopting** → read **00**, decide the options, record them in your own repo, then continue.
+- **Want to see a finished file, not a skeleton** → [examples/](../examples/README.md)（两份对照：路由型 / 分层型）
+- **First time adopting** → read **00**, decide the options, record them in your own repo, then continue.
 - Just want to write one file correctly → read the matching section of **03**, follow the skeleton, then check yourself against the counter-examples.
 - Starting a repository → read 01 → 02 → 03.
 - Handing the repo to an agent → **04**; if agent commits are becoming common, **05**.
 - **Planning: where do scope, order and progress go** → **06** §1. **Releasing** → **06** §2.
 - **Switching sessions or agents** → **06** §3.
-- Want the switch list → [07 · Which settings to turn on](07-该开哪些设置.md).`n- Want to know what is missing → walk [spec/checklist.md](../spec/checklist.md). It reports facts; it does **not** grade your chosen tier.
+- Want the switch list → [07 · Which settings to turn on](07-该开哪些设置.md).
+- Want to know what is missing → walk [spec/checklist.md](../spec/checklist.md). It reports facts; it does **not** grade your chosen tier.
 
 ## One criterion that runs through everything
 
