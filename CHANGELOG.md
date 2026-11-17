@@ -15,6 +15,11 @@
 - **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
 
+- **`templates/prompt-github-app-git.md.tmpl`**：可直接粘给 agent 的提示词模板——凭证、JWT 硬规则
+  （`iss` 用数字 App ID、UTC 时间戳）、git 身份两种方案（含 GH007）、联合署名、分支/PR 四步、
+  报错对照表、交付前自检。
+- 发布方式调整为 **App + git + gh 为主、纯 API 为兜底**：有 git 就用 git，过程才在 `git log` 里留痕。
+
 - **`tools/gh-app-token.ps1`**：用 GitHub App 私钥换 installation token，不依赖 git/gh/node/openssl
   （PKCS#1 → PKCS#8 → CNG → RS256 → JWT）。`publish-pr.ps1` 新增 `-AppId` / `-InstallationId` / `-PrivateKeyPath`，
   不再依赖 PAT；提交自动带 `Co-authored-by`，PR 自动 `cc @` + 设 assignee。
@@ -31,6 +36,11 @@
 - `v1` 是**移动 tag**，跟随最新的 v1.x；生产环境请固定 commit SHA（见 [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) 与 ADR-0006）。
 - **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
+
+- **`templates/prompt-github-app-git.md.tmpl`**：可直接粘给 agent 的提示词模板——凭证、JWT 硬规则
+  （`iss` 用数字 App ID、UTC 时间戳）、git 身份两种方案（含 GH007）、联合署名、分支/PR 四步、
+  报错对照表、交付前自检。
+- 发布方式调整为 **App + git + gh 为主、纯 API 为兜底**：有 git 就用 git，过程才在 `git log` 里留痕。
 
 - **`tools/gh-app-token.ps1`**：用 GitHub App 私钥换 installation token，不依赖 git/gh/node/openssl
   （PKCS#1 → PKCS#8 → CNG → RS256 → JWT）。`publish-pr.ps1` 新增 `-AppId` / `-InstallationId` / `-PrivateKeyPath`，
@@ -77,6 +87,11 @@
 - **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
 
+- **`templates/prompt-github-app-git.md.tmpl`**：可直接粘给 agent 的提示词模板——凭证、JWT 硬规则
+  （`iss` 用数字 App ID、UTC 时间戳）、git 身份两种方案（含 GH007）、联合署名、分支/PR 四步、
+  报错对照表、交付前自检。
+- 发布方式调整为 **App + git + gh 为主、纯 API 为兜底**：有 git 就用 git，过程才在 `git log` 里留痕。
+
 - **`tools/gh-app-token.ps1`**：用 GitHub App 私钥换 installation token，不依赖 git/gh/node/openssl
   （PKCS#1 → PKCS#8 → CNG → RS256 → JWT）。`publish-pr.ps1` 新增 `-AppId` / `-InstallationId` / `-PrivateKeyPath`，
   不再依赖 PAT；提交自动带 `Co-authored-by`，PR 自动 `cc @` + 设 assignee。
@@ -106,6 +121,11 @@
 - **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
 
+- **`templates/prompt-github-app-git.md.tmpl`**：可直接粘给 agent 的提示词模板——凭证、JWT 硬规则
+  （`iss` 用数字 App ID、UTC 时间戳）、git 身份两种方案（含 GH007）、联合署名、分支/PR 四步、
+  报错对照表、交付前自检。
+- 发布方式调整为 **App + git + gh 为主、纯 API 为兜底**：有 git 就用 git，过程才在 `git log` 里留痕。
+
 - **`tools/gh-app-token.ps1`**：用 GitHub App 私钥换 installation token，不依赖 git/gh/node/openssl
   （PKCS#1 → PKCS#8 → CNG → RS256 → JWT）。`publish-pr.ps1` 新增 `-AppId` / `-InstallationId` / `-PrivateKeyPath`，
   不再依赖 PAT；提交自动带 `Co-authored-by`，PR 自动 `cc @` + 设 assignee。
@@ -130,6 +150,11 @@
 - `v1` 是**移动 tag**，跟随最新的 v1.x；生产环境请固定 commit SHA（见 [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) 与 ADR-0006）。
 - **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
+
+- **`templates/prompt-github-app-git.md.tmpl`**：可直接粘给 agent 的提示词模板——凭证、JWT 硬规则
+  （`iss` 用数字 App ID、UTC 时间戳）、git 身份两种方案（含 GH007）、联合署名、分支/PR 四步、
+  报错对照表、交付前自检。
+- 发布方式调整为 **App + git + gh 为主、纯 API 为兜底**：有 git 就用 git，过程才在 `git log` 里留痕。
 
 - **`tools/gh-app-token.ps1`**：用 GitHub App 私钥换 installation token，不依赖 git/gh/node/openssl
   （PKCS#1 → PKCS#8 → CNG → RS256 → JWT）。`publish-pr.ps1` 新增 `-AppId` / `-InstallationId` / `-PrivateKeyPath`，
@@ -165,6 +190,11 @@
 - `v1` 是**移动 tag**，跟随最新的 v1.x；生产环境请固定 commit SHA（见 [docs/guides/use-in-ci.md](docs/guides/use-in-ci.md) 与 ADR-0006）。
 - **inputs 改名属于破坏性变更**：会同时影响 `v1` 用户，必须升 major 并另起 `v2` tag。
 ### Added
+
+- **`templates/prompt-github-app-git.md.tmpl`**：可直接粘给 agent 的提示词模板——凭证、JWT 硬规则
+  （`iss` 用数字 App ID、UTC 时间戳）、git 身份两种方案（含 GH007）、联合署名、分支/PR 四步、
+  报错对照表、交付前自检。
+- 发布方式调整为 **App + git + gh 为主、纯 API 为兜底**：有 git 就用 git，过程才在 `git log` 里留痕。
 
 - **`tools/gh-app-token.ps1`**：用 GitHub App 私钥换 installation token，不依赖 git/gh/node/openssl
   （PKCS#1 → PKCS#8 → CNG → RS256 → JWT）。`publish-pr.ps1` 新增 `-AppId` / `-InstallationId` / `-PrivateKeyPath`，

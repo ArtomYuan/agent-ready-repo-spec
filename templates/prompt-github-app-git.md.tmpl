@@ -1,0 +1,139 @@
+# GitHub App + Git + 分支/PR 操作提示词模板
+
+> **怎么用**：复制本文件 → 替换所有 `{{...}}` → 整段粘给 agent（Claude Code / Codex / Cursor 等）。
+> 带 `{{}}` 的是必填，带 `[]` 的是按需保留、不要就删掉整段。
+>
+> **为什么把 Git 放在正文里**：App token 只是"能推"，**流程要靠 git 落地**——
+> 分支、作者、联合署名、PR 正文，这些都在 git/gh 这一层才看得见。纯 API 发布能走通，但留痕弱、reviewer 看不见过程。
+> 相关章节：[guide/05](../guide/05-Agent参与怎么管理.md)、[guide/06](../guide/06-信息该放哪.md)、
+> token 工具 [tools/gh-app-token.ps1](../tools/gh-app-token.ps1)。
+
+---
+
+## 加载后请先回一句"配置就绪"，然后等待任务，不要自行开工
+
+## 1. 凭证（只用于换 token，不要写进任何文件或命令历史）
+
+- App 私钥路径：`{{PRIVATE_KEY_PATH}}`
+- GitHub App ID：`{{APP_ID}}`（**纯数字**，例 `5791552`）
+- Installation ID：`{{INSTALLATION_ID}}`（例 `182732500`）
+
+## 2. 换取 Token 的硬规则
+
+1. JWT 的 `iss` 必须是**数字型 App ID**，**严禁用 Client ID**（Client ID 是 OAuth 网页授权用的，拿来换 installation token 一律 401）。
+2. 时间戳必须是 **UTC 秒级、10 位整数**：`iat = now - 60`，`exp = now + 540`（有效期不超过 10 分钟）。
+   **算 epoch 必须用 UTC**。踩过的坑：`New-TimeSpan -Start ([datetime]'1970-01-01T00:00:00Z')` 里那个字面量 `Kind=Local`，
+   相减漏掉时区偏移，epoch 整整差 8 小时，`iat` 落在 8 小时前 → GitHub 返回 `401 Bad credentials`。
+   正确写法：`[int][DateTimeOffset]::UtcNow.ToUnixTimeSeconds()`。
+3. 用 JWT 调 `POST /app/installations/{{INSTALLATION_ID}}/access_tokens` 换 installation token，给它设环境变量 `GH_TOKEN`
+   （GitHub CLI 与 git credential 都认这个变量）。
+4. **token 只活 1 小时**：每个任务开始前重换一次，不要复用上一次的。
+5. **绝不能把 token 拼进 remote URL**（会明文落到 `.git/config`）。用一次性的 header：
+   `git -c "http.extraheader=AUTHORIZATION: basic <base64('x-access-token:'+$GH_TOKEN)>" push ...`
+
+## 3. Git 身份（配错会在 push 时报 GH007）
+
+先确认 `{{TARGET_ACCOUNT}}` 是否开启了邮箱隐私保护，二选一：
+
+**方案 A —— 已开启隐私保护（推荐，也是默认选择）**
+
+```
+git config user.name  "{{APP_NAME}}[bot]"
+git config user.email "{{APP_ID}}+{{APP_NAME}}[bot]@users.noreply.github.com"
+```
+
+**方案 B —— 未开启隐私保护**
+
+```
+git config user.name  "{{APP_NAME}}[bot]"
+git config user.email "{{REAL_EMAIL}}"
+```
+
+> 判断依据：向开启了邮箱隐私保护的账号仓库 push 时，用真实邮箱会被拒并报 **GH007**。
+> 拿不准就用方案 A——noreply 邮箱在任何设置下都成立。
+
+还需要两条（本地环境差异，跟身份无关但会让 CI 变红）：
+
+```
+git config core.autocrlf false     # 仓库若有 LF 生成物，checkout 时被转 CRLF 会让"一致性检查"误报
+git config core.quotepath false    # 中文文件名不显示成 \xxx
+```
+
+## 4. 联合署名（可选：想计入个人贡献图才加）
+
+每次 `git commit` 的正文末尾原样加一行，**不要改写大小写、不要折行**：
+
+- 账号已开启隐私保护：`Co-authored-by: {{USER}} <{{USER_ID}}+{{USER}}@users.noreply.github.com>`
+- 账号未开启隐私保护：`Co-authored-by: {{USER}} <{{REAL_EMAIL}}>`
+
+不需要就整段删掉，**不要留半行**。
+
+## 5. 分支与 PR 操作流（固定，不得擅自更改）
+
+1. **建分支**：基于 `{{BASE_BRANCH}}` 拉特性分支，命名 `{{BRANCH_PREFIX}}/{{MMdd-HHmm}}-{{slug}}`
+   （`feat/` `fix/` `docs/` `chore/` 按改动性质选）。
+   **严禁直接向 `main` push**——分支保护会拒绝，硬推会毁掉历史。
+2. **提交**：`git add` → `git commit`，标题用 Conventional Commits（`feat(scope): ...`）；
+   **提交信息不要以大写缩写开头**（`PR xxx`、`API xxx` 会被 commitlint 判为 sentence-case 而失败）。
+3. **推送**：`git push` 特性分支（token 走 `http.extraheader`，见 2.5）。
+4. **建 PR**：必须用 `gh pr create`，三个参数缺一不可：
+
+   ```
+   gh pr create --title "{{PR_TITLE}}" --base {{BASE_BRANCH}} --assignee {{USER}} --body-file {{PR_BODY_FILE}}
+   ```
+
+   - `--base {{BASE_BRANCH}}`：锁定目标主干；
+   - `--assignee {{USER}}`：强制指派负责人；
+   - `--body-file {{PR_BODY_FILE}}`：正文走文件，避免 shell 转义把 `@` 吃掉。
+
+5. **PR 正文**必须包含**纯文本** `@{{USER}}`：不要加反斜杠转义、不要用引号包起来、不要改成 markdown 链接。
+   正文建议固定四段：改了什么 / **下一步** / 非目标 / 怎么验证的（见 [PR 模板](PULL_REQUEST_TEMPLATE.md.tmpl)）。
+
+## 6. 停下来问，而不是绕过去
+
+出现下面任一情况，**停手并报告**，不要自己找替代路径：
+
+- 目标分支不是预期的基分支，或同名分支已存在且不是你的；
+- PR 已开但 CI 变红：报告哪个 job、贴关键日志，**不要**为了让检查变绿去改 CI 或放宽规则；
+- 合并被规则挡下（见下表 405）：**agent 不是最终裁决者**，请求人类批准，不要申请提权、不要改 ruleset；
+- 需要改 `.github/workflows/`、`.claude/`、`AGENTS.md` 这类治理面：先问，不要顺手改。
+
+## 7. 报错对照表（都真实遇到过）
+
+| 现象 | 原因 | 处理 |
+|---|---|---|
+| `401 Bad credentials`，JWT 刚生成就失败 | `iat`/`exp` 算错（时区），或 `iss` 用了 Client ID | 用 UTC 秒；`iss` 用数字 App ID |
+| `401` 但仓库能读 | 拿 installation token 去调 `GET /user` | 显式给 owner，别依赖 `/user` |
+| `push` 报 `GH007` | 账号开了邮箱隐私保护，却用了真实邮箱 | 改用方案 A 的 noreply 邮箱 |
+| `405 New changes require approval from someone other than the last pusher` | 仓库 ruleset/分支保护要求"非最后推送者批准" | 请人类批准；不要绕过 |
+| PR 的 assignee 是空的 | `POST /pulls` 的 `assignees` 字段会被静默忽略 | 开完 PR 再 `POST /issues/{{number}}/assignees` |
+| `PATCH /repos/...` 返回 200 但设置没变 | App 缺 `administration` 权限，字段被静默忽略 | 改完再 `GET` 一次确认；否则请人手动改 |
+| commitlint 失败 | 标题以大写缩写开头 / 缺 type | `feat(scope): 中文或小写开头` |
+
+## 8. 交付前自检（逐条回答，不要只说"已完成"）
+
+- [ ] 分支名、基分支正确？`main` 上没有我的直接提交？
+- [ ] `git log -1 --format='%an <%ae>'` 显示的是 `{{APP_NAME}}[bot]`？
+- [ ] 提交正文里有 `Co-authored-by:`（如果第 4 节保留了）？
+- [ ] PR 的 `base` = `{{BASE_BRANCH}}`、`assignee` = `{{USER}}`、正文含纯文本 `@{{USER}}`？
+- [ ] CI 五个检查列出名字与结论，而不是"应该能过"？
+- [ ] 合并被挡住时，说清"卡在哪条规则、需要谁批准"？
+
+---
+
+## 替换清单
+
+| 占位符 | 含义 | 例 |
+|---|---|---|
+| `{{PRIVATE_KEY_PATH}}` | App 私钥 `.pem` 的绝对路径 | `/home/user/keys/app.pem` |
+| `{{APP_ID}}` | App ID（纯数字） | `5791552` |
+| `{{INSTALLATION_ID}}` | Installation ID | `182732500` |
+| `{{APP_NAME}}` | App 名（决定 bot 显示名） | `KujiraAgent` |
+| `{{USER}}` | 人类账号（署名 + assignee + PR 正文 @） | `ArtomYuan` |
+| `{{USER_ID}}` | 人类账号数字 ID（拼 noreply 邮箱用） | `8846758` |
+| `{{REAL_EMAIL}}` | 未开隐私保护时的真实邮箱 | `you@example.com` |
+| `{{TARGET_ACCOUNT}}` | 目标仓库所属账号 | `ArtomYuan` |
+| `{{BASE_BRANCH}}` | 目标主干 | `main` |
+| `{{BRANCH_PREFIX}}` | 分支前缀 | `feat` / `fix` / `docs` / `chore` |
+| `{{PR_TITLE}}` | PR 标题（Conventional Commits） | `docs: 补充发布说明` |
+| `{{PR_BODY_FILE}}` | PR 正文文件路径 | `.git/PR_BODY.md` |
