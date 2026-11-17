@@ -6,6 +6,19 @@
 
 ## [Unreleased]
 
+### Changed —— 仓库元数据改完了（不在 diff 里）
+
+- **About 描述换成英文**：`What an agent-ready GitHub repo should look like: a spec (L0–L3), an eight-chapter
+  guide, and templates. Documentation only — no checker, no executables.`
+  原来的中文描述还挂着"体检器"——那是 ADR-0009 删掉的东西。第一版里有 `48 rules`，已删：
+  条数随版本变化，写死它等于再埋一颗本库正在拆的雷。
+- **topics 从 8 个删到 4 个**：去掉 `powershell` / `code-quality` / `developer-tools`（本库既没有 PowerShell，
+  也不做代码质量检查），另去掉 `claude-code`——AGENTS.md 的禁区写着"不默认读者的 agent 工具"，
+  挂某个具体工具的 topic 等于替它背书。保留 `agent-governance` `agents-md` `ai-agents` `repository-spec`。
+- **顺手记一条 API 陷阱**：`PATCH /repos` 会**静默忽略** `topics` 字段——返回 200、`description` 生效、
+  `topics` 一个没变、没有任何报错。改 topics 必须走 `PUT /repos/{owner}/{repo}/topics`（字段名是 `names`）。
+  与 `POST /pulls` 静默忽略 `assignees` 同一类：**GitHub 回 2xx 不代表你传的字段都生效了。**
+
 ### Fixed —— 把"这一步改不了"的真正原因写对
 
 - `CHANGELOG.md` 1.5.0 节里那句"GitHub App 没有 Repository **metadata** 权限，`PATCH /repos` 返回 **422**，
@@ -136,9 +149,10 @@
   顺带删掉一条悬挂注释：`# 生成物：在 PR 里折叠` 下面已经没有规则（`spec/RULES.md` 随 ADR-0009 一起删了）。
 - **仓库元数据**（不在 diff 里，走 API 改）：About 描述去掉"体检器"（ADR-0009 已删）；
   topics 去掉 `powershell` / `code-quality` / `developer-tools`——本库既没有 PowerShell，也不做代码质量检查。
-  **未执行**：`PATCH /repos` 返回 `403 Resource not accessible by integration`——App 申请了 `administration`，
-  但 installation 没批准这次扩权，token 里根本没有这个 key。原因与恢复路径见
-  [证据](docs/evidence/2026-11-18-github-app-permission-propagation.md)。
+  **1.5.0 发布时未执行**：`PATCH /repos` 返回 `403 Resource not accessible by integration`——App 申请了 `administration`，
+  但 installation 没批准这次扩权，token 里根本没有这个 key。
+  **已于 2026-11-18 扩权批准后执行完成**：描述改为英文，topics 另删 `claude-code`（见 `[Unreleased]`）。
+  原因与恢复路径见 [证据](docs/evidence/2026-11-18-github-app-permission-propagation.md)。
 - **版本锚点**（不在 diff 里，走 API 建，**已完成**）：新增 tag `v1.4.0`（→ `7b66cc3`）与对应 Release；
   给 `v1` 补了 Release 页并标 *Superseded / 请勿使用*。
   此前唯一的 tag 是 `v1` → `d60c3cc`，即**含 `checker/` 与 `action.yml` 的旧树**（ADR-0009 之前的形态）；

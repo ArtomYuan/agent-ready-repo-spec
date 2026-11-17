@@ -66,7 +66,33 @@ installation 没批 `administration` 时，连"这个 token 在仓库里算不�
 2. 看不到申请项就**撤销安装再重装**（重装是最可靠的清零方式）。
 3. 批准后**重新签 token**，再回读 `token.permissions` 确认 `administration=write` 出现了，才动手改。
 
-## 5. 纠正本库自己写错的一句
+**已验证闭环（同日）**：在 `settings/installations → KujiraAgent → Configure` 批准扩权之后重新签 token，
+`installation.permissions` 与 `token.permissions` 两处**都出现了 `administration = write`**，
+`PATCH /repos` 改描述随即成功。所以本文件的结论是完整的：卡住的是**批准**，不是申请。
+
+## 5. 另一条静默失败：`PATCH /repos` 不认 `topics`
+
+同一次操作里踩到的，与权限无关：
+
+```
+PATCH /repos/{owner}/{repo}   { description: "...", topics: [ ... ] }
+→ 200 OK
+→ description 生效
+→ topics 一个都没变，也没有任何报错
+```
+
+改 topics 的正路是**另一个端点**，字段名也不同：
+
+```
+PUT /repos/{owner}/{repo}/topics   { "names": ["agent-governance", "..."] }
+→ 200，返回体里直接带 names
+```
+
+**规律**：GitHub 的写接口回 2xx 只说明"这个请求合法"，**不说明你传的字段都被接受了**。
+改完必须回读。同一类已知行为：`POST /pulls` 的 `assignees` 字段会被静默忽略，
+必须事后补 `POST /issues/{n}/assignees`。
+
+## 6. 纠正本库自己写错的一句
 
 `CHANGELOG.md` 的 1.5.0 节原来写着：
 
