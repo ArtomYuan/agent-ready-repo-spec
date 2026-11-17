@@ -276,10 +276,16 @@ required_status_checks 里的 context 列表  ⇄  当前 workflow 里实际存�
 | `R011` | 治理面单独设 owner——agent 改动的第一道人工闸门 |
 | `R029` | 保留 agent 归属，让"哪次提交是模型写的"始终可回答 |
 | `R041` | agent 工具自带一套提交指令时，以谁的为准 |
+| `R044` | 治理文件为什么要单独的 owner，以及为什么 agent 不能自己改 |
+| `R048` | 在 PR 层面声明 agent 参与，与提交层的 trailer 并列 |
+| `R049` | 让 agent 的改动能被单独 revert |
 | `R050` | 提交历史是唯一无法事后伪造的证据 |
+| `R060` | 门禁本身：必须 PR、必需检查、禁止 admin 绕过 |
+| `R062` | agent 手里那份凭证的爆炸半径 |
 
-> **还不是条目，但应该是。** 本章论证的那几道门（必须 PR、必需检查、禁止 admin 绕过、回滚路径）
-> 全是**结构性**事实、可判定，因此本该进 checklist，但现在没有。这是**覆盖缺口**，不是"决定不收"；
-> 见 [guide/07](07-该开哪些设置.zh-CN.md) 与 [ADR-0010](../docs/adr/0010-required-checks-self-lock.md) 里的真实事故。
+> **这里曾经是覆盖缺口，`1.5.0` 补上了。** 本章论证的那几道门一直是**结构性**事实、可判定，本该进 checklist，
+> 但当时没有条目。现在有了：`R060`（保护）、`R043`（必需检查名，见 [guide/07](07-该开哪些设置.zh-CN.md)）、
+> `R044`（code owners）、`R049`（回滚路径）。它们为什么只停在 `should`、代价是什么，记在
+> [ADR-0011](../docs/adr/0011-github-management-rules.md)。
 
 证据：[docs/evidence/2026-11-17-protection-probe.md](../docs/evidence/2026-11-17-protection-probe.md)。
