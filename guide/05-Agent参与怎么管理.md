@@ -270,6 +270,9 @@ The two must match one-to-one. One extra → pending forever
    [docs/evidence/2026-11-18-github-app-permission-propagation.md](../docs/evidence/2026-11-18-github-app-permission-propagation.md).
    So **check `token.permissions`, not the App's settings page**, and have the adoption record state who can edit the
    ruleset — otherwise nobody can undo a self-lock.
+   The same class of trap waits in the API you use to clean up: `PATCH /repos` **silently ignores** the `topics`
+   field (200 OK, nothing changed) — topics live behind `PUT /repos/{owner}/{repo}/topics`. **Read the value back**:
+   2xx only means the request was legal, not that every field you sent was accepted.
 
 **Break-glass (treat as `must` in any repository adopting this spec)**
 

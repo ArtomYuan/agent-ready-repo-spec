@@ -262,6 +262,8 @@ required_status_checks 里的 context 列表  ⇄  当前 workflow 里实际存�
    [docs/evidence/2026-11-18-github-app-permission-propagation.md](../docs/evidence/2026-11-18-github-app-permission-propagation.md)。
    所以：**查 `token.permissions`，别看 App 设置页的勾选**；并且采用记录里必须写清"谁能改 ruleset"，
    否则自锁之后没人能解。
+   同一类陷阱也埋伏在你用来善后的 API 上：`PATCH /repos` 会**静默忽略** `topics` 字段（返回 200、什么都没改），
+   topics 要走 `PUT /repos/{owner}/{repo}/topics`。**改完回读**——2xx 只代表请求合法，不代表你传的字段都被接受了。
 
 **破窗**（`must` 级，任何采用本规范的仓库都该写下来）：
 
