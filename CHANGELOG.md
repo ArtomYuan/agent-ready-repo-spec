@@ -6,6 +6,10 @@
 
 ## [Unreleased]
 
+（下一批改动写这里）
+
+## [1.4.0] - 2026-11-18
+
 ### Changed —— 这个库不再包含任何可执行物
 
 - **删除**：`checker/`（检查器与生成器）、`tests/`、`tools/`（发布与换 token 脚本）、`action.yml`、
@@ -16,13 +20,13 @@
 
 ### Added
 
-- **[spec/checklist.md](spec/checklist.md)**：36 条规则连同 `id / 级别 / 是否 must / 为什么 / 怎么改`，
+- **[spec/checklist.md](spec/checklist.md)**：37 条规则连同 `id / 级别 / 是否 must / 为什么 / 怎么改`（本版新增 `R042`），
   成为**规则唯一事实源**（人可读，任何语言都能据此自行实现工具）。
 - **[templates/prompt-github-app-git.md.tmpl](templates/prompt-github-app-git.md.tmpl)**：
   可直接粘给 agent 的提示词模板——凭证、JWT 硬规则（`iss` 用数字 App ID、UTC 时间戳）、
   git 身份两种方案（含 `GH007`）、联合署名、分支与 PR 四步、报错对照表、交付前自检。
 
-- **[examples/](examples/README.md)**：两份填好的对照样本（`small-repo` 路由型 ~9 行、`medium-repo` 约束+命令+验证+自动化地图），每节标注取自哪个真实仓库；显式把 `Co-authored-by` 与文件语言两处分歧摆出来让使用者选。`n- **[guide/07-该开哪些设置](guide/07-该开哪些设置.md)**（中英两版）：合并方式、ruleset 九条、谁能绕过、Actions 默认值、安全项，以及"必需检查写错名字会锁死 main"那条；末节诚实记录本仓库自己**尚未核实**的项。`n- **[docs/evidence/2026-11-18-agent-docs-sampling.md](docs/evidence/2026-11-18-agent-docs-sampling.md)**：12 个高星仓库的 agent 指令文件采样（四种形态、两处与本规范冲突的做法）。`n- **[templates/prompt-locale.md.tmpl](templates/prompt-locale.md.tmpl)**：让 agent 按使用者母语工作的提示词片段，
+- **`R042`（L3 · may）：AGENTS.md 声明输出语言**——agent 的语言默认跟着代码注释或上次输出走，不声明就会出现两种语言；它管的是"有没有声明"，不是"声明成什么语言"，因无真实事故支撑只到 `may`。`n- **[examples/](examples/README.md)**：两份填好的对照样本（`small-repo` 路由型 ~9 行、`medium-repo` 约束+命令+验证+自动化地图），每节标注取自哪个真实仓库；显式把 `Co-authored-by` 与文件语言两处分歧摆出来让使用者选。`n- **[guide/07-该开哪些设置](guide/07-该开哪些设置.md)**（中英两版）：合并方式、ruleset 九条、谁能绕过、Actions 默认值、安全项，以及"必需检查写错名字会锁死 main"那条；末节诚实记录本仓库自己**尚未核实**的项。`n- **[docs/evidence/2026-11-18-agent-docs-sampling.md](docs/evidence/2026-11-18-agent-docs-sampling.md)**：12 个高星仓库的 agent 指令文件采样（四种形态、两处与本规范冲突的做法）。`n- **[templates/prompt-locale.md.tmpl](templates/prompt-locale.md.tmpl)**：让 agent 按使用者母语工作的提示词片段，
   含"不翻译清单"（规则 ID / 路径 / 命令 / 标识符）与译文冲突时的处置。
 - `guide/03` 的 `AGENTS.md` 骨架从六节扩为七节，新增「语言约定」一节（中英两版同步）。
 

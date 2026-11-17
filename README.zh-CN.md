@@ -11,7 +11,7 @@
 ## 怎么用
 
 1. **读你要的那几章** —— 从 [guide/README.zh-CN.md](guide/README.zh-CN.md) 开始。
-2. **对着 [spec/checklist.md](spec/checklist.md) 过一遍** —— 36 条，按 L0–L3 分组。每条只问两件事：
+2. **对着 [spec/checklist.md](spec/checklist.md) 过一遍** —— 37 条，按 L0–L3 分组。每条只问两件事：
    *我们有吗 / 没有的话理由是什么*。**理由比勾选更重要。**
 3. **挑能用的模板复制过去** —— [templates/](templates/)：`AGENTS.md`、PR 模板、CODEOWNERS、ADR、采用记录。
 
@@ -21,7 +21,7 @@
 
 | 路径 | 内容 |
 |---|---|
-| [guide/](guide/README.zh-CN.md) | 七章：接入决策 · 该有什么文档 · 目录结构 · 每份文档怎么写 · agent 怎么用 · agent 参与怎么管理 · 信息该放哪 |
+| [guide/](guide/README.zh-CN.md) | 八章：接入决策 · 该有什么文档 · 目录结构 · 每份文档怎么写 · agent 怎么用 · agent 参与怎么管理 · 信息该放哪 · 该开哪些设置 |
 | [spec/](spec/README.md) | 怎么读这套规范：成熟度级别、严重度、版本策略 · **[checklist.md](spec/checklist.md)** · agent 的阅读顺序 |
 | [templates/](templates/) | 复制到你自己仓库的文件，含 `{{PLACEHOLDER}}` |
 | [docs/](docs/index.md) | ADR（每条决策为什么这么定）、十个真实仓库的实测证据、文档地图 |

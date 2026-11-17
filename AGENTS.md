@@ -13,7 +13,7 @@
 ## 目录地图
 
 - `guide/` — 指导正文，七章 + 索引。**每章都有中英两版**（`xxx.md` 与 `xxx.zh-CN.md`）。
-- `spec/` — 规范骨架：`README.md`（怎么读、级别、版本策略）、`checklist.md`（36 条唯一事实源）、`agent-playbook.md`（agent 的阅读顺序）。
+- `spec/` — 规范骨架：`README.md`（怎么读、级别、版本策略）、`checklist.md`（37 条唯一事实源）、`agent-playbook.md`（agent 的阅读顺序）。
 - `templates/` — 复制到目标仓库的模板，含 `{{PLACEHOLDER}}`。
 - `docs/` — 设计说明与 ADR（`docs/adr/`）、实测证据（`docs/evidence/`）、文档地图（`docs/index.md`）。
 - `.github/` — 平台文件：PR 模板、Issue 模板、CODEOWNERS。

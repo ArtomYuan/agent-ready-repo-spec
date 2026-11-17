@@ -22,7 +22,7 @@ That's the whole workflow. There is no command to run, and that is deliberate.
 
 | Path | Contents |
 |---|---|
-| [guide/](guide/README.md) | Seven chapters: adoption decisions · what docs · layout · how to write each doc · using an agent · governing agent participation · where information lives |
+| [guide/](guide/README.md) | Eight chapters: adoption decisions · what docs · layout · how to write each doc · using an agent · governing agent participation · where information lives · which settings to turn on |
 | [spec/](spec/README.md) | How to read the spec: maturity levels, severities, version policy · **[checklist.md](spec/checklist.md)** · agent reading order |
 | [templates/](templates/) | Files to copy into your repository, with `{{PLACEHOLDER}}` markers |
 | [docs/](docs/index.md) | ADRs (why each decision), evidence from ten real repositories, doc map |

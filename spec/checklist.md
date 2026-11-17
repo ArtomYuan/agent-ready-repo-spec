@@ -1,6 +1,6 @@
 # 自查清单
 
-> 本文件是本规范**唯一的事实源**，共 36 条（specVersion 1.3.0）。
+> 本文件是本规范**唯一的事实源**，共 37 条（specVersion 1.4.0）。
 > 级别含义：`must` 缺了就是问题；`should` 强烈建议；`may` 视情况。
 > 用法：把这张表当成对照表，逐条问"我们有吗 / 什么理由没有"，**理由比勾选更重要**。
 > 机器可读的历史版本（JSON + 检查器）已在 ADR-0009 中下线：规范库不提供可执行物，也不绑定任何语言。
@@ -58,6 +58,7 @@
 | `R039` | may | PR 模板含自检清单 | 自检清单把“agent 该确认的事”变成可勾选项，比散文有效。 | 在模板加 - [ ] 项：未触碰禁区、已更新 CHANGELOG、已补 ADR。 |
 | `R040` | may | **若用 hooks**：hook 脚本使用 exit 2 阻塞 | 阻塞类 hook 不收 exit 2 就等于没检查：exit 0 只进日志，exit 1 是非阻塞错误。 | 违规分支改为写 stderr 后 exit 2。 |
 | `R041` | may | 仓库自己的提交约定写进 AGENTS.md | Claude Code 默认自带一套提交/PR 指令（includeGitInstructions=true）。仓库若另有约定，必须写进 AGENTS.md，否则两套指令打架；要么在这里声明，要么把内置指令关掉（includeGitInstructions=false）。 | 在 AGENTS.md 的“硬约定”里写一行提交约定；若关闭了内置指令，则必须写清楚完整规则。 |
+| `R042` | may | AGENTS.md 声明输出语言 | agent 的语言默认跟着代码注释或它上次的输出来走，没人声明就会在同一仓库里出现两种语言，reviewer 反复纠正。声明一次的成本最低。**没有真实事故支撑，故停在 may。** | 在 AGENTS.md 靠前位置加「语言约定」：使用语言、不翻译清单（规则 ID / 路径 / 命令 / 代码标识符）、译文与原文冲突时以原文为准。可直接粘的片段见 `templates/prompt-locale.md.tmpl`。 |
 | `R050` | may | 最近提交的 subject 符合 Conventional Commits | 格式只在文档里 = 不生效。history 是唯一无法事后伪造的证据：subject 能解析，CHANGELOG 与 release 才能自动化。 | 把不合规的 subject 在后续提交里改正并说明；长期方案是让 commitlint 在 CI/hook 上拦住新提交（R028）。 |
 | `R051` | may | 最近提交是线性历史（无 merge commit） | 线性历史让 revert、cherry-pick、审计都变简单；merge commit 会把一条 PR 的变化混进两条父提交，出问题时难以定位与回滚。 | 仓库设置启用 Squash merge 或 Rebase merge，关闭 Merge commit；已存在的 merge 不必重写。 |
 
