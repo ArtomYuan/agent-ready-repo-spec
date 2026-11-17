@@ -24,6 +24,29 @@
 - `guide/README.{md,zh-CN.md}`："回答六件事"改为八件事并与八章一一对应（07 章此前不在列表里）；
   英文版 `How to read` 里残留的一句中文括注改回英文。
 
+### Added —— 这套规范从此可以被"符合"
+
+- `spec/README.md` 新增「**符合性声明**」一节：声明"本仓库符合 `agent-ready-repo-spec 1.4.0`，目标档位 L2"的
+  **四个条件**（全部 `must` 满足 / 每个偏离的 `should` 有书面理由 / 采用记录落在被管理的仓库内 / `may` 不计分），
+  并把 `must` / `should` / `may` 对齐到 RFC 2119 的 MUST / SHOULD / MAY。
+  在此之前它有规则 ID、有严重度、有 SemVer、有"唯一事实源"，却没有任何一句话回答"**满足什么才算符合**"——
+  没有符合性定义的规范只是建议。
+- `spec/README.md` 新增「编号」一节：号段按档位预留（`R001`–`R009`=L0、`R010`–`R019`=L1、`R020`–`R029`=L2、
+  `R030`–`R049`=L3、`R050` 起=需要看 `git log`）、**永不复用**、新增只往后加。
+  `R006`–`R009`、`R017`–`R019`、`R043`–`R049` 不出现是**预留**而不是缺条——
+  已用 `git log --all -S` 核对全部历史提交，这些号从未被分配过。
+- `spec/checklist.md` 顶部补号段说明与符合性指针；`spec/agent-playbook.md` §2 补"可以替他核对四个条件，但不要替他声明"。
+- `AGENTS.md` 补「语言约定」与「命令（唯一权威）」两节：本库此前**自己违反刚发布的 `R042`**（没有语言约定）
+  与 `R031`（没有命令一节），而 `docs/adr/0008-bilingual-equal-status.md` 结尾还指向一个当时并不存在的「语言约定」一节。
+
+### Changed —— 级别表不再重复判据
+
+- `spec/README.md` 的四级表去掉"达到它意味着有 README / CONTRIBUTING / …"那一列，只留"这一档在解决什么问题"。
+  那一列与 checklist 的严重度**互相矛盾**：把 `R005`（CI，`should`）与 `R010`（CONTRIBUTING，`may`，
+  且正文明说"不是 agent 就绪的必要条件"）写成达标条件，又在 L3 写了"可回滚"而清单里没有任何回滚条目。
+  它本身就是 `AGENTS.md` 禁止的"第二份规则陈述"。
+- `spec/README.md`「规范不覆盖什么」补一条：不替你评"你该到哪一级"。
+
 ### Fixed —— 渲染、失效落点与双语漂移
 
 - 修掉 **10 处字面 `` `n `` 转义残留**（`CHANGELOG.md`、`docs/index.md`、`guide/README.md`、`guide/README.zh-CN.md`）：

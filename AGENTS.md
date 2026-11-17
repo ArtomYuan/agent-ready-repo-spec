@@ -10,10 +10,31 @@
 - **不绑定任何语言或工具**：不默认读者用 Claude、Codex 或 Cursor，也不要求读者装任何运行时。
 - 使用者做的是：读文档 → 复制模板 → 对着 [spec/checklist.md](spec/checklist.md) 逐条比对。
 
+## 语言约定
+
+- **仓库里的文件**：默认文件（`*.md`）是**英文**，中文镜像是 `*.zh-CN.md`，两版平权（[ADR-0008](docs/adr/0008-bilingual-equal-status.md)）。
+- **协作过程**：PR 描述、commit message、ADR、`docs/evidence/`、issue 讨论用**中文**。
+- 目前只有中文的部分：`spec/`、`docs/`、`CONTRIBUTING.md`、`CHANGELOG.md`、`.github/` 下的模板、本文件。
+- **不翻译**：规则 ID（`R0xx`）、文件路径、命令、模板占位符、GitHub 设置名（`required_status_checks` 这类）。
+- 译文与原文冲突时**以证据裁定，不以语言裁定**（ADR-0008 第 3 条）。
+
+## 命令（唯一权威，勿自行发明）
+
+**本库没有任何可执行命令**——没有检查器、没有生成器、没有安装步骤（[ADR-0009](docs/adr/0009-spec-only-no-tooling.md)）。
+不要为了"跑一下规范"去找命令，找不到是对的。
+
+| 用途 | 怎么做 | 备注 |
+|---|---|---|
+| 自查一个仓库 | 对着 [spec/checklist.md](spec/checklist.md) 逐条比对 | 人或 agent 来做，顺序见 [spec/agent-playbook.md](spec/agent-playbook.md) §2 |
+| 改一条规则 | 只改 `spec/checklist.md` | 规则唯一事实源；判据变严要升 `specVersion` |
+| 本地验链接 | 无。CI 用 lychee `--offline` 跑 | 想本地复现，任何语言写几行都行，本库不提供 |
+| 本地验双语 | 无。CI 比对中英标题数 | 同上 |
+| 唯一自动化 | `.github/workflows/docs.yml` 的两个必需检查 | **链接检查** · **双语配对**，只校验文档自身 |
+
 ## 目录地图
 
 - `guide/` — 指导正文，八章 + 索引。**每章都有中英两版**（`xxx.md` 与 `xxx.zh-CN.md`）。
-- `spec/` — 规范骨架：`README.md`（怎么读、级别、版本策略）、`checklist.md`（37 条唯一事实源）、`agent-playbook.md`（agent 的阅读顺序）。
+- `spec/` — 规范骨架：`README.md`（怎么读、级别、**符合性声明**、版本与编号策略）、`checklist.md`（37 条唯一事实源）、`agent-playbook.md`（agent 的阅读顺序）。
 - `templates/` — 复制到目标仓库的模板，含 `{{PLACEHOLDER}}`。
 - `docs/` — 设计说明与 ADR（`docs/adr/`）、实测证据（`docs/evidence/`）、文档地图（`docs/index.md`）。
 - `.github/` — 平台文件：PR 模板、Issue 模板、CODEOWNERS。
