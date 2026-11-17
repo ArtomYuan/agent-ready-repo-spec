@@ -6,6 +6,28 @@
 
 ## [Unreleased]
 
+### Added —— 发布物本身也要有判据（`R064`–`R070`，specVersion → 1.6.0）
+
+- 清单新增 7 条：`R064` 每个发布版本都要有 tag **和** Release 页、且锚在发布提交上；
+  `R065` Release 正文四节（升级注意 / 新增·变更·修复 / 已知问题 / 校验）；
+  `R066` 发布物里不写会失效的计数和状态句；`R067` 移动 tag 要留痕、优先发更正版本；
+  `R068`（L3）废弃 tag 标 *Superseded* 不删；`R069`（L3）规范类项目要在「已知问题」里列出自己不合格的条目；
+  `R070` 版本号变更要写明**升了哪一位、为什么**。
+  条目数 **48 → 55**，`specVersion` **1.5.0 → 1.6.0**（全是新增 `should` / `may`，按版本策略属 minor）。
+- `R070` 的动机很具体：本库的 SemVer 策略写在 `spec/README.md`「版本策略」里，**清单引用数是 0**——
+  读者看到 `1.5.0 → 1.6.0` 无法判断升对没有，因为"这批改动属于哪一类"只活在会沉进历史的 PR 描述里。
+  本条自身就是它的第一次执行。
+- 其中 4 条**不是新发明**——`guide/06 §2` 早就把"什么时候发、Release 怎么写"写完了，而它在清单里的
+  规则 ID 引用数是 **0**。与 [ADR-0011](docs/adr/0011-github-management-rules.md) 是同一种漂移，
+  而且更尴尬：发布是**不读那一章的人也会做的事**。
+- `R067` / `R068` 是真新写的：本库正要把 `v1.4.0` 切到真正的 1.4.0 提交，而 §2 的表只说了"tag 永不改"，
+  没说真要改时怎么办——移动 tag 是对所有钉住它的人毁约，且损坏隐形（他们的构建变了，手上没有 diff 可读）。
+- `guide/06`（中英）新增 §2.5「tag 能不能移动」与 §2.3 的"两类不要写的文字"；附录各补 6 行导航。
+- 新增 [ADR-0012](docs/adr/0012-release-notes-spec.md)：为什么发布物要进清单，以及被否掉的四个方案。
+- `CONTRIBUTING.md` 新增「发布」一节：只放顺序，判据指向清单。
+- 同步的可变声明：`README` / `README.zh-CN` / `AGENTS.md` 的条目数、`spec/README.md` 的当前版本与
+  符合性声明示例、`spec/agent-playbook.md` 的示例、`.github/ISSUE_TEMPLATE/bug.yml` 的占位版本。
+
 ### Changed —— 仓库元数据改完了（不在 diff 里）
 
 - **About 描述换成英文**：`What an agent-ready GitHub repo should look like: a spec (L0–L3), an eight-chapter

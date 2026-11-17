@@ -14,7 +14,7 @@
 ## 怎么用
 
 1. **读你要的那几章** —— 从 [guide/README.zh-CN.md](guide/README.zh-CN.md) 开始。
-2. **对着 [spec/checklist.md](spec/checklist.md) 过一遍** —— 48 条，按 L0–L3 分组。每条只问两件事：
+2. **对着 [spec/checklist.md](spec/checklist.md) 过一遍** —— 55 条，按 L0–L3 分组。每条只问两件事：
    *我们有吗 / 没有的话理由是什么*。**理由比勾选更重要。**
 3. **挑能用的模板复制过去** —— [templates/](templates/)：`AGENTS.md`、PR 模板、CODEOWNERS、ADR、采用记录。
 

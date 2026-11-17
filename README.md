@@ -16,7 +16,7 @@ agents write many of the commits.
 ## How to use it
 
 1. **Read the chapters you need** — start with [guide/README.md](guide/README.md).
-2. **Walk [spec/checklist.md](spec/checklist.md)** — 48 items, grouped L0–L3. For each: *do we have it, and if not, why not?*
+2. **Walk [spec/checklist.md](spec/checklist.md)** — 55 items, grouped L0–L3. For each: *do we have it, and if not, why not?*
    The reason matters more than the tick.
 3. **Copy what fits** from [templates/](templates/) — `AGENTS.md`, PR template, CODEOWNERS, ADR, adoption record.
 

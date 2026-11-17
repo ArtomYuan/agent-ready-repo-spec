@@ -43,6 +43,23 @@ fix(guide): 03 章的反例表格与正文不一致
 4. 更新 `CHANGELOG.md`。
 5. 若这是一条"为什么这么定"的决策（而非单纯修错），补一条 ADR。
 
+## 发布
+
+判据在清单里（`R064`–`R070`），写法在 [guide/06 §2](guide/06-信息该放哪.zh-CN.md)。这里只放**顺序**：
+
+1. 一个提交把 `CHANGELOG.md` 的 `[Unreleased]` 转成版本节，上面留一个空的 `[Unreleased]`；
+   版本节标题下写一句**升了哪一位、为什么**（`R070`），例：`1.5.0 → 1.6.0：全是新增 should/may，属 minor`；
+2. 同步三处会跟着变的声明：`spec/README.md` 的"当前 `specVersion`"、`README`/`README.zh-CN`/`AGENTS.md`
+   的条目数、`.github/ISSUE_TEMPLATE/bug.yml` 的占位版本。**漏一处，首页就开始说谎**；
+3. 合并；
+4. 在**合并后的那个提交**上打 tag——不是它前面那个；
+5. 建 Release，四节：升级注意 / 新增·变更·修复 / 已知问题 / 校验。
+   「已知问题」里必须列出**本库自己不合格**的条目（`R069`）；
+6. 正文里不写会失效的计数和状态句（`R066`）。本库一周内踩了三次，见 [ADR-0012](docs/adr/0012-release-notes-spec.md)。
+
+**移动 tag 是破坏性变更**：优先发更正版本；确实要动，按 `R067` 留痕（旧 SHA / 新 SHA / 原因），
+被取代的 tag 标 *Superseded* 不删（`R068`）。
+
 ## PR
 
 用 [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)。
