@@ -10,7 +10,7 @@
 | id | 级别 | 条目 | 为什么 | 怎么改 |
 |---|---|---|---|---|
 | `R001` | must | 存在 README | GitHub 按 .github/ > 根 > docs/ 的顺序取第一个 README 作为仓库首页；没有它，仓库等于不可评估。 | 写 README.md：一句话定位 + 30 秒能跑起来的最小命令 + 入口链接。 |
-| `R002` | must | 根目录存在 AGENTS.md | AGENTS.md 是跨工具的 agent 唯一事实源；Claude Code 在无 CLAUDE.md 时默认直接读它。 | 在根目录建 AGENTS.md，只写命令、目录地图、硬约定、禁区、已知的坑。 |
+| `R002` | must | 根目录存在 AGENTS.md | AGENTS.md 是跨工具的 agent 唯一事实源；Claude Code 在无 CLAUDE.md 时默认直接读它。 | 在根目录建 AGENTS.md。八段骨架见 [guide/03 §2](../guide/03-文档该怎么写.zh-CN.md)：项目是什么 / 语言约定 / 命令 / 目录地图 / 硬约定 / 禁区 / 已知的坑 / 拿不准时。可直接粘：[templates/AGENTS.md.tmpl](../templates/AGENTS.md.tmpl)。 |
 | `R003` | must | 存在 .gitignore | 没有 .gitignore 的仓库迟早把构建产物和密钥提交进来。 | 加 .gitignore，至少覆盖依赖目录、构建产物、.env*。 |
 | `R004` | must | 存在 LICENSE | 无协议等于默认保留全部权利，别人无法合法使用。 | 选一个 OSI 协议（MIT / Apache-2.0）放进根目录，并写进 README。 |
 | `R005` | should | 有 CI 工作流 | 没有 CI，agent 的改动就没有可拒绝的依据。 | 加 .github/workflows/ci.yml，至少跑 lint + test。 |
@@ -64,6 +64,9 @@
 
 ---
 
-## 不同级别的差异
+## 判完一条之后
 
-一个有 AI agent 参与的 GitHub 仓库该长什么样。本文件是规则唯一事实源。
+每条只有三种结论：**已有** / **建议补** / **跳过 + 理由**。
+
+第三种最有价值——它让下一个人（或下一个 agent）不会把"没有"读成"漏了"，从而"顺手帮你补上"。
+理由写进采用记录，落点在你自己的仓库里：[templates/adoption.md.tmpl](../templates/adoption.md.tmpl)。

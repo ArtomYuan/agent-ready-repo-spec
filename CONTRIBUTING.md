@@ -31,7 +31,7 @@ chore/<slug>        模板、杂项
 提交信息用 Conventional Commits，scope 取 `spec` / `guide` / `templates` / `docs`：
 
 ```
-feat(spec): 新增 R042 检查 docs/ 下的死链
+feat(spec): 新增 R042（AGENTS.md 声明输出语言）
 fix(guide): 03 章的反例表格与正文不一致
 ```
 

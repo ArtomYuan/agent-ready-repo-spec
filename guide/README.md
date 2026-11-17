@@ -5,14 +5,16 @@
 This directory is **guidance**, not a verdict. Whether — and how much — to use it is up to the repository that adopts it.
 But the decision should be made **once**, and it should **live inside the adopting repository** — see [00-adoption decisions](00-接入决策.md).
 
-It answers six questions:
+It answers eight questions — one per chapter:
 
 1. Which tier to adopt, and where to record that decision
 2. What docs a GitHub repository should have
 3. How the repository should be laid out
 4. How each of those docs should be written
-5. How an agent should be used on the repository, and how to govern it when agents write many of the commits
-6. Where state and to-dos live when sessions or agents change
+5. How an agent should be used on the repository
+6. How to govern it when agents write many of the commits
+7. Where state, to-dos and handovers live when sessions or agents change — and how a release is decided
+8. Which repository settings to turn on, and the one that can lock you out
 
 `templates/` holds samples only — **it does not decide for you and does not act for you**; this library ships no checker ([ADR-0009](../docs/adr/0009-spec-only-no-tooling.md)).
 
@@ -35,7 +37,7 @@ It answers six questions:
 
 ## How to read
 
-- **Want to see a finished file, not a skeleton** → [examples/](../examples/README.md)（两份对照：路由型 / 分层型）
+- **Want to see a finished file, not a skeleton** → [examples/](../examples/README.md) (two worked samples side by side: router-shaped and layered)
 - **First time adopting** → read **00**, decide the options, record them in your own repo, then continue.
 - Just want to write one file correctly → read the matching section of **03**, follow the skeleton, then check yourself against the counter-examples.
 - Starting a repository → read 01 → 02 → 03.

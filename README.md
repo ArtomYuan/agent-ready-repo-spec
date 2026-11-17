@@ -25,7 +25,7 @@ That's the whole workflow. There is no command to run, and that is deliberate.
 | [guide/](guide/README.md) | Eight chapters: adoption decisions · what docs · layout · how to write each doc · using an agent · governing agent participation · where information lives · which settings to turn on |
 | [spec/](spec/README.md) | How to read the spec: maturity levels, severities, version policy · **[checklist.md](spec/checklist.md)** · agent reading order |
 | [templates/](templates/) | Files to copy into your repository, with `{{PLACEHOLDER}}` markers |
-| [docs/](docs/index.md) | ADRs (why each decision), evidence from ten real repositories, doc map |
+| [docs/](docs/index.md) | ADRs (why each decision), dated evidence from two samplings — 10 repositories' file surface and 12 repositories' agent-instruction files — and the doc map |
 
 ## The one criterion that runs through everything
 
