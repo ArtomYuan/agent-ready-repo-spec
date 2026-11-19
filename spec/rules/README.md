@@ -22,7 +22,7 @@
 | [release/](release/) | 8 | [06 · 信息该放哪](../../guide/06-信息该放哪.zh-CN.md) | [本仓库自审](../../docs/evidence/2026-11-17-repo-self-audit.md) |
 | [settings/](settings/) | 5 | [07 · 该开哪些设置](../../guide/07-该开哪些设置.zh-CN.md) | [分支保护实测](../../docs/evidence/2026-11-17-protection-probe.md) |
 
-合计 **55 条**，8 个板块。
+合计 **55 条**，8 个板块，`specVersion 2.0.0`。
 
 ## L0 · 任何仓库的底线（5 条）
 
