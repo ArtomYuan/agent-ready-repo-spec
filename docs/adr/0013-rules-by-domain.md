@@ -1,6 +1,6 @@
 # ADR-0013：规则按板块分目录，一个板块若干**主题文档**，ID 换成 `板块/主题`
 
-- 状态：Accepted（`release/` 已落地；其余 7 个板块待按同一形状重做）
+- 状态：Accepted（`release/` `settings/` `adoption/` 已落地，14 条；其余 5 个板块 41 条待重做）
 - 日期：2026-11-20
 - 决策者：@ArtomYuan（提出结构与切分单位）、agent（方案与执行）
 - 取代：**部分修订** [ADR-0009](0009-spec-only-no-tooling.md) 的落点约定
@@ -70,6 +70,14 @@ ID 是**稳定的引用名**，文件名是**文档单位**。两者由索引那
 | [content.md](../../spec/rules/release/content.md) | 内容规则 | `notes-sections` `no-stale-numbers` `self-noncompliance` |
 | [artifact.md](../../spec/rules/release/artifact.md) | 发布物规则 | `changelog` `tag-and-release` `moving-tags` `superseded-tags` |
 
+`settings/` 两篇，按"门与线"分；`adoption/` 1 条不成组，一篇：
+
+| 文档 | 话题 | 承载条目 |
+|---|---|---|
+| [branch-protection.md](../../spec/rules/settings/branch-protection.md) | 分支保护规则 | `main-protection` `required-check-names` `linear-history` |
+| [ci.md](../../spec/rules/settings/ci.md) | CI 规则 | `ci-exists` `workflow-permissions` |
+| [record.md](../../spec/rules/adoption/record.md) | 采用记录规则 | `record` |
+
 每篇的形状固定：**一句话 → 话题正文（判断表、模板、反例、常见误判）→「条目」小节逐条列
 `为什么` / `怎么做` → 「相关」**。判据正文只出现在「条目」那一节，前面的正文是解释。
 
@@ -120,8 +128,10 @@ ID 是**稳定的引用名**，文件名是**文档单位**。两者由索引那
 
 - **`guide/` 正文要不要改用新 ID？** 365 处，含 19 处区间写法（`R064`–`R070` 这种）
   不能机械替换。收益是解释性文字也可辨识，代价是一个巨大的、难评审的 diff。本轮**没做**。
-- **其余 7 个板块的主题划分。** `release/` 的三分法（版本号 / 内容 / 发布物）是当场定的；
-  `documents/` 10 条怎么切成几篇、`writing/` 9 条怎么切，还没定，需要逐个板块过。
+- **剩余 5 个板块的主题划分。** 已定的三种切法：`release/` 按话题三分（版本号 / 内容 / 发布物）、
+  `settings/` 按"门与线"二分（分支保护 / CI）、`adoption/` 1 条不成组。
+  `documents/` 10 条与 `writing/` 9 条怎么切还没定——这两个板块条数最多，
+  而且 `documents/` 里"存在某文件"和"文件该含什么"混在一起，切分要先把这两类分开。
 
 ## 怎么回退
 

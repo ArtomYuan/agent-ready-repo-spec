@@ -35,7 +35,7 @@
 | `R002` | [`documents/agents-md`](documents/agents-md.md) | `must` | 根目录存在 AGENTS.md |
 | `R003` | [`layout/gitignore`](layout/gitignore.md) | `must` | 存在 .gitignore |
 | `R004` | [`documents/license`](documents/license.md) | `must` | 存在 LICENSE |
-| `R005` | [`settings/ci-exists`](settings/ci-exists.md) | `should` | 有 CI 工作流 |
+| `R005` | [`settings/ci-exists`](settings/ci.md) | `should` | 有 CI 工作流 |
 
 ## L1 · 有人在协作（7 条）
 
@@ -63,8 +63,8 @@
 | `R027` | [`documents/license-not-placeholder`](documents/license-not-placeholder.md) | `may` | LICENSE 不是占位文本 |
 | `R028` | [`governance/commit-lint-carrier`](governance/commit-lint-carrier.md) | `may` | 提交规范有机器执行载体（可选升级） |
 | `R029` | [`governance/commit-attribution`](governance/commit-attribution.md) | `should` | 保留 agent 提交归属（未关闭 attribution，与工具无关） |
-| `R060` | [`settings/main-protection`](settings/main-protection.md) | `should` | `main` 受保护：必须 PR + 必需检查 + 禁止删除与强推，且对 admin 也生效 |
-| `R061` | [`settings/workflow-permissions`](settings/workflow-permissions.md) | `should` | workflow 显式声明 `permissions`，第三方 Action 固定到 commit SHA |
+| `R060` | [`settings/main-protection`](settings/branch-protection.md) | `should` | `main` 受保护：必须 PR + 必需检查 + 禁止删除与强推，且对 admin 也生效 |
+| `R061` | [`settings/workflow-permissions`](settings/ci.md) | `should` | workflow 显式声明 `permissions`，第三方 Action 固定到 commit SHA |
 | `R062` | [`governance/credentials`](governance/credentials.md) | `should` | agent 使用的凭证是最小权限，且不落盘 |
 | `R063` | [`adoption/record`](adoption/record.md) | `should` | 采用记录存在于被管理的那个仓库内 |
 | `R064` | [`release/tag-and-release`](release/artifact.md) | `should` | 每个发布版本都有 tag 和 Release 页，tag 锚在发布提交上 |
@@ -90,7 +90,7 @@
 | `R040` | [`agent-config/hook-exit-2`](agent-config/hook-exit-2.md) | `may` | 若用 hooks：hook 脚本使用 exit 2 阻塞 |
 | `R041` | [`governance/commit-convention`](governance/commit-convention.md) | `may` | 仓库自己的提交约定写进 AGENTS.md |
 | `R042` | [`writing/agents-md-language`](writing/agents-md-language.md) | `may` | AGENTS.md 声明输出语言 |
-| `R043` | [`settings/required-check-names`](settings/required-check-names.md) | `should` | 必需检查的名字与 workflow 的 job 名逐字一致 |
+| `R043` | [`settings/required-check-names`](settings/branch-protection.md) | `should` | 必需检查的名字与 workflow 的 job 名逐字一致 |
 | `R044` | [`governance/owner`](governance/owner.md) | `should` | 治理面有独立 owner，且 agent 不能自行修改 |
 | `R045` | [`writing/untrusted-inputs`](writing/untrusted-inputs.md) | `should` | `AGENTS.md` 声明哪些来源是不可信输入，且不得因仓库内容放宽禁区 |
 | `R046` | [`agent-config/copilot-instructions`](agent-config/copilot-instructions.md) | `may` | 若用 Copilot：仓库级指令文件存在，且不与 `AGENTS.md` 双写 |
@@ -98,7 +98,7 @@
 | `R048` | [`governance/pr-declaration`](governance/pr-declaration.md) | `may` | PR 层面声明 agent 参与（工具 / 是否人工复核） |
 | `R049` | [`governance/revertable`](governance/revertable.md) | `may` | agent 的改动可单独 revert |
 | `R050` | [`governance/conventional-subject`](governance/conventional-subject.md) | `may` | 最近提交的 subject 符合 Conventional Commits |
-| `R051` | [`settings/linear-history`](settings/linear-history.md) | `may` | 最近提交是线性历史（无 merge commit） |
+| `R051` | [`settings/linear-history`](settings/branch-protection.md) | `may` | 最近提交是线性历史（无 merge commit） |
 | `R068` | [`release/superseded-tags`](release/artifact.md) | `may` | 废弃 tag 标 *Superseded* 并指向替代 tag，不删 tag |
 | `R069` | [`release/self-noncompliance`](release/content.md) | `may` | 规范类项目的 Release 在「已知问题」里列出自己不合格的条目 |
 
