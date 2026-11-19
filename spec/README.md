@@ -113,8 +113,10 @@
 
 ## 编号
 
-规则的**规范名是 `板块/主题`**，例如 `release/moving-tags`。它同时就是文件路径
-（`spec/rules/release/moving-tags.md`），所以**名字和路径不可能各说一套**。
+规则的**规范名是 `板块/主题`**，例如 `release/moving-tags`。它是稳定的引用名，
+**不编码到文件名**：一个板块下是若干**主题文档**，每条规则是其中一节。
+`release/moving-tags` 的归属地是 `spec/rules/release/artifact.md`，由索引那一行的链接对齐。
+取舍见 [ADR-0013](../docs/adr/0013-rules-by-domain.md)：放弃"ID 即路径"，换"一篇文档讲透一个话题"。
 
 1.x 时代的 `R0xx` 降级为**旧号**，永久保留在 [rules/README.md](rules/README.md) 的「旧号」列：
 
@@ -126,11 +128,13 @@
 ### 命名规矩
 
 - 全小写 kebab-case；板块名一个词，主题名 1–3 个词。
-- **一条规则一个文件**，文件名就是主题名。
+- **一条规则只有一个归属小节**：某篇主题文档的「条目」里的一节，小节元数据行写着它的 ID。
+  同话题的规则放同一篇，别处只引用不复制判据。
 - **板块名一经发布不再改**——它编码在每条 ID 里，改板块名等于批量改 ID。
   2.0.0 定下的 8 个板块：`adoption` `documents` `layout` `writing` `agent-config` `governance` `release` `settings`。
-- 新增条目 = 新建一个文件 + 在 [rules/README.md](rules/README.md) 对应档位节加一行。**不插号、不回收旧号。**
-- 废弃条目 = 文件保留，索引行标 `deprecated`。当前没有废弃条目。
+- 新增条目 = 在对应板块里找到承载它的主题文档（没有就新建一篇），在「条目」小节加一节，
+  再到 [rules/README.md](rules/README.md) 对应档位节加一行。**不插号、不回收旧号。**
+- 废弃条目 = 小节保留，索引行标 `deprecated`。当前没有废弃条目。
 
 ### 历史号段（读旧 PR 时有用，别拿它推断级别）
 

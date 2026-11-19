@@ -63,13 +63,15 @@
 
 ### Changed —— 规则改成一条一个文件，ID 换成 `板块/主题`（**2.0.0**）
 
-- `spec/checklist.md`（55 行一张表）拆成 **`spec/rules/<板块>/<主题>.md` 55 个文件**，
-  按 8 个板块分目录，与 `guide/00`–`07` 一一对应；`spec/rules/README.md` 变成索引
+- `spec/checklist.md`（55 行一张表）拆到 **`spec/rules/<板块>/`**，按 8 个板块分目录，
+  与 `guide/00`–`07` 一一对应；板块内按话题成篇，一条规则是一节；`spec/rules/README.md` 变成索引
   （按 L0/L1/L2/L3 分四节，一行一条：旧号 · ID · 级别 · 判据 · 链接）。
-- **规范名 = `板块/主题`，且 ID 就是路径**：`release/moving-tags` ↔ `spec/rules/release/moving-tags.md`。
+- **规范名 = `板块/主题`**：`release/moving-tags`。ID 不编码到文件名——一个板块下是若干**主题文档**，
+  一条规则是其中一节；`release/` 就是 `version.md` / `content.md` / `artifact.md` 三篇。
   旧号 `R0xx` **永久保留**为索引第一列，历史引用零改动。
-- 每个规则文件自带「讲解」小节指向对应章节；被多个章节解释的 22 条再加一节「跨板块」。
-  这是"有章节没条目"那个病（ADR-0011 / ADR-0012 / `release/version-bump-why` 三次发作）的结构解。
+- 每篇主题文档的形状固定：一句话 → 话题正文（判断表、模板、反例）→「条目」小节逐条列
+  `为什么` / `怎么做` →「相关」指回对应章节。这是"有章节没条目"那个病
+  （ADR-0011 / ADR-0012 / `release/version-bump-why` 三次发作）的结构解。
 - 决策、代价与回退见 [ADR-0013](docs/adr/0013-rules-by-domain.md)。
 
 ### Added —— 版本策略补上"改 ID / 改路径算哪一档"

@@ -6,6 +6,9 @@
 > `旧号` 是 1.x 时代的 `R0xx`，**永久保留、不改不复用**——历史 PR、CHANGELOG、ADR 与下游采用记录
 > 都指着它。新引用一律用 `板块/主题`；旧引用继续有效，由本表对齐。
 >
+> **ID 不等于路径**：一个板块下是若干**主题文档**，每条规则是其中一节。索引那一行的链接指向
+> 承载它的文档，不是一条规则一个文件。
+
 > **已知漂移面**：本表的「判据」列与各文件 H1 是同一句话，「级别」列与各文件首行注释也是同一份数据。
 > 改一条规则时**两处一起改**。本库不提供检查器（ADR-0009），所以这一致性由人和 agent 逐字核对。
 
@@ -42,7 +45,7 @@
 | `R011` | [`documents/codeowners`](documents/codeowners.md) | `should` | 存在 CODEOWNERS |
 | `R012` | [`documents/pr-template`](documents/pr-template.md) | `should` | 存在 PR 模板 |
 | `R013` | [`documents/issue-template`](documents/issue-template.md) | `should` | Issue 模板带合法 frontmatter |
-| `R014` | [`release/changelog`](release/changelog.md) | `should` | 存在 CHANGELOG |
+| `R014` | [`release/changelog`](release/artifact.md) | `should` | 存在 CHANGELOG |
 | `R015` | [`layout/editorconfig`](layout/editorconfig.md) | `may` | 存在 .editorconfig |
 | `R016` | [`layout/gitattributes`](layout/gitattributes.md) | `may` | 存在 .gitattributes（Windows 协作必查） |
 
@@ -64,11 +67,11 @@
 | `R061` | [`settings/workflow-permissions`](settings/workflow-permissions.md) | `should` | workflow 显式声明 `permissions`，第三方 Action 固定到 commit SHA |
 | `R062` | [`governance/credentials`](governance/credentials.md) | `should` | agent 使用的凭证是最小权限，且不落盘 |
 | `R063` | [`adoption/record`](adoption/record.md) | `should` | 采用记录存在于被管理的那个仓库内 |
-| `R064` | [`release/tag-and-release`](release/tag-and-release.md) | `should` | 每个发布版本都有 tag 和 Release 页，tag 锚在发布提交上 |
-| `R065` | [`release/notes-sections`](release/notes-sections.md) | `should` | Release 正文含四节：升级注意 / 新增·变更·修复 / 已知问题 / 校验 |
-| `R066` | [`release/no-stale-numbers`](release/no-stale-numbers.md) | `should` | Release 与 CHANGELOG 里不写会失效的计数和状态句 |
-| `R067` | [`release/moving-tags`](release/moving-tags.md) | `should` | 移动 tag 要留痕（旧 SHA / 新 SHA / 原因），且优先发更正版本 |
-| `R070` | [`release/version-bump-why`](release/version-bump-why.md) | `should` | 版本号变更要写明升了哪一位、为什么 |
+| `R064` | [`release/tag-and-release`](release/artifact.md) | `should` | 每个发布版本都有 tag 和 Release 页，tag 锚在发布提交上 |
+| `R065` | [`release/notes-sections`](release/content.md) | `should` | Release 正文含四节：升级注意 / 新增·变更·修复 / 已知问题 / 校验 |
+| `R066` | [`release/no-stale-numbers`](release/content.md) | `should` | Release 与 CHANGELOG 里不写会失效的计数和状态句 |
+| `R067` | [`release/moving-tags`](release/artifact.md) | `should` | 移动 tag 要留痕（旧 SHA / 新 SHA / 原因），且优先发更正版本 |
+| `R070` | [`release/version-bump-why`](release/version.md) | `should` | 版本号变更要写明升了哪一位、为什么 |
 
 ## L3 · 有 agent 参与开发（24 条）
 
@@ -96,8 +99,8 @@
 | `R049` | [`governance/revertable`](governance/revertable.md) | `may` | agent 的改动可单独 revert |
 | `R050` | [`governance/conventional-subject`](governance/conventional-subject.md) | `may` | 最近提交的 subject 符合 Conventional Commits |
 | `R051` | [`settings/linear-history`](settings/linear-history.md) | `may` | 最近提交是线性历史（无 merge commit） |
-| `R068` | [`release/superseded-tags`](release/superseded-tags.md) | `may` | 废弃 tag 标 *Superseded* 并指向替代 tag，不删 tag |
-| `R069` | [`release/self-noncompliance`](release/self-noncompliance.md) | `may` | 规范类项目的 Release 在「已知问题」里列出自己不合格的条目 |
+| `R068` | [`release/superseded-tags`](release/artifact.md) | `may` | 废弃 tag 标 *Superseded* 并指向替代 tag，不删 tag |
+| `R069` | [`release/self-noncompliance`](release/content.md) | `may` | 规范类项目的 Release 在「已知问题」里列出自己不合格的条目 |
 
 ---
 
