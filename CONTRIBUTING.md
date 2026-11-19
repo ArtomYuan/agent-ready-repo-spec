@@ -12,7 +12,7 @@
 **不接受**：
 
 - 为了让某个仓库"过关"而放宽判据；
-- 给这个库加入可执行物或规则校验（脚本、依赖清单、对 `checklist.md` 的机器校验）——见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)；
+- 给这个库加入可执行物或规则校验（脚本、依赖清单、对 `rules/README.md` 的机器校验）——见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)；
 - 只改中文或只改英文（两版必须同一 PR 内同步，见 [ADR-0008](docs/adr/0008-bilingual-equal-status.md)）。
 
 ## 分支与提交
@@ -37,7 +37,8 @@ fix(guide): 03 章的反例表格与正文不一致
 
 ## 改规则的流程
 
-1. 改 **[spec/checklist.md](spec/checklist.md)**（**只改这里**，不要再引入第二份清单）。
+1. 改 **[spec/rules/](spec/rules/README.md)** 里那条规则自己的文件（**判据正文只在那里**），
+   再同步 `spec/rules/README.md` 的对应行（判据句与 H1 逐字一致、级别一致）。不要再引入第二份清单。
 2. 若判据变严或条目升级为 `must`：升 `specVersion`（[spec/README.md](spec/README.md) 有策略）。
 3. 中英两版相关章节同步更新（`guide/*.md` 与 `guide/*.zh-CN.md`）。
 4. 更新 `CHANGELOG.md`。
@@ -45,20 +46,20 @@ fix(guide): 03 章的反例表格与正文不一致
 
 ## 发布
 
-判据在清单里（`R064`–`R070`），写法在 [guide/06 §2](guide/06-信息该放哪.zh-CN.md)。这里只放**顺序**：
+判据在 [`spec/rules/release/`](spec/rules/README.md)（8 条），写法在 [guide/06 §2](guide/06-信息该放哪.zh-CN.md)。这里只放**顺序**：
 
 1. 一个提交把 `CHANGELOG.md` 的 `[Unreleased]` 转成版本节，上面留一个空的 `[Unreleased]`；
-   版本节标题下写一句**升了哪一位、为什么**（`R070`），例：`1.5.0 → 1.6.0：全是新增 should/may，属 minor`；
+   版本节标题下写一句**升了哪一位、为什么**（`release/version-bump-why`），例：`1.6.0 → 2.0.0：规则改成一条一个文件、ID 换成 板块/主题，引用失效属破坏性变更 → major`；
 2. 同步三处会跟着变的声明：`spec/README.md` 的"当前 `specVersion`"、`README`/`README.zh-CN`/`AGENTS.md`
    的条目数、`.github/ISSUE_TEMPLATE/bug.yml` 的占位版本。**漏一处，首页就开始说谎**；
 3. 合并；
 4. 在**合并后的那个提交**上打 tag——不是它前面那个；
 5. 建 Release，四节：升级注意 / 新增·变更·修复 / 已知问题 / 校验。
-   「已知问题」里必须列出**本库自己不合格**的条目（`R069`）；
-6. 正文里不写会失效的计数和状态句（`R066`）。本库一周内踩了三次，见 [ADR-0012](docs/adr/0012-release-notes-spec.md)。
+   「已知问题」里必须列出**本库自己不合格**的条目（`release/self-noncompliance`）；
+6. 正文里不写会失效的计数和状态句（`release/no-stale-numbers`）。本库一周内踩了三次，见 [ADR-0012](docs/adr/0012-release-notes-spec.md)。
 
-**移动 tag 是破坏性变更**：优先发更正版本；确实要动，按 `R067` 留痕（旧 SHA / 新 SHA / 原因），
-被取代的 tag 标 *Superseded* 不删（`R068`）。
+**移动 tag 是破坏性变更**：优先发更正版本；确实要动，按 `release/moving-tags` 留痕（旧 SHA / 新 SHA / 原因），
+被取代的 tag 标 *Superseded* 不删（`release/superseded-tags`）。
 
 ## PR
 

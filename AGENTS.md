@@ -8,14 +8,14 @@
 
 - **不含规则引擎**：没有检查器、没有生成器、没有包管理器清单。唯一的自动化是平台自带的两个必需检查（链接检查 / 双语配对，见 [`.github/workflows/docs.yml`](.github/workflows/docs.yml)），它们只校验文档自身的一致性，**不校验规则**。见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)。
 - **不绑定任何语言或工具**：不默认读者用 Claude、Codex 或 Cursor，也不要求读者装任何运行时。
-- 使用者做的是：读文档 → 复制模板 → 对着 [spec/checklist.md](spec/checklist.md) 逐条比对。
+- 使用者做的是：读文档 → 复制模板 → 对着 [spec/rules/README.md](spec/rules/README.md) 逐条比对。
 
 ## 语言约定
 
 - **仓库里的文件**：默认文件（`*.md`）是**英文**，中文镜像是 `*.zh-CN.md`，两版平权（[ADR-0008](docs/adr/0008-bilingual-equal-status.md)）。
 - **协作过程**：PR 描述、commit message、ADR、`docs/evidence/`、issue 讨论用**中文**。
 - 目前只有中文的部分：`spec/`、`docs/`、`CONTRIBUTING.md`、`CHANGELOG.md`、`.github/` 下的模板、本文件。
-- **不翻译**：规则 ID（`R0xx`）、文件路径、命令、模板占位符、GitHub 设置名（`required_status_checks` 这类）。
+- **不翻译**：规则 ID（`板块/主题` 与旧号 `R0xx`）、文件路径、命令、模板占位符、GitHub 设置名（`required_status_checks` 这类）。
 - 译文与原文冲突时**以证据裁定，不以语言裁定**（ADR-0008 第 3 条）。
 
 ## 命令（唯一权威，勿自行发明）
@@ -25,8 +25,8 @@
 
 | 用途 | 怎么做 | 备注 |
 |---|---|---|
-| 自查一个仓库 | 对着 [spec/checklist.md](spec/checklist.md) 逐条比对 | 人或 agent 来做，顺序见 [spec/agent-playbook.md](spec/agent-playbook.md) §2 |
-| 改一条规则 | 只改 `spec/checklist.md` | 规则唯一事实源；判据变严要升 `specVersion` |
+| 自查一个仓库 | 对着 [spec/rules/README.md](spec/rules/README.md) 逐条比对 | 人或 agent 来做，顺序见 [spec/agent-playbook.md](spec/agent-playbook.md) §2 |
+| 改一条规则 | 改 `spec/rules/<板块>/<主题>.md`，**同时**改 `spec/rules/README.md` 那一行 | 判据正文在文件里，索引只导航；判据变严要升 `specVersion` |
 | 本地验链接 | 无。CI 用 lychee `--offline` 跑 | 想本地复现，任何语言写几行都行，本库不提供 |
 | 本地验双语 | 无。CI 比对中英标题数 | 同上 |
 | 唯一自动化 | `.github/workflows/docs.yml` 的两个必需检查 | **链接检查** · **双语配对**，只校验文档自身 |
@@ -34,17 +34,22 @@
 ## 目录地图
 
 - `guide/` — 指导正文，八章 + 索引。**每章都有中英两版**（`xxx.md` 与 `xxx.zh-CN.md`）。
-- `spec/` — 规范骨架：`README.md`（怎么读、级别、**符合性声明**、版本与编号策略）、`checklist.md`（55 条唯一事实源）、`agent-playbook.md`（agent 的阅读顺序）。
+- `spec/` — 规范骨架：`README.md`（怎么读、级别、**符合性声明**、版本与编号策略）、`agent-playbook.md`（agent 的阅读顺序）。
+- `spec/rules/` — **55 条规则，一条一个文件**，按 8 个板块分目录：
+  `adoption/` `documents/` `layout/` `writing/` `agent-config/` `governance/` `release/` `settings/`。
+  `rules/README.md` 是索引（一行一条：旧号 · ID · 级别 · 判据 · 链接），**不含判据正文**。
 - `templates/` — 复制到目标仓库的模板，含 `{{PLACEHOLDER}}`。
 - `docs/` — 设计说明与 ADR（`docs/adr/`）、实测证据（`docs/evidence/`）、文档地图（`docs/index.md`）。
 - `.github/` — 平台文件：PR 模板、Issue 模板、CODEOWNERS。
 
 ## 硬约定
 
-- **`spec/checklist.md` 是规则唯一事实源**。改规则只改它；不要再引入第二份（JSON、生成物、脚本）。
+- **一条规则只有一个归属文件**：`spec/rules/<板块>/<主题>.md`，文件名就是它的规范名（`板块/主题`）。
+  改判据只改那个文件；`rules/README.md` 的对应行只做导航，**别处不得复制判据**。
+  不要再引入第二份清单（JSON、生成物、脚本）——ADR-0009。
 - **双语平权**（[ADR-0008](docs/adr/0008-bilingual-equal-status.md)）：`xxx.md` 与 `xxx.zh-CN.md` 地位相同，
   改内容必须在**同一个 PR** 内同步两边；只改一侧视为未完成。冲突时以**证据**裁定，不以语言裁定。
-- **不翻译**：规则 ID（`R0xx`）、文件路径、命令、模板占位符。
+- **不翻译**：规则 ID（`板块/主题` 与旧号 `R0xx`）、文件路径、命令、模板占位符。
 - **文档里的路径必须真实存在**——读者会顺着点。
 - **不要引入可执行物或规则校验**：不加 `.ps1`/`.js`/`.py`、不加 `package.json`/`requirements.txt`、不加**校验规则（checklist）** 的 workflow。
   `docs.yml` 只校验文档自身（链接、双语配对），不在禁区之列。需要自动化的人应当另建仓库消费本清单。
@@ -52,7 +57,8 @@
 
 ## 禁区
 
-- 不新增第二份规则清单（会立刻产生漂移）。
+- 不新增第二份规则清单，也不在板块文件之外复述判据（会立刻产生漂移）。
+- 不改旧号 `R0xx`，不改板块名。旧号永不复用；板块名编码在每条 ID 里。
 - 不默认读者的 agent 工具：需要提到具体工具时，写成条件式（"若你用 Claude Code…"）。
 - 不在文档里写"必须装 X"——除非那是被指导仓库自己的选择。
 - 不提交个人配置（`.env`、本地路径、私有凭证）。
@@ -61,6 +67,12 @@
 
 - **双语文档最容易漂移**：改一侧忘了另一侧。提交前用 `grep` 对照两版的小标题数量。
 - **相对路径在多级目录里容易写错**：`guide/*.md` 引用 `docs/` 要写 `../docs/...`。
+- **索引与文件是三处受控双写**：`rules/README.md` 的「判据」列 = 文件 H1，「级别」列 = 文件首行注释，档位 = 索引分节。
+  改一条规则时**两处一起改**，逐字核对（本库不提供检查器）。
+- **`guide/` 不许开子目录**：`双语配对` 用的是 `for f in guide/*.md`，**平铺 glob 不递归**，
+  子目录里的文件会静默不被检查。规则拆目录只发生在 `spec/rules/`。
+- **锚点链接不被校验**：`docs.yml` 的 lychee 没有 `--include-fragments`，`#小节` 写错了 CI 不红。
+  所以规则一律**链到文件**，不链到小节。
 - **删过的东西还会有引用**：本仓库曾删掉检查器与 `.claude/`（ADR-0009），历史的 ADR 里刻意保留旧命名，
   新文档不要再引用已删除的路径。
 

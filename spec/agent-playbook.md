@@ -6,7 +6,7 @@
 
 | 任务 | 读什么 | 产出 |
 |---|---|---|
-| 给一个存量仓库做体检 | [guide/00](../guide/00-接入决策.zh-CN.md) → [checklist.md](checklist.md) | 一份"已有 / 建议补 / 跳过 + 理由"的清单 |
+| 给一个存量仓库做体检 | [guide/00](../guide/00-接入决策.zh-CN.md) → [rules/README.md](rules/README.md) | 一份"已有 / 建议补 / 跳过 + 理由"的清单 |
 | 新建仓库 | guide [01](../guide/01-该有什么文档.zh-CN.md) → [02](../guide/02-目录结构.zh-CN.md) → [03](../guide/03-文档该怎么写.zh-CN.md) | 按 [guide/01 第 3 节](../guide/01-该有什么文档.zh-CN.md) 的"第 1 天最小集"落地 |
 | 写某一份文档 | [guide/03](../guide/03-文档该怎么写.zh-CN.md) 对应那一节 | 一份照骨架写的文件 |
 | 把仓库交给 agent | [guide/04](../guide/04-Agent怎么用.zh-CN.md) | `AGENTS.md` + 可运行的检查命令 |
@@ -15,7 +15,7 @@
 
 ## 2. 体检怎么做（没有脚本可用，这是设计）
 
-1. 打开 [checklist.md](checklist.md)，**逐条**问三个问题：
+1. 打开 [rules/README.md](rules/README.md)，**逐条**问三个问题（要读判据正文就点进那一行链接的文件）：
    - 有吗？（**看文件系统，不要凭印象**）
    - 没有的话，是"不需要"还是"还没做"？
    - 如果是"不需要"，理由是什么？（写下来，这是给下一个人看的）

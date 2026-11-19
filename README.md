@@ -11,12 +11,12 @@ agents write many of the commits.
   **Coverage today, stated honestly:** `guide/` (all eight chapters), `README`, `examples/README` and `SECURITY` are
   bilingual — that is what the `双语配对` required check enforces. `spec/`, `docs/`, `CONTRIBUTING.md` and
   `CHANGELOG.md` are **Chinese-only**, and one of them is the file you actually have to act on:
-  [spec/checklist.md](spec/checklist.md). See [ADR-0008 §现状](docs/adr/0008-bilingual-equal-status.md).
+  [spec/rules/README.md](spec/rules/README.md). See [ADR-0008 §现状](docs/adr/0008-bilingual-equal-status.md).
 
 ## How to use it
 
 1. **Read the chapters you need** — start with [guide/README.md](guide/README.md).
-2. **Walk [spec/checklist.md](spec/checklist.md)** — 55 items, grouped L0–L3. For each: *do we have it, and if not, why not?*
+2. **Walk [spec/rules/README.md](spec/rules/README.md)** — 55 items, grouped L0–L3. For each: *do we have it, and if not, why not?*
    The reason matters more than the tick.
 3. **Copy what fits** from [templates/](templates/) — `AGENTS.md`, PR template, CODEOWNERS, ADR, adoption record.
 
@@ -27,7 +27,7 @@ That's the whole workflow. There is no command to run, and that is deliberate.
 | Path | Contents |
 |---|---|
 | [guide/](guide/README.md) | Eight chapters: adoption decisions · what docs · layout · how to write each doc · using an agent · governing agent participation · where information lives · which settings to turn on |
-| [spec/](spec/README.md) | How to read the spec: maturity levels, severities, version policy · **[checklist.md](spec/checklist.md)** · agent reading order |
+| [spec/](spec/README.md) | How to read the spec: maturity levels, severities, version policy · **[rules/README.md](spec/rules/README.md)** · agent reading order |
 | [templates/](templates/) | Files to copy into your repository, with `{{PLACEHOLDER}}` markers |
 | [docs/](docs/index.md) | ADRs (why each decision), dated evidence from two samplings — 10 repositories' file surface and 12 repositories' agent-instruction files — and the doc map |
 

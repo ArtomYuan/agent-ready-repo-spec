@@ -188,7 +188,7 @@ Precedence: repository overlay instructions override defaults in this agent when
 
 ## 附：本章对应的自查项
 
-只做导航——判据本身在 [spec/checklist.md](../spec/checklist.md)。
+只做导航——判据本身在 [spec/rules/README.md](../spec/rules/README.md)。
 
 | 条目 | 本章解释它什么 |
 |---|---|

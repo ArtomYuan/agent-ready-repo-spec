@@ -3,7 +3,7 @@
 - 状态：Accepted
 - 日期：2026-11-18
 - 决策者：@ArtomYuan
-- 相关：[spec/checklist.md](../../spec/checklist.md) · [guide/07](../../guide/07-该开哪些设置.zh-CN.md) ·
+- 相关：[spec/checklist.md](../../spec/rules/README.md) · [guide/07](../../guide/07-该开哪些设置.zh-CN.md) ·
   [ADR-0010](0010-required-checks-self-lock.md) · [ADR-0009](0009-spec-only-no-tooling.md)
 
 ## 背景

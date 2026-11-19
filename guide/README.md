@@ -45,7 +45,7 @@ It answers eight questions — one per chapter:
 - **Planning: where do scope, order and progress go** → **06** §1. **Releasing** → **06** §2.
 - **Switching sessions or agents** → **06** §3.
 - Want the switch list → [07 · Which settings to turn on](07-该开哪些设置.md).
-- Want to know what is missing → walk [spec/checklist.md](../spec/checklist.md). It reports facts; it does **not** grade your chosen tier.
+- Want to know what is missing → walk [spec/rules/README.md](../spec/rules/README.md). It reports facts; it does **not** grade your chosen tier.
 
 ## One criterion that runs through everything
 

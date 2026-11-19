@@ -3,7 +3,7 @@
 - 状态：Accepted
 - 日期：2026-11-18
 - 决策者：@ArtomYuan
-- 相关：[spec/checklist.md](../../spec/checklist.md)（`R064`–`R070`）·
+- 相关：[spec/checklist.md](../../spec/rules/README.md)（`R064`–`R070`）·
   [guide/06 §2](../../guide/06-信息该放哪.zh-CN.md) ·
   [ADR-0011](0011-github-management-rules.md) · [ADR-0009](0009-spec-only-no-tooling.md)
 
