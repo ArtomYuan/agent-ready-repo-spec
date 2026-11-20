@@ -1,6 +1,6 @@
 # ADR-0013：规则按板块分目录，一个板块若干**主题文档**，ID 换成 `板块/主题`
 
-- 状态：Accepted（`release/` `settings/` `adoption/` 已落地，14 条；其余 5 个板块 41 条待重做）
+- 状态：Accepted（8 个板块全部落地：**55 条规则收在 22 篇主题文档**）
 - 日期：2026-11-20
 - 决策者：@ArtomYuan（提出结构与切分单位）、agent（方案与执行）
 - 取代：**部分修订** [ADR-0009](0009-spec-only-no-tooling.md) 的落点约定
@@ -62,7 +62,7 @@ ID 是**稳定的引用名**，文件名是**文档单位**。两者由索引那
 
 ### 2. 一个板块 = 若干**主题文档**，一条规则 = 文档里的**一节**
 
-`release/` 三篇，就是最初提的那三篇：
+全部 8 个板块共 **22 篇**。`release/` 三篇就是最初提的那三篇，其余按同一逻辑切：
 
 | 文档 | 话题 | 承载条目 |
 |---|---|---|
@@ -76,7 +76,29 @@ ID 是**稳定的引用名**，文件名是**文档单位**。两者由索引那
 |---|---|---|
 | [branch-protection.md](../../spec/rules/settings/branch-protection.md) | 分支保护规则 | `main-protection` `required-check-names` `linear-history` |
 | [ci.md](../../spec/rules/settings/ci.md) | CI 规则 | `ci-exists` `workflow-permissions` |
-| [record.md](../../spec/rules/adoption/record.md) | 采用记录规则 | `record` |
+
+`documents/` 10 条按**共同话题**归组，不按"一文件一篇"切——那样会切出 9 篇装 10 条，
+等于退回被否掉的存根形状：
+
+| 文档 | 话题 | 承载条目 |
+|---|---|---|
+| [essentials.md](../../spec/rules/documents/essentials.md) | 三份基础文件 | `readme` `agents-md` `license` `license-not-placeholder` |
+| [collaboration.md](../../spec/rules/documents/collaboration.md) | 协作面四件套 | `contributing` `codeowners` `pr-template` `issue-template` |
+| [trust.md](../../spec/rules/documents/trust.md) | 信任与举报 | `security` `code-of-conduct` |
+
+`writing/` 按**被写的对象**切，`layout/` 按**位置**切，`agent-config/` 按**执行强度**切，
+`governance/` 按**变更单位**切：
+
+| 板块 | 篇 | 承载条数 |
+|---|---|---|
+| `writing/` | `agents-md.md`(5) · `adr.md`(2) · `pr-template.md`(1) · `untrusted-inputs.md`(1) | 9 |
+| `layout/` | `root-files.md`(3) · `docs-tree.md`(2) · `agent-files.md`(3) | 8 |
+| `agent-config/` | `permissions.md`(2) · `surfaces.md`(2) · `hooks-skills.md`(2) | 6 |
+| `governance/` | `commits.md`(4) · `pull-requests.md`(2) · `ownership.md`(2) | 8 |
+
+> **`documents/` 与 `writing/` 会各有一篇讲同一个文件**：`documents/essentials.md` 判 AGENTS.md
+> **存在**，`writing/agents-md.md` 判它**该写什么**。这不是重复——板块与 `guide/` 八章 1:1，
+> 存在性归 01 章、写法归 03 章，两篇互链。甲方案（按文件切）在板块冻结的前提下只能落到这个形状。
 
 每篇的形状固定：**一句话 → 话题正文（判断表、模板、反例、常见误判）→「条目」小节逐条列
 `为什么` / `怎么做` → 「相关」**。判据正文只出现在「条目」那一节，前面的正文是解释。
@@ -128,13 +150,19 @@ ID 是**稳定的引用名**，文件名是**文档单位**。两者由索引那
 
 - **`guide/` 正文要不要改用新 ID？** 365 处，含 19 处区间写法（`R064`–`R070` 这种）
   不能机械替换。收益是解释性文字也可辨识，代价是一个巨大的、难评审的 diff。本轮**没做**。
-- **剩余 5 个板块的主题划分。** 已定的三种切法：`release/` 按话题三分（版本号 / 内容 / 发布物）、
-  `settings/` 按"门与线"二分（分支保护 / CI）、`adoption/` 1 条不成组。
-  `documents/` 10 条与 `writing/` 9 条怎么切还没定——这两个板块条数最多，
-  而且 `documents/` 里"存在某文件"和"文件该含什么"混在一起，切分要先把这两类分开。
+- **单篇体积没有上限判据。** 22 篇里最小 4.5 KB、最大 16 KB（`writing/agents-md.md`，承载 5 条）。
+  长是因为每条都带可执行判断表，还是该再切，目前没有判据。
+- **`adoption/` 只有 1 条、1 篇。** 它值不值得独占一个板块，取决于 `guide/00` 会不会继续长出判据。
 
 ## 怎么回退
 
-`release/` 的三篇是从 `spec/checklist.md` 的 8 行**逐行抽取 + 补写解释**得到的，
-判据正文未改。回退 = `git revert` 这次重组的提交，`spec/checklist.md` 原样回来，
-`R0xx` 从未改过所以零损失。
+22 篇的「条目」小节全部是从 `spec/checklist.md` 的 55 行**逐行抽取 + 补写解释**得到的。
+重组后拿 `1cc59d0` 的 55 个存根做过逐句比对，实测：**55 条的 `为什么` / `怎么做` 句子零丢失**。
+其中 13 条非逐字，全部是折行与引号字形（`“”`→`"`）差异；2 条有意的措辞改动已记录：
+
+- `release/version-bump-why`：`清单引用数` → `条目引用数`、`R064`–`R069` → `release/tag-and-release 那一批`。
+  原句里的"清单"指已删除的 `spec/checklist.md`，照抄会指向不存在的东西。
+- `release/notes-sections`：模板内联进本页后，"按 §2.3 的模板写"改成"按 §2.3 的模板（本页上方）写"，
+  链接保留。
+
+回退 = `git revert` 这次重组的提交，`spec/checklist.md` 原样回来，`R0xx` 从未改过所以零损失。

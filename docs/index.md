@@ -31,7 +31,7 @@
 | 必需检查自锁的真实事故与恢复步骤 | [adr/0010-required-checks-self-lock.md](adr/0010-required-checks-self-lock.md) |
 | 为什么把"GitHub 管理面"提升成可判定条目（`R043`、`R060`–`R063`） | [adr/0011-github-management-rules.md](adr/0011-github-management-rules.md) |
 | 为什么"发布物怎么写"也要进清单（`R064`–`R070`） | [adr/0012-release-notes-spec.md](adr/0012-release-notes-spec.md) |
-| 为什么规则改成一条一个文件、ID 换成 `板块/主题`（2.0.0） | [adr/0013-rules-by-domain.md](adr/0013-rules-by-domain.md) |
+| 为什么规则按板块分**主题文档**、ID 换成 `板块/主题`（2.0.0） | [adr/0013-rules-by-domain.md](adr/0013-rules-by-domain.md) |
 | 中英两版谁是事实源 | [adr/0008-bilingual-equal-status.md](adr/0008-bilingual-equal-status.md) |
 | **证据与实测数据** | [evidence/](evidence/)（按采集日期命名：仓库采样、本仓库自审、官方文档摘录、分支保护实测） |
 

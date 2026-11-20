@@ -37,8 +37,8 @@
 - `spec/` — 规范骨架：`README.md`（怎么读、级别、**符合性声明**、版本与编号策略）、`agent-playbook.md`（agent 的阅读顺序）。
 - `spec/rules/` — **55 条规则**，按 8 个板块分目录：
   `adoption/` `documents/` `layout/` `writing/` `agent-config/` `governance/` `release/` `settings/`。
-  板块内**按话题成篇**（如 `release/` = `version.md` 版本号规则 / `content.md` 内容规则 /
-  `artifact.md` 发布物规则），**一条规则是某篇文档「条目」小节里的一节**。
+  板块内**按话题成篇**，共 **22 篇**（如 `release/` = `version.md` / `content.md` / `artifact.md`；
+  `settings/` = `branch-protection.md` / `ci.md`），**一条规则是某篇文档「条目」小节里的一节**。
   `rules/README.md` 是索引（一行一条：旧号 · ID · 级别 · 判据 · 承载页链接），**不含判据正文**。
   **ID 不等于路径**：`release/moving-tags` 的归属地是 `release/artifact.md`。
 - `templates/` — 复制到目标仓库的模板，含 `{{PLACEHOLDER}}`。

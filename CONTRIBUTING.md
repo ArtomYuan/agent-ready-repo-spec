@@ -49,7 +49,7 @@ fix(guide): 03 章的反例表格与正文不一致
 判据在 [`spec/rules/release/`](spec/rules/README.md)（8 条），写法在 [guide/06 §2](guide/06-信息该放哪.zh-CN.md)。这里只放**顺序**：
 
 1. 一个提交把 `CHANGELOG.md` 的 `[Unreleased]` 转成版本节，上面留一个空的 `[Unreleased]`；
-   版本节标题下写一句**升了哪一位、为什么**（`release/version-bump-why`），例：`1.6.0 → 2.0.0：规则改成一条一个文件、ID 换成 板块/主题，引用失效属破坏性变更 → major`；
+   版本节标题下写一句**升了哪一位、为什么**（`release/version-bump-why`），例：`1.6.0 → 2.0.0：规则按板块分主题文档、ID 换成 板块/主题，引用失效属破坏性变更 → major`；
 2. 同步三处会跟着变的声明：`spec/README.md` 的"当前 `specVersion`"、`README`/`README.zh-CN`/`AGENTS.md`
    的条目数、`.github/ISSUE_TEMPLATE/bug.yml` 的占位版本。**漏一处，首页就开始说谎**；
 3. 合并；
