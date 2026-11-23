@@ -19,6 +19,10 @@ L0 的五条里，四条（README、AGENTS.md、`.gitignore`、LICENSE）解决�
 判据很低：**存在一个 workflow，至少跑 lint + test**。不要求覆盖率、不要求多平台矩阵、
 不要求发布流水线。一条 `push` 触发的 `npm test` 就够 L0——它建立的是"有东西会红"这个事实。
 
+本库按字面判是**偏离**的：唯一 workflow `docs.yml` 没有 lint 也没有 test，两个 job 是链接检查与
+双语配对——它建立的仍是"有东西会红"，但照字面"跑 lint + test"没做到。按 `release/self-noncompliance`
+的精神在这里自曝，而不是把它读成达标。
+
 ## CI 是门禁的执行端
 
 [分支保护规则](branch-protection.md) 里的 `required_status_checks` 存的是**检查名**，

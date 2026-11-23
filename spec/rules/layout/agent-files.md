@@ -41,7 +41,7 @@
    **修复成本随提交次数单调上升**，唯一划算的策略是事前拦住。
 3. **它不在自己的档位上。** L2 解决的是"可追溯"，那一档几乎全是 `should`；这条却是 `must`，
    因为它的失效后果不在本档维度里——泄露的是凭证，爆炸半径见
-   [governance/credentials.md](../governance/ownership.md)。**判据的级别跟着后果走，不跟着话题走。**
+   [归属与凭证规则](../governance/ownership.md)。**判据的级别跟着后果走，不跟着话题走。**
 
 ## 状态判据 vs 机制判据：为什么要两条
 
@@ -115,7 +115,7 @@ $ git ls-files | grep settings.local
 | "已经加了 `.gitignore`，那个文件自然没了" | `.gitignore` 不作用于已跟踪文件 | `git rm --cached .claude/settings.local.json` |
 | "规矩写进 `CLAUDE.md` 就够了" | `CLAUDE.md` 是 context，不是 enforced configuration | 执行层写进 `.claude/settings.json`，见 [permissions 页](../agent-config/permissions.md) |
 | "`deny` 空着也算有文件" | 本页判存在性；`permissions.deny` 非空是另一条判据 | 见 [agent-config 板块的权限页](../agent-config/permissions.md) |
-| "个人文件里不会有令牌吧" | 个人覆盖的典型内容就是本机绝对路径与临时塞进去的 token | 泄露面与爆炸半径见 [governance/credentials.md](../governance/ownership.md) |
+| "个人文件里不会有令牌吧" | 个人覆盖的典型内容就是本机绝对路径与临时塞进去的 token | 泄露面与爆炸半径见 [归属与凭证规则](../governance/ownership.md) |
 
 ## 条目
 
@@ -149,7 +149,7 @@ $ git ls-files | grep settings.local
 - [docs/ 与跨工具资产位置](docs-tree.md) — 同一份 agent 资产该放 `.github/` 还是 `.claude/`
 - [agent-config 板块的权限页](../agent-config/permissions.md) — `permissions.deny` 该有什么
 - [hooks 与 skills 页](../agent-config/hooks-skills.md) — hooks 引用的脚本必须存在
-- [governance/credentials.md](../governance/ownership.md) — 为什么 agent 手里的凭证就是爆炸半径
+- [归属与凭证规则](../governance/ownership.md) — 为什么 agent 手里的凭证就是爆炸半径
 - [分支保护规则](../settings/branch-protection.md) — `non_fast_forward` 为什么让泄露无法事后清除
 - [templates/settings.json.tmpl](../../../templates/settings.json.tmpl) — 共享门禁的起点
 - [guide/02 · 目录结构](../../../guide/02-目录结构.zh-CN.md) — `.claude/` 与 `.github/` 的分工表

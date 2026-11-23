@@ -39,9 +39,9 @@ docs/
 
 ## 地图长什么样：本仓库实测
 
-[docs/index.md](../../../docs/index.md) 不按"教程/参考/架构"分，而按**读者**分三张表——
-「我是人，想用这套规范」「我是 agent，要替人管一个库」「我在看设计」，末尾一节「文档约定」。
-每行都是"我想做 X → 去哪"，不是文件清单。
+[docs/index.md](../../../docs/index.md) 不按"教程/参考/架构"分，而按**读者**分三节——
+「我是人，想用这套规范」「我是 agent，要替人管一个库」「我在看设计」（前两节是表，agent 节是正文加引用块），
+末尾一节「文档约定」。每行都是"我想做 X → 去哪"，不是文件清单。
 
 这不算偏离判据，反而说明判据落在哪：**地图要回答"我该点哪个"，分类轴可以是类型，也可以是读者。**
 本仓库 `docs/` 下只有 `adr/` 与 `evidence/` 两个子目录，没有 `guides/`、`operations/`，
@@ -57,7 +57,7 @@ docs/
 实测（[十仓采样 §1](../../../docs/evidence/2026-11-17-repo-sampling.md)）：十个样本里 **5 个有文档目录**，
 命名三种——`docs/`（`cli/cli`、`vercel/next.js`、`modelcontextprotocol/servers`）、
 `Doc/`（`python/cpython`）、`documentation/`（`sindresorhus/got`）；另外 5 个没有独立文档目录
-（`microsoft/vscode` 的文档在 wiki/站点）。
+（`microsoft/vscode` 的文档在 wiki/站点——此说出自 [guide/02 §1](../../../guide/02-目录结构.zh-CN.md) 的对照表，采样表该格为空）。
 
 → **新建用 `docs/`，存量不改名。** 改名让所有外部链接失效，收益远小于成本。
 规范因此只判"有没有一张地图"，不判"目录叫什么名"。
@@ -66,7 +66,7 @@ docs/
 
 一句话判据（同条目「怎么做」）：**只有某个工具用 → 那个工具的目录；可能被多个工具用 → `.github/`。**
 
-实测支撑（guide/02 §5 与 [十仓采样 §3](../../../docs/evidence/2026-11-17-repo-sampling.md)）：
+实测支撑（[guide/02 §1、§3](../../../guide/02-目录结构.zh-CN.md) 与 [十仓采样 §3](../../../docs/evidence/2026-11-17-repo-sampling.md)，下表按行合并两处来源）：
 
 | 仓库 | `.github/` 里的 agent 资产 |
 |---|---|

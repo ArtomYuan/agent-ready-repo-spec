@@ -84,6 +84,6 @@
 ## 相关
 
 - [分支保护规则](../settings/branch-protection.md) · [CI 规则](../settings/ci.md) — 需要记进「设置」节的两类落点
-- [guide/00 §2、§5](../../../guide/00-接入决策.zh-CN.md) — 载体选择、误区、五步接入
+- [guide/00 §2、§4、§5](../../../guide/00-接入决策.zh-CN.md) — 载体选择、五步接入、误区
 - [templates/adoption.md.tmpl](../../../templates/adoption.md.tmpl) — 模板
-- [../../docs/evidence/2026-11-17-repo-self-audit.md](../../../docs/evidence/2026-11-17-repo-self-audit.md) — 本库自己的采用记录问题
+- [docs/evidence/2026-11-17-repo-self-audit.md](../../../docs/evidence/2026-11-17-repo-self-audit.md) — 本库自审（可交接性）

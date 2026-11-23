@@ -52,6 +52,11 @@
 | `1` | **非阻塞**错误：报错被显示出来，流程照走 | 警告，且你接受它继续 |
 | `2` | **阻塞**：这次调用被拦下 | 真正的门禁 |
 
+三个退出码与 stderr 反馈通道的语义出自官方 Hooks reference
+（[code.claude.com/docs/en/hooks](https://code.claude.com/docs/en/hooks)，与
+[guide/05 附录](../../../guide/05-Agent参与怎么管理.zh-CN.md) 引的是同一条链接）；
+本库摘录里只落了 `exit 2`（[guide/04 §3](../../../guide/04-Agent怎么用.zh-CN.md)），`0` / `1` 两行是上游定义。
+
 写 `1` 的 hook 是最阴险的一种：它有日志、有报错、CI 里看着也红，但 agent 该改的文件一个都没被拦住。
 判据因此不是"有没有 hook"，而是"违规分支是不是 `exit 2`"。
 

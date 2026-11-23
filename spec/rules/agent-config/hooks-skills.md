@@ -38,7 +38,7 @@ hook 路径写错，门禁静默消失，比从来没配过 hook 更危险；ski
 
 ## skill：frontmatter 指向一次命中
 
-`description` 是 skill 被自动命中的唯一依据（本条判据的原话）。所以它要回答的是**"什么时候用我"**，
+`description` 是 skill 被自动命中的唯一依据（上游加载机制，本库证据文件未收录 Skills 原文）。所以它要回答的是**"什么时候用我"**，
 不是"我是什么"。可核对的写法差异：
 
 | | 示例 | 模型能否据此命中 |
@@ -95,8 +95,9 @@ Claude Code 那套放 `.claude/`（[guide/02 §5](../../../guide/02-目录结构
 **本库这两条都不适用。** [ADR-0009](../../../docs/adr/0009-spec-only-no-tooling.md) 把本库自带的
 `.claude/`（settings、hooks、skills、commands）整体删掉了，所以现在**本库里没有任何 hook 脚本，也没有任何 skill**；
 唯一的自动化是 `.github/workflows/docs.yml` 的两个必需检查，它们只校验文档自身。
-本页举的写法全部来自给被指导仓库的 [templates/AGENTS.md.tmpl](../../../templates/AGENTS.md.tmpl) 与官方文档摘录
-[Claude Code 文档摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md)。
+本页举的写法来自给被指导仓库的 [templates/AGENTS.md.tmpl](../../../templates/AGENTS.md.tmpl)、官方文档摘录
+[Claude Code 文档摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md)（hooks 与确定性部分），
+以及上游 Skills 的公开加载机制（frontmatter 的 `name` / `description`——该摘录未收录 Skills 一节）。
 
 ## 条目
 
