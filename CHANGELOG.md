@@ -74,13 +74,35 @@
   `为什么` / `怎么做` →「相关」指回对应章节。这是"有章节没条目"那个病
   （ADR-0011 / ADR-0012 / `release/version-bump-why` 三次发作）的结构解。
 - 决策、代价与回退见 [ADR-0013](docs/adr/0013-rules-by-domain.md)。
+- 全库活文件（`guide/` 16 个章节文件及 README、SECURITY、模板等）里的 `spec/checklist.md` 引用
+  全部重定向到 `spec/rules/README.md` 与对应承载页；历史叙述（ADR、旧 CHANGELOG 节）里的旧路径**刻意不改**。
 
 ### Added —— 版本策略补上"改 ID / 改路径算哪一档"
 
-- `spec/README.md`「版本策略」新增两条：**改规则 ID、改板块划分、改规则文件路径 → major**；
-  **改判据措辞但不改判定结果 → patch**。此前策略只覆盖"新增 should/may"和"收紧判据"，
+- `spec/README.md`「版本策略」新增四条：**改规则 ID、改板块划分、改规则文件路径 → major**；
+  **改判据措辞但不改判定结果 → patch**；**删条目、废弃条目 → major**；**新增板块、新增文档章节 → minor**。
+  前两条是 2.0.0 升号的直接依据，后两条是 2026-11-23 全量审计时补齐、与 `release/version.md`
+  的 8 行判断表对齐的。此前策略只覆盖"新增 should/may"和"收紧判据"，
   对换 ID 这件事**没有任何判据**——与 `release/moving-tags` 之前"要移动 tag 却没规则"、
   `release/version-bump-why` 之前"要升号却没规则"是同一种缺口第四次发作。
+
+### Fixed —— 2026-11-23 全量审计修正（6 处 blocker + 约 30 处 fix）
+
+- 事实修正：`ownership.md` 的 credentials 命中改 **0 命中**（该文件已并入本页）；
+  `surfaces.md` 的"清单里零条"改"1.5.0 才补上 `R046`"；`artifact.md` 引用的"2.0.0 已知问题"
+  （尚不存在）改指 CHANGELOG 1.5.0 重锚记录；`branch-protection.md` 三处"锁过一次"改"两次"
+  （ADR-0010 原文）；`R044` 自曝出处统一改指 guide/00 §6 与 CHANGELOG 1.5.0 节；
+  `agents-md.md`"样本里唯一超 200 行"限定为已记行数。
+- 实测数字：git 统计分母 58→59（截至 `06fe228`，并写明稳定口径 `main` 21/44）；作者邮箱大写变体
+  14→15 并标注字段口径；`AGENTS.md` 106 行 / 8281 字节；PR 模板 tmpl 33 行；installation 批准权限
+  14→15 项；自审 PR 字符数按 `#3`→`#6` 升序列出。
+- 规则对齐：`release/moving-tags` 怎么做补第三路径（正确锚是错锚祖先→超集，发更正版本是倒退，
+  直接记录偏差）；`templates/adoption.md.tmpl` 补「设置」节（含"谁能改"列，`adoption/record` 与
+  guide/07 均已声称模板有此节）；`settings/ci.md` 按 `release/self-noncompliance` 精神自曝本库无 lint/test。
+- 链接与指针：4 处链接标签还写着已删除的 `governance/credentials.md`；6 处小节号错位修正；
+  2 处链接文字层级；`revertable` 五步第 1 步补"在被 revert 提交的合并点上判"与只读探针；
+  #38→#39 的 create→modify 依赖如实入表。
+- `.gitignore` 删除体检产物 3 行残留（`/reports/`、`*.spec-report.*`——检查器已随 ADR-0009 删除）。
 ## [1.5.0] - 2026-11-18
 
 ### Fixed —— 扫掉 ADR-0009 的残留引用

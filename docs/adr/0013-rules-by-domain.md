@@ -165,4 +165,17 @@ ID 是**稳定的引用名**，文件名是**文档单位**。两者由索引那
 - `release/notes-sections`：模板内联进本页后，"按 §2.3 的模板写"改成"按 §2.3 的模板（本页上方）写"，
   链接保留。
 
+2026-11-23 全量审计又新增 2 处**有意的条目措辞改动**（均为事实修正，见 CHANGELOG 同名 Fixed 节）：
+
+- `agent-config/copilot-instructions` 为什么：「清单里零条」在条目落进清单后已失真，改为
+  「早期清单零条，1.5.0 才补上 `R046`」。
+- `settings/required-check-names` 为什么：「本仓库真的发生过一次」与 ADR-0010:17「前后踩了两次
+  同一个坑」矛盾，条目与承载页三处统一改为「两次」。
+- `release/moving-tags` 怎么做：补第三路径——正确锚点是错锚的祖先（错锚树是超集）时，
+  发更正版本是倒退，直接记录偏差。原句「能发 `1.4.1` 就别动 `1.4.0`」是无条件的，与本页正文矛盾。
+
+另有 1 处**接受的偏差**：`settings/workflow-permissions` 怎么做里的 GitHub 文档链接
+（`using-jobs/assigning-permissions-to-jobs`）已被官方重定向到新路径，旧链接仍可解析（HTTP 200），
+不改条目，留待下次动该条目时一并更新。
+
 回退 = `git revert` 这次重组的提交，`spec/checklist.md` 原样回来，`R0xx` 从未改过所以零损失。
