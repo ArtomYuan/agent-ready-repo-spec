@@ -51,7 +51,7 @@
 
 | 文件 | 行数 | 复选框总数 | 分布 |
 |---|---:|---:|---|
-| [templates/PULL_REQUEST_TEMPLATE.md.tmpl](../../../templates/PULL_REQUEST_TEMPLATE.md.tmpl) | 34 | 9 | 影响面 4 + 自检清单 5 |
+| [templates/PULL_REQUEST_TEMPLATE.md.tmpl](../../../templates/PULL_REQUEST_TEMPLATE.md.tmpl) | 33 | 9 | 影响面 4 + 自检清单 5 |
 | [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md) | 35 | 5 | 全部在自检清单 |
 
 注意"影响面"那 4 个框**不算进自检预算**：它们不是"我确认我做了 X"，而是"这次改动涉及哪些面"，

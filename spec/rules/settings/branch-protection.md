@@ -2,7 +2,7 @@
 
 > 板块 `settings` · 本页承载 3 条条目：`settings/main-protection`（L2 · should · 旧 `R060`）·
 > `settings/required-check-names`（L3 · should · 旧 `R043`）· `settings/linear-history`（L3 · may · 旧 `R051`）
-> 讲解与实测值见 [guide/07 §1–3、§6](../../../guide/07-该开哪些设置.zh-CN.md)。
+> 讲解与实测值见 [guide/07 §0–3、§6、§8](../../../guide/07-该开哪些设置.zh-CN.md)。
 
 ## 一句话
 
@@ -13,7 +13,7 @@
 **设置是"不依赖记忆的约束"。** 只要某件事必须永远成立，就用平台机制表达，而不是写进文档里的一个句子。
 
 推论同样重要：**每个你打开的开关都必须有主人。** 没人负责的设置页，在它把仓库锁死的那天也没人会去修。
-这条推论不是修辞——本库真的被自己配的开关锁过一次，见下面「唯一会把你锁在外面的一项」。
+这条推论不是修辞——本库真的被自己配的开关锁过两次，见下面「唯一会把你锁在外面的一项」。
 
 ## 为什么 agent 参与的仓库更需要这道门
 
@@ -24,7 +24,7 @@ agent 能提 PR、能改 `.github/workflows/`、能让检查变绿。如果它�
 
 ## 该开哪几项
 
-用 **ruleset**，不要用旧版分支保护（旧版没有 `bypass_actors` 的细粒度控制，也没有统一的策略来源）。
+用 **ruleset**，不要用旧版分支保护（本库的选择，对照见 [guide/07 §2](../../../guide/07-该开哪些设置.zh-CN.md)）。
 
 | 规则 | 作用 | 不开会怎样 |
 |---|---|---|
@@ -34,6 +34,11 @@ agent 能提 PR、能改 `.github/workflows/`、能让检查变绿。如果它�
 | `required_status_checks` | 指定检查必须绿 | 见下面那一节——**这一项配错会锁死仓库** |
 | `required_linear_history` | 只允许线性历史 | merge commit 让 revert 变成考古 |
 | `bypass_actors` **留空** | admin 也不能绕过 | "管理员可绕过"一开，上面五条全部变成建议 |
+
+"≥1 人工批准"是判据的目标态；本库 2026-11-17 的实测回读是 `required_approving_review_count = 0`
+（[docs/evidence/2026-11-17-protection-probe.md](../../../docs/evidence/2026-11-17-protection-probe.md) §1），
+而 `AGENTS.md` 的保护表写的是"1 个人工批准"——**这条判据要求你回读 ruleset，而不是读文档**，
+同一处矛盾的复盘见 [归属与凭证规则](../governance/ownership.md)。
 
 **`bypass_actors` 留空是这张表里唯一容易被"方便一下"就关掉的一项。** 需要应急通道，就显式写进
 ruleset 的 bypass 名单并留下记录，而不是打开"管理员可绕过"这个总开关。
@@ -47,7 +52,7 @@ ruleset 的 bypass 名单并留下记录，而不是打开"管理员可绕过"�
 删掉 workflow 或改掉 job 名，那个名字就永久停在
 `Expected — Waiting for status to be reported`——**不超时，也不认历史提交**，`main` 从此不可合并。
 
-本库真实发生过一次，恢复要靠改 ruleset。复盘见
+本库真实发生过两次（前后踩的是同一个坑），恢复要靠改 ruleset。复盘见
 [ADR-0010](../../../docs/adr/0010-required-checks-self-lock.md)。
 
 三条规矩：
@@ -85,7 +90,7 @@ agent 若能改 CI，就等于能给自己放行。反面教材本库亲身踩�
 `settings/required-check-names` · L3 · should · 旧 `R043`
 
 **为什么。** ruleset 里存的是**字符串**，不是引用。job 改名或删掉，那一项就永远停在
-`Expected — Waiting for status to be reported`，`main` 从此不可合并——**本仓库真的发生过一次**，
+`Expected — Waiting for status to be reported`，`main` 从此不可合并——**本仓库真的发生过两次**，
 恢复要靠改 ruleset。
 
 **怎么做。** 顺序固定：先加新名字的 job → 改 ruleset → **下一个 PR** 再删旧 job。
@@ -105,5 +110,5 @@ agent 若能改 CI，就等于能给自己放行。反面教材本库亲身踩�
 
 - [CI 规则](ci.md) — 必需检查由 workflow 上报，两边是一体两面
 - [采用记录规则](../adoption/record.md) — 保护配置、谁能改、破窗流程都要落进采用记录
-- [guide/07 §1–3、§6、§7](../../../guide/07-该开哪些设置.zh-CN.md) — 开关清单与实测值
+- [guide/07 §6–8](../../../guide/07-该开哪些设置.zh-CN.md) — 自锁事故、设置记录与本库实测值
 - [guide/05 附录](../../../guide/05-Agent参与怎么管理.zh-CN.md) — 完整事故过程

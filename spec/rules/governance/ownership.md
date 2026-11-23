@@ -41,15 +41,17 @@
 
 ## 本库现状：`governance/owner` 这条不合格
 
-不自曝的规范库没有信誉。`release/self-noncompliance`（旧 `R069`）要求规范类项目在 Release「已知问题」里
-列出自己不合格的条目，本库 1.5.0 已经这么处理过 `R044`；这里写清楚它到底差在哪、怎么恢复。
+不自曝的规范库没有信誉。`release/self-noncompliance`（旧 `R069`）要求规范类项目在发布物的已知问题里
+列出自己不合格的条目。本库对 `R044` 的自曝实际落在 [guide/00 §6](../../../guide/00-接入决策.zh-CN.md)
+与 CHANGELOG 1.5.0 节（"CODEOWNERS 目前不生效"）——`R069` 本身是 1.6.0 批次才加的 `may`，
+1.5.0 发布时还不存在，所以当时没有走 Release「已知问题」这个落点。这里写清楚它到底差在哪、怎么恢复。
 
 | 判据要素 | 本库实测状态 | 证据 |
 |---|---|---|
 | 治理面有单独的行 | **做到了**：`CODEOWNERS` 里 `/AGENTS.md`、`/.github/` 各占一行（另有 `*`、`/spec/`、`/guide/`） | 仓库根 `.github/CODEOWNERS` |
 | 这些行指向**独立**的 owner | **没做到**：五行全部指向同一个 `@ArtomYuan`。写代码的人、拥有治理面的人、批准合并的人是同一个人 | 同上 |
 | `Require review from Code Owners` | **没开**：2026-11-17 的 PUT body 里 `require_code_owner_reviews = $false` | [docs/evidence/2026-11-17-protection-probe.md](../../../docs/evidence/2026-11-17-protection-probe.md) §1 |
-| 文件是否生效 | **不生效**：`guide/00` 与本库 `CHANGELOG.md` 都明写"CODEOWNERS 目前只是索引 / 目前不生效" | [guide/00](../../../guide/00-接入决策.zh-CN.md) §本仓库自己 |
+| 文件是否生效 | **不生效**：`guide/00` 与本库 `CHANGELOG.md` 都明写"CODEOWNERS 目前只是索引 / 目前不生效" | [guide/00 §6 这个库自己怎么做的](../../../guide/00-接入决策.zh-CN.md) |
 | 本地 deny 基线 | **不适用**：本库按 ADR-0009 删掉了 `.claude/`，也没有权限基线文件；这一层等于空 | ADR-0009 |
 
 还有一处**文档与平台是两份数据**的实证：`AGENTS.md` 的保护表写"必须 PR；1 个人工批准"，
@@ -77,7 +79,7 @@
 | 回读点 | 实测结果 |
 |---|---|
 | `GET /app`（App **申请**的权限） | 16 项，含 `administration=write`、`workflows=write`、`repository_creation=write` |
-| `GET /app/installations/{id}`（installation **批准**的权限） | 14 项，**`administration` 这个 key 根本不存在**——不是 `read`，不是 `none`，是没有这一项 |
+| `GET /app/installations/{id}`（installation **批准**的权限） | 15 项（申请的 16 项减去 `administration`），**`administration` 这个 key 根本不存在**——不是 `read`，不是 `none`，是没有这一项 |
 | `POST …/access_tokens` 返回的 `token.permissions` | 与 installation 完全一致，同样没有 `administration` |
 | 实际调用 `PATCH /repos` | `403 Resource not accessible by integration`；`GET /repos` 回读 `permissions.admin = false` |
 | 批准扩权后重签 token | `installation.permissions` 与 `token.permissions` 两处**都**出现 `administration = write`，调用随即成功 |
@@ -97,7 +99,7 @@
 |---|---|---|
 | remote URL 里没有 token | `git config --get remote.origin.url` | `https://github.com/ArtomYuan/agent-ready-repo-spec.git`，干净 |
 | `.git/config` 里没有凭证 | 打开 `.git/config` 搜 `://` 与 `AUTHORIZATION` | 同上：token 走一次性 `http.extraheader`，不写进 remote |
-| 仓库里没有 `.env` / 凭证文件入库 | `git ls-files` 搜 `env` / `token` / `secret` / `pem` | 唯一命中是 `spec/rules/governance/credentials.md` 这个文件名本身 |
+| 仓库里没有 `.env` / 凭证文件入库 | `git ls-files` 搜 `env` / `token` / `secret` / `pem` | **0 命中**（2026-11-23 复测；此前唯一命中 `spec/rules/governance/credentials.md` 是本页旧名，已随 2.0.0 重构并入本文件） |
 | 日志与 PR 描述里没有 token 明文 | 搜 `ghs_` / `github_pat_` / `-----BEGIN` | 由评审核对；模板里也明写"绝不能把 token 拼进 remote URL（会明文落到 `.git/config`）" |
 
 正路写法在 [templates/prompt-github-app-git.md.tmpl](../../../templates/prompt-github-app-git.md.tmpl)：

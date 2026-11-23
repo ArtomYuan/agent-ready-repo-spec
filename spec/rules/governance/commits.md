@@ -16,7 +16,7 @@
 
 | 你想回答的问题 | 条目 | 载体在哪 | 档位 · 级别 |
 |---|---|---|---|
-| 这次提交是谁写的 | `governance/commit-attribution` | git trailer（`Co-Authored-By`） | L2 · should |
+| 这次提交是谁写的 | `governance/commit-attribution` | git trailer（`Co-authored-by`） | L2 · should |
 | 这个仓库的提交格式是什么 | `governance/commit-convention` | `AGENTS.md` 里的一行 | L3 · may |
 | 谁执行这个格式 | `governance/commit-lint-carrier` | commitlint 配置 + CI job 或 commit-msg hook | L2 · may |
 | 历史真的按格式走了吗 | `governance/conventional-subject` | `git log` 抽样 | L3 · may |
@@ -53,12 +53,12 @@
 
 | 观测 | 数值 | 说明 |
 |---|---|---|
-| `--all` 全部提交 | 58 | 含未合并分支 |
+| `--all` 全部提交 | 59 | 含未合并分支；**截至 `06fe228`**——这个数每个提交都会涨，稳定口径看下一行的 `main` |
 | 其中带 `Co-authored-by` 的 | 26 | 约四成半 |
-| `main` 上带 trailer 的 | 21 / 44 | 已合并历史里近半 |
-| **本分支最新 4 个提交带 trailer 的** | **0 / 4** | 归属线索**会静默消失**，不会有任何报错 |
-| 出现的 trailer 署名值 | 3 种 | `KujiraAgent[bot] <357582985+…>`、`KujiraAgent[bot] <5791552+…>`、`ArtomYuan <8846758+…>` |
-| 作者邮箱的大小写变体 | 2 种 | `357582985+KujiraAgent[bot]@…` 14 个提交、`357582985+kujiraagent[bot]@…` 21 个提交 |
+| `main` 上带 trailer 的 | 21 / 44 | 已合并历史里近半（main 未再前进，此数为稳定值） |
+| **本分支独有的 5 个提交带 trailer 的** | **0 / 5** | 归属线索**会静默消失**，不会有任何报错 |
+| 出现的 trailer 署名值 | 4 种（区分大小写） | `KujiraAgent[bot] <357582985+…>` 14、`KujiraAgent[bot] <5791552+…>` 6、`ArtomYuan <8846758+…>` 21、`kujiraagent[bot] <357582985+…>` 1 |
+| **作者邮箱**（`%ae`）的大小写变体 | 2 种 | `357582985+KujiraAgent[bot]@…` 15 个提交、`357582985+kujiraagent[bot]@…` 21 个提交 |
 
 两个真实坏法值得单独说：
 
@@ -67,8 +67,9 @@
   的对象行），`357582985` 才是 bot 用户 ID。填错只会得到一个"看起来对"的邮箱——
   [templates/prompt-github-app-git.md.tmpl](../../../templates/prompt-github-app-git.md.tmpl) 后来专门加了一句
   "`{{BOT_USER_ID}}` 是 bot **用户**的数字 id，**不是 App ID**"，就是为这个坑。
-- **大小写漂移让审计脚本漏掉一半。** 按 `357582985+KujiraAgent[bot]@users.noreply.github.com` 精确匹配，
-  只能命中 14 个提交，另外 21 个是同一个账号的小写写法。审计归属前先跑一次区分大小写的去重。
+- **大小写漂移让审计脚本漏掉一半。** 按作者邮箱 `357582985+KujiraAgent[bot]@users.noreply.github.com`
+  精确匹配，只能命中 15 个提交，另外 21 个是同一个账号的小写写法（注意口径：按 **trailer 值**匹配时
+  小写只有 1 条——两个字段别混）。审计归属前先跑一次区分大小写的去重。
 
 | 坏法 | 症状 | 怎么查 |
 |---|---|---|
@@ -79,7 +80,8 @@
 
 ## 格式合规不等于提交信息合格
 
-本库实测：`git log --all --format='%s'` 的 58 条 subject，**0 条**解析不出 `type(scope)?: subject`。
+本库实测：`git log --all --format='%s'` 的 59 条 subject（截至 `06fe228`），**0 条**解析不出
+`type(scope)?: subject`（正则：`^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([^\()]+\))?!?: .+`）。
 这条现在是绿的——但**没有任何东西保证它下个 PR 还是绿的**，因为载体那一层是空的。这正是
 `governance/conventional-subject` 与 `governance/commit-lint-carrier` 必须分成两条的原因。
 

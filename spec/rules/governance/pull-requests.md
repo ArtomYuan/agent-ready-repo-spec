@@ -14,11 +14,12 @@ PR 声明让 reviewer 在读 diff **之前**就知道该怎么读它。
 
 | 层 | 机制 | 谁在什么时候读到 | 本库落点 |
 |---|---|---|---|
-| 提交层 | `Co-Authored-By` trailer（`governance/commit-attribution`，旧 `R029`） | 事后审计、`git log`、bisect | 历史里 26 / 58 个提交带 trailer（`git log --all` 实测） |
+| 提交层 | `Co-authored-by` trailer（`governance/commit-attribution`，旧 `R029`） | 事后审计、`git log`、bisect | 历史里 26 / 59 个提交带 trailer（`git log --all` 实测，截至 `06fe228`；稳定口径看 `main`：21 / 44） |
 | 评审层 | PR 描述第一节的工具 / 模型 + 人工复核人（`governance/pr-declaration`，旧 `R048`） | reviewer 决定"这个 diff 该怎么读"的那一刻 | [`.github/PULL_REQUEST_TEMPLATE.md`](../../../.github/PULL_REQUEST_TEMPLATE.md) 的第一节 |
 
 两条**并列、不互相推翻**。这不是和稀泥，是有反例逼出来的：`kubernetes/kubernetes` 走的是相反路线——
-"**Do not add `Co-authored-by:`** in commit messages"，改为在 PR 层面要求声明 AI 使用、并由人类作者承担全部责任
+"**Do not add `Co-authored-by:`** in commit messages"，把归属移到 PR 描述与 AI 使用声明里，
+避免提交历史被机器署名污染
 （采样记录见 [docs/evidence/2026-11-18-agent-docs-sampling.md](../../../docs/evidence/2026-11-18-agent-docs-sampling.md) §三）。
 [ADR-0011](../../../docs/adr/0011-github-management-rules.md) 把这件事写得很直白：`R048` 与 `R029` 有表面张力，
 本库的处理是两层线索并存，**这是妥协，不是消解**——所以 `R048` 只停在 `may`，评审时值得盯一眼。
@@ -45,8 +46,10 @@ L3 的判据是"可拒绝、可回滚、不腐烂"。"可拒绝"有闸门（`set
 `settings/required-check-names` 旧 `R043`），而"可回滚"此前**没有任何条目**——这就是 `governance/revertable` 补的洞。
 判据要能落到动作上，按顺序过五步：
 
-1. **一条命令的判据**：在干净工作区上 `git revert <squash-sha>` 不带冲突。带冲突就说明这次改动和别的改动缠在一起了，
-   先回去拆 PR，别急着找"怎么强行 revert"。
+1. **一条命令的判据**：在**被 revert 提交所在的 tree（它的合并点）**上 `git revert <squash-sha>` 不带冲突。
+   只读探针：`git show <squash-sha> | git apply -R --check -`——必须在合并点上跑，后续重写会让旧补丁
+   在当前 HEAD 上反向应用失败（本页四个正例在 `06fe228` 上全部失败，正是这个原因）。
+   带冲突就说明这次改动和别的改动缠在一起了，先回去拆 PR，别急着找"怎么强行 revert"。
 2. **前置开关**：只允许 squash + 线性历史（本库 `AGENTS.md` 的保护表就是这么写的）。
    merge commit 会把一条 PR 的变化摊到两个父提交上，`git revert -m 1` 属于考古，不属于回滚。
    开关本身见 [分支保护规则](../settings/branch-protection.md)。
@@ -73,7 +76,7 @@ L3 的判据是"可拒绝、可回滚、不腐烂"。"可拒绝"有闸门（`set
 
 | PR | 内容 | 判定 |
 |---|---|---|
-| #37 / #38 / #39 | 各修一处：去掉 ADR 里写死的条数 / 把"改不了描述"的成因写对 / 记一条 `PATCH /repos` 静默忽略 `topics` | **正例**。三个小 PR 互不依赖，revert 任意一个，另外两个仍然成立 |
+| #37 / #38 / #39 | 各修一处：去掉 ADR 里写死的条数 / 把"改不了描述"的成因写对 / 记一条 `PATCH /repos` 静默忽略 `topics` | **正例**——但依赖关系要写清：#37 与另两个独立；#38→#39 是 create→modify 依赖（4/4 文件重合，#39 改的正是 #38 新建的证据文件），revert #38 会删掉 #39 已改过的文件——这恰好就是第 4 步要你提前列出来的那种副作用 |
 | #22 | 删掉 `checker/`、`tests/`、`action.yml`、`.github/workflows/ci.yml`（ADR-0009） | **正例**。体量大但目的单一，revert 就是整树恢复；它的问题不是不可回滚，是回滚之后 ruleset 里的旧检查名没人上报——见 [ADR-0010](../../../docs/adr/0010-required-checks-self-lock.md) |
 | #35 | 一次做了：新增 11 条管理面条目、**改写编号策略**（推翻 #33 立的"号段 = 档位"）、把符合性声明同步到 1.5.0、给 PR 模板加"本次是否有 agent 参与"一节、同步 `guide/00`/`05`/`07` 的中英附录 | **反例**。CHANGELOG 自己写着"本 PR 就是推翻它的那一个"——revert 它等于同时撤掉"加条目"和"推翻号段约定"两个决定，而这两个决定本该分开评审、分开回滚 |
 

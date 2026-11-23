@@ -1,7 +1,7 @@
 # 发布物规则
 
-> 板块 `release` · 本页承载 4 条条目：`release/tag-and-release`（L2 · should · 旧 `R064`）·
-> `release/changelog`（L1 · should · 旧 `R014`）· `release/moving-tags`（L2 · should · 旧 `R067`）·
+> 板块 `release` · 本页承载 4 条条目：`release/changelog`（L1 · should · 旧 `R014`）·
+> `release/tag-and-release`（L2 · should · 旧 `R064`）· `release/moving-tags`（L2 · should · 旧 `R067`）·
 > `release/superseded-tags`（L3 · may · 旧 `R068`）
 > 讲解与出处见 [guide/06 §2 开头与 §2.5](../../../guide/06-信息该放哪.zh-CN.md)。
 
@@ -45,7 +45,8 @@
 第 1 步和第 2 步之间有个容易踩的判断坑：**"更正版本"必须内容更多，不能更少。**
 如果错锚的 tag 指向的树其实是**超集**（它包含了后来的提交），那在它上面发一个更高版本号、
 更少内容的版本，是**倒退**——这种情况下第 1 步不适用，直接走"记录偏差"。
-本库 `v1.4.0` 就是这个情形，见 [ADR-0012](../../../docs/adr/0012-release-notes-spec.md) 与本库 `2.0.0` 的已知问题。
+本库 `v1.4.0` 就是这个情形，见 [ADR-0012](../../../docs/adr/0012-release-notes-spec.md)
+与 CHANGELOG `1.5.0` 节里"把 `v1.4.0` 重锚到 `7b66cc3`"的记录。
 
 ## 废弃的 tag 不删
 
@@ -80,8 +81,9 @@
 **为什么。** tag 可以被移动，而钉住它的人会**静默**拿到另一棵树——这是没有 diff 可读的
 破坏性变更，比改代码更隐蔽。
 
-**怎么做。** 能发 `1.4.1` 就别动 `1.4.0`；确实要动，就把三个值同时写进 Release 正文与 CHANGELOG。
-程序见 [guide/06](../../../guide/06-信息该放哪.zh-CN.md) §2.5。
+**怎么做。** 能发 `1.4.1` 就别动 `1.4.0`；但若正确锚点是错锚的**祖先**（错锚树是超集），
+发更正版本等于倒退，这一步不适用，直接**记录偏差**（旧锚、正确锚、原因，写进 Release 与 CHANGELOG）；
+确实要移动，就把三个值同时写进 Release 正文与 CHANGELOG。程序见 [guide/06](../../../guide/06-信息该放哪.zh-CN.md) §2.5。
 
 ### 废弃 tag 标 *Superseded* 并指向替代 tag，不删 tag
 
@@ -96,4 +98,4 @@
 - [版本号规则](version.md) — 什么时候发、哪一位该动、怎么声明
 - [内容规则](content.md) — Release 正文的四节与两类禁写文字
 - [guide/06 §2、§2.5](../../../guide/06-信息该放哪.zh-CN.md) — 三产物分工与 tag 移动程序
-- [../../docs/adr/0012-release-notes-spec.md](../../../docs/adr/0012-release-notes-spec.md) — 这一批条目的由来
+- [docs/adr/0012-release-notes-spec.md](../../../docs/adr/0012-release-notes-spec.md) — 这一批条目的由来

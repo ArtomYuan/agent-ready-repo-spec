@@ -39,15 +39,17 @@ owner **必须是人类账号或团队，不能是 bot 或 agent**：闸门由�
 
 **本库自己就是"形式合规、闸门无效"的样本**：`.github/CODEOWNERS` 五条规则（`*`、`/spec/`、`/guide/`、
 `/AGENTS.md`、`/.github/`）全指向同一个 `@ArtomYuan`——文件在、覆盖也对，但没有一条路径有独立的第二双眼睛。
-这正是 `governance/owner`（旧 `R044`）在本库长期不合格的那一条，本库在 `1.5.0` 的 Release「已知问题」里自曝过它。
-owner 归属见 [治理面归属规则](../governance/ownership.md)，门禁见 [分支保护规则](../settings/branch-protection.md)。
+这正是 `governance/owner`（旧 `R044`）在本库长期不合格的那一条，本库在 [guide/00 §6](../../../guide/00-接入决策.zh-CN.md)
+与 CHANGELOG `1.5.0` 节自曝过它（当时 `release/self-noncompliance` 还不存在，未走 Release「已知问题」落点）。
+owner 归属与 `Require review from Code Owners` 开关见 [治理面归属规则](../governance/ownership.md)，
+ruleset 六项见 [分支保护规则](../settings/branch-protection.md)。
 
 ## PR 模板：字段要糊不过去
 
 判据是"模板是唯一能稳定拿到的结构化信息"。但**模板本身不产生信息**——本库自审实测：`#3`–`#6` 四个 PR
-正文分别是 163 / 163 / 159 / 165 个字符，全是同一套模板套话，信息量≈0
+正文按 `#3`→`#6` 分别是 165 / 159 / 163 / 163 个字符，全是同一套模板套话，信息量≈0
 （[本库自审](../../../docs/evidence/2026-11-17-repo-self-audit.md) §2）。所以：**能被套话填满的字段等于没有字段**。
-本库 `.github/PULL_REQUEST_TEMPLATE.md` 里两处设计糊不过去：「怎么验证的」配注释"贴真实输出，不要写'已测试'"
+本库 `.github/PULL_REQUEST_TEMPLATE.md` 里两处设计糊不过去：「怎么验证的」配注释"贴真实输出或可复现步骤，不要写'已测试'"
 ——真实输出必须跑一遍才有；「非目标」配注释"不写，下一个人会当成漏了"——强迫作者交代刻意没做的部分。
 
 **自检清单该含什么**是 `writing/` 的判据，见 [PR 模板写法规则](../writing/pr-template.md)；

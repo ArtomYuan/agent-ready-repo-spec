@@ -17,7 +17,7 @@
 | `AGENTS.md`（根） | 多数 agent 默认读根目录 | **主体**。存在性与内容见 [文档必备项](../documents/essentials.md) 与 [AGENTS.md 写法](../writing/agents-md.md) |
 | `CLAUDE.md` | 若你用 Claude Code | 薄适配层：第一行指向 `AGENTS.md`，只留该工具专属补充（本页 `agent-config/claude-md-thin`） |
 | `.github/copilot-instructions.md` | 若你用 Copilot | 与 `AGENTS.md` **二选一**放细则，另一处只放指针（本页 `agent-config/copilot-instructions`） |
-| `.github/instructions/*.instructions.md` + `applyTo` | 若你用 Copilot | 分主题指令的正路，见 [2026-11-18 采样](../../../docs/evidence/2026-11-18-agent-docs-sampling.md) |
+| `.github/instructions/*.instructions.md` + `applyTo` | 若你用 Copilot | 分主题指令的正路（这套语法是 GitHub Copilot 官方机制，本库证据文件未收录其原文）；实测体积见 [2026-11-18 采样](../../../docs/evidence/2026-11-18-agent-docs-sampling.md) |
 | `.claude/settings.json`、`.claude/rules/*.md` | 若你用 Claude Code | 只服务这一个工具的资产才进 `.claude/`；该不该提交见 [目录与 agent 文件](../layout/agent-files.md) |
 | auto memory（工具本机） | 若你用 Claude Code | **机器本地，不跨机器共享**——不能当事实源。原文见 [Claude Code 文档摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md) |
 
@@ -118,7 +118,7 @@ vscode 那 8 行值得抄，它只做两件事：**指向真正的细则**，以
 
 `agent-config/copilot-instructions` · L3 · may · 旧 `R046`
 
-**为什么。** 实测里 `.github/copilot-instructions.md` 在头部仓库是主战场：`microsoft/vscode` 14.5 KB、`denoland/deno` 12.3 KB、`supabase/supabase` 6.5 KB。本库的 `guide/02` 只在表格里提了一句，清单里**零条**——自己的证据没有转化成规则。
+**为什么。** 实测里 `.github/copilot-instructions.md` 在头部仓库是主战场：`microsoft/vscode` 14.5 KB、`denoland/deno` 12.3 KB、`supabase/supabase` 6.5 KB。本库早期清单里这一条**零条**（`guide/02` 只在表格里带过），1.5.0 才补上 `R046`——证据先于规则，这条本身就是补上的产物。
 
 **怎么做。** 细则只放一处（`AGENTS.md` 或 `.github/copilot-instructions.md`），另一处只放指针；分主题指令用 `.github/instructions/*.instructions.md` + `applyTo`。证据：[2026-11-18 采样](../../../docs/evidence/2026-11-18-agent-docs-sampling.md)。
 
