@@ -4,6 +4,7 @@
 > `governance/commit-convention`（L3 · may · 旧 `R041`）· `governance/commit-lint-carrier`（L2 · may · 旧 `R028`）·
 > `governance/conventional-subject`（L3 · may · 旧 `R050`）
 > 讲解与事故见 [guide/05 · Agent 参与怎么管理](../../../guide/05-Agent参与怎么管理.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -111,15 +112,15 @@
 
 `governance/commit-attribution` · L2 · should · 旧 `R029`
 
-**为什么。** Claude Code 默认给提交加 git trailer（`Co-Authored-By: <model> <noreply@anthropic.com>`），这是 agent 参与最便宜的审计手段；把它关掉，事后就分不清哪次提交是模型写的。
+**为什么。** 若你的工具默认给提交加会话署名 trailer（`Co-Authored-By: <model> <noreply 地址>`，具体署名值见 [机制对照表](../../mechanism-map.md)），这是 agent 参与最便宜的审计手段；把它关掉，事后就分不清哪次提交是模型写的。
 
-**怎么做。** 删掉 attribution 的 false / 空字符串；要改文案就保留 trailer，例如 `attribution.commit: "Co-Authored-By: Claude <noreply@anthropic.com>"`。
+**怎么做。** 删掉 attribution 的 false / 空字符串；要改文案就保留 trailer，只改署名文案（该工具专有的设置名见 [机制对照表](../../mechanism-map.md)）。
 
 ### 仓库自己的提交约定写进 AGENTS.md
 
 `governance/commit-convention` · L3 · may · 旧 `R041`
 
-**为什么。** Claude Code 默认自带一套提交/PR 指令（includeGitInstructions=true）。仓库若另有约定，必须写进 AGENTS.md，否则两套指令打架；要么在这里声明，要么把内置指令关掉（includeGitInstructions=false）。
+**为什么。** 若你的工具自带一套提交/PR 指令（这类内置开关通常默认开启，开关名见 [机制对照表](../../mechanism-map.md)）。仓库若另有约定，必须写进 AGENTS.md，否则两套指令打架；要么在这里声明，要么把内置指令关掉。
 
 **怎么做。** 在 AGENTS.md 的“硬约定”里写一行提交约定；若关闭了内置指令，则必须写清楚完整规则。
 
@@ -127,7 +128,7 @@
 
 `governance/commit-lint-carrier` · L2 · may · 旧 `R028`
 
-**为什么。** GitHub 自家仓库大多不强制提交格式（actions/checkout 只在 CONTRIBUTING 里给一条外部链接），Claude Code 也不内置格式校验——所以这条不是行业基线，而是**可选升级**：只有当你希望按前缀自动生成 CHANGELOG / 自动发版时才需要它。
+**为什么。** GitHub 自家仓库大多不强制提交格式（actions/checkout 只在 CONTRIBUTING 里给一条外部链接），agent 工具本身也不内置格式校验——所以这条不是行业基线，而是**可选升级**：只有当你希望按前缀自动生成 CHANGELOG / 自动发版时才需要它。
 
 **怎么做。** 加 commitlint 配置（extends @commitlint/config-conventional），并在 CI 或 commit-msg hook 里跑起来；不需要自动化的仓库可以不管这条。
 
@@ -147,6 +148,7 @@
 - [分支保护规则](../settings/branch-protection.md) — 必需检查名与 job 名的耦合、线性历史
 - [CI 规则](../settings/ci.md) — 载体若要进 CI，先看 workflow 权限与 Action 固定 SHA
 - [采用记录规则](../adoption/record.md) — 不加载体时，把"不采用 + 理由"写下来
+- [机制对照表](../../mechanism-map.md) — 会话署名 trailer 与工具专有设置名 ↔ 具体写法（附录，非规范）
 - [guide/05 · Agent 参与怎么管理](../../../guide/05-Agent参与怎么管理.zh-CN.md) — 留痕与回滚、反例表
 - [guide/06 · 信息该放哪](../../../guide/06-信息该放哪.zh-CN.md) — subject 可解析才能自动生成 CHANGELOG
 - [guide/03 · 文档该怎么写](../../../guide/03-文档该怎么写.zh-CN.md) — `AGENTS.md` 里"两套指令打架"的原处

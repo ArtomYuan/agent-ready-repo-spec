@@ -7,7 +7,7 @@
 一个**纯规范文档库**：讲清楚"一个 agent 参与的 GitHub 仓库该长什么样、文档该怎么写、agent 参与时该怎么管理"。
 
 - **不含规则引擎**：没有检查器、没有生成器、没有包管理器清单。唯一的自动化是平台自带的两个必需检查（链接检查 / 双语配对，见 [`.github/workflows/docs.yml`](.github/workflows/docs.yml)），它们只校验文档自身的一致性，**不校验规则**。见 [ADR-0009](docs/adr/0009-spec-only-no-tooling.md)。
-- **不绑定任何语言或工具**：不默认读者用 Claude、Codex 或 Cursor，也不要求读者装任何运行时。
+- **不绑定任何语言或工具**：不默认读者用任何具体 agent 工具，也不要求读者装任何运行时。
 - 使用者做的是：读文档 → 复制模板 → 对着 [spec/rules/README.md](spec/rules/README.md) 逐条比对。
 
 ## 语言约定
@@ -34,7 +34,8 @@
 ## 目录地图
 
 - `guide/` — 指导正文，八章 + 索引。**每章都有中英两版**（`xxx.md` 与 `xxx.zh-CN.md`）。
-- `spec/` — 规范骨架：`README.md`（怎么读、级别、**符合性声明**、版本与编号策略）、`agent-playbook.md`（agent 的阅读顺序）。
+- `spec/` — 规范骨架：`README.md`（怎么读、级别、**符合性声明**、版本与编号策略）、`agent-playbook.md`（agent 的阅读顺序）、
+  `mechanism-map.md`（附录：机制对照表，**非规范**——具体工具名只允许出现在它与 `docs/evidence/`）。
 - `spec/rules/` — **55 条规则**，按 8 个板块分目录：
   `adoption/` `documents/` `layout/` `writing/` `agent-config/` `governance/` `release/` `settings/`。
   板块内**按话题成篇**，共 **22 篇**（如 `release/` = `version.md` / `content.md` / `artifact.md`；
@@ -62,7 +63,9 @@
 
 - 不新增第二份规则清单，也不在归属小节之外复述判据（会立刻产生漂移）。
 - 不改旧号 `R0xx`，不改板块名。旧号永不复用；板块名编码在每条 ID 里。
-- 不默认读者的 agent 工具：需要提到具体工具时，写成条件式（"若你用 Claude Code…"）。
+- 不默认读者的 agent 工具：提到某类机制一律写成条件式（"若你的工具存在 X"——**存在即适用、不存在即不适用**）。
+  规范正文**零工具名**：通用术语见 [ADR-0014](docs/adr/0014-tool-neutral-spec.md)，通用术语 ↔ 具体文件名的对照见
+  [spec/mechanism-map.md](spec/mechanism-map.md)（附录，非规范）；具体工具名只出现在那份附录与 `docs/evidence/`。
 - 不在文档里写"必须装 X"——除非那是被指导仓库自己的选择。
 - 不提交个人配置（`.env`、本地路径、私有凭证）。
 
@@ -76,7 +79,7 @@
   （lychee 没开 `--include-fragments`，锚点错了 CI 不红）。定位靠在小节里搜 ID。
 - **`guide/` 不许开子目录**：`双语配对` 用的是 `for f in guide/*.md`，**平铺 glob 不递归**，
   子目录里的文件会静默不被检查。规则拆目录只发生在 `spec/rules/`。
-- **删过的东西还会有引用**：本仓库曾删掉检查器与 `.claude/`（ADR-0009），历史的 ADR 里刻意保留旧命名，
+- **删过的东西还会有引用**：本仓库曾删掉检查器与工具专属资产目录（ADR-0009），历史的 ADR 里刻意保留旧命名，
   新文档不要再引用已删除的路径。
 - **git 历史统计会随提交腐烂**：写"共 N 个提交 / N 行 / N 字节"的每一个数都会在下一个提交过期。
   要么锚到稳定参照（`main`、某个 tag、`截至 <sha>`），要么不写精确值——2026-11-23 审计一轮就查出 6 处过期数。

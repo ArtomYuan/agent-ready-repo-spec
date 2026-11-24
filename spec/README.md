@@ -3,6 +3,12 @@
 这一节说明**怎么读这套规范**。规则索引见 **[rules/README.md](rules/README.md)**（一行一条，含旧号、档位、级别、路径）；
 **判据正文在各规则文件里**，索引不复制它。
 
+> **规范正文只用通用术语，不出现任何工具名**（[ADR-0014](../docs/adr/0014-tool-neutral-spec.md)）。
+> 读到"工具专属指令文件""共享工具配置文件""门禁 hook"这类词，想知道它在你用的工具里是哪个文件，
+> 查 **[mechanism-map.md](mechanism-map.md)**（附录：机制对照表，**非规范**——不承载判据、不参与符合性声明、允许过期）。
+> 本目录的内容分工：`README.md`（怎么读）与 `agent-playbook.md`（agent 的阅读顺序）是规范骨架，
+> `rules/`（55 条判据）是规范正文，`mechanism-map.md` 只是查表用的附录。
+
 ## 一个仓库的四个成熟阶段
 
 级别只回答一件事：**这一档在解决什么问题**。要哪些文件、每条怎么判，一律看
@@ -27,7 +33,7 @@
 
 | 严重度 | 含义 | 典型 |
 |---|---|---|
-| `must` | 缺了就是硬伤，会在几周内咬人 | 提交了 `settings.local.json`、`.gitignore` 没排除个人配置 |
+| `must` | 缺了就是硬伤，会在几周内咬人 | 提交了个人覆盖文件、`.gitignore` 没排除个人配置 |
 | `should` | 该有；没有会让协作或治理变形 | 无 CODEOWNERS、无 ADR、`permissions.deny` 为空 |
 | `may` | 加分项，视项目规模取舍 | 无 CODE_OF_CONDUCT、无 `.editorconfig`、无 `.gitattributes` |
 
@@ -37,7 +43,7 @@
 
 规范要能被"符合"，否则它只是建议。一个仓库可以在自己的文档里写：
 
-> 本仓库符合 `agent-ready-repo-spec 2.0.0`，目标档位 **L2**。
+> 本仓库符合 `agent-ready-repo-spec 3.0.0`，目标档位 **L2**。
 
 **声明的四个条件**——缺任何一条就不该这么写：
 
@@ -99,7 +105,7 @@
 
 ## 版本策略
 
-- `specVersion` 遵循 SemVer（当前 **2.0.0**）。
+- `specVersion` 遵循 SemVer（当前 **3.0.0**）。
 - **新增 `may`/`should` 条目** → minor。
 - **新增板块、新增文档章节** → minor。
 - **把条目改成 `must`，或收紧判据** → major（照做的人会突然"不合格"）。

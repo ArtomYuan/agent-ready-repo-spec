@@ -1,7 +1,8 @@
-# 各工具的指令面规则
+# 指令面规则
 
-> 板块 `agent-config` · 本页承载 2 条条目：`agent-config/claude-md-thin`（L3 · should · 旧 `R033`）· `agent-config/copilot-instructions`（L3 · may · 旧 `R046`）
+> 板块 `agent-config` · 本页承载 2 条条目：`agent-config/adapter-thin`（L3 · should · 旧 `R033`）· `agent-config/instructions-single`（L3 · may · 旧 `R046`）
 > 讲解与依据见 [guide/04 · Agent 怎么用](../../../guide/04-Agent怎么用.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -12,25 +13,25 @@
 
 ## 指令面清单：谁读哪一份
 
-| 文件 | 谁会读 | 本库立场 |
+| 指令面 | 谁会读 | 本库立场 |
 |---|---|---|
 | `AGENTS.md`（根） | 多数 agent 默认读根目录 | **主体**。存在性与内容见 [文档必备项](../documents/essentials.md) 与 [AGENTS.md 写法](../writing/agents-md.md) |
-| `CLAUDE.md` | 若你用 Claude Code | 薄适配层：第一行指向 `AGENTS.md`，只留该工具专属补充（本页 `agent-config/claude-md-thin`） |
-| `.github/copilot-instructions.md` | 若你用 Copilot | 与 `AGENTS.md` **二选一**放细则，另一处只放指针（本页 `agent-config/copilot-instructions`） |
-| `.github/instructions/*.instructions.md` + `applyTo` | 若你用 Copilot | 分主题指令的正路（这套语法是 GitHub Copilot 官方机制，本库证据文件未收录其原文）；实测体积见 [2026-11-18 采样](../../../docs/evidence/2026-11-18-agent-docs-sampling.md) |
-| `.claude/settings.json`、`.claude/rules/*.md` | 若你用 Claude Code | 只服务这一个工具的资产才进 `.claude/`；该不该提交见 [目录与 agent 文件](../layout/agent-files.md) |
-| auto memory（工具本机） | 若你用 Claude Code | **机器本地，不跨机器共享**——不能当事实源。原文见 [Claude Code 文档摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md) |
+| 工具专属指令文件 | 若你的工具在 `AGENTS.md` 之外还读自己的文件 | 薄适配层：第一行指向 `AGENTS.md`，只留该工具专属补充（本页 `agent-config/adapter-thin`） |
+| 平台级指令文件 | 若你的 agent 走代码托管平台的指令位 | 与 `AGENTS.md` **二选一**放细则，另一处只放指针（本页 `agent-config/instructions-single`） |
+| 分主题指令文件 | 若你的工具支持按路径生效的分主题指令 | 分主题指令的正路；实测体积见 [2026-11-18 采样](../../../docs/evidence/2026-11-18-agent-docs-sampling.md) |
+| 共享工具配置文件、工具专属规则文件 | 若你的工具读仓库内的权限/hook 声明 | 只服务这一个工具的资产才进工具专属目录；该不该提交见 [目录与 agent 文件](../layout/agent-files.md) |
+| 机器本地记忆 | 若你的工具在本机积累记忆 | **机器本地，不跨机器共享**——不能当事实源。原文见 [证据摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md) |
 
 放哪一条判断规则就够：**只有这一个工具用的 → 工具的私有目录；任何别的工具也可能要的 → 公共位置。**
 完整对照表在 [guide/02 §5](../../../guide/02-目录结构.zh-CN.md)。
 
 ## 所有指令面都只是提示
 
-这一点决定了本页为什么只要求"别双写"，不要求"写得更严"。官方文档的原话是：
-`CLAUDE.md` files… Claude treats them as **context, not enforced configuration**
-（[Claude Code 文档摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md) §2）。
+这一点决定了本页为什么只要求"别双写"，不要求"写得更严"。官方文档的口径是：
+指令文件是 **context，不是 enforced configuration**
+（原文见 [证据摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md) §2）。
 
-也就是说：不管你把同一句话写进 `AGENTS.md`、`CLAUDE.md` 还是 `copilot-instructions.md`，
+也就是说：不管你把同一句话写进主体指令文件、工具专属指令文件还是平台级指令文件，
 它的执行强度都是**模型自己决定**那一档。写三份不会更硬，只会三份不一致。
 "绝不能有例外"的那几条要升级到确定性机制，那是 [权限与 hook 门禁](permissions.md) 的事。
 
@@ -44,14 +45,14 @@
 
 | 仓库 | 实测（2026-11-18 快照） | 谁是主体 |
 |---|---|---|
-| `microsoft/vscode` | `AGENTS.md` **8 行 / 0.5 KB**，`.github/copilot-instructions.md` **14.5 KB** | Copilot 文件是主体，`AGENTS.md` 是路由层 |
-| `supabase/supabase` | `AGENTS.md` **7 KB / 78 行**，`copilot-instructions.md` **6.5 KB** | 两份都在写细则——体积上看不出谁是主体 |
-| `denoland/deno` | `CLAUDE.md` **11.6 KB** + `copilot-instructions.md` **12.3 KB** | 两份都超过 10 KB，几乎不可能互为指针 |
+| `microsoft/vscode` | `AGENTS.md` **8 行 / 0.5 KB**，平台级指令文件 **14.5 KB** | 平台级文件是主体，`AGENTS.md` 是路由层 |
+| `supabase/supabase` | `AGENTS.md` **7 KB / 78 行**，平台级指令文件 **6.5 KB** | 两份都在写细则——体积上看不出谁是主体 |
+| `denoland/deno` | 工具专属指令文件 **11.6 KB** + 平台级指令文件 **12.3 KB** | 两份都超过 10 KB，几乎不可能互为指针 |
 
 vscode 那 8 行值得抄，它只做两件事：**指向真正的细则**，以及**把最容易做错的那一条直接写在门口**。
-注意它的方向和 `agent-config/claude-md-thin` 相反（那条要求 `AGENTS.md` 厚、`CLAUDE.md` 薄）——
+注意它的方向和 `agent-config/adapter-thin` 相反（那条要求主体厚、适配层薄）——
 这不矛盾：**判据不是"谁厚"，是"同一句细则只有一个归属地"**。本库选 `AGENTS.md` 当主体，
-因为它是跨工具的那一份；若你的团队只有 Copilot，反过来也成立，但只该有一处。
+因为它是跨工具的那一份；若你的团队只用一个生态，反过来也成立，但只该有一处。
 
 ## 薄到什么程度算薄
 
@@ -60,39 +61,40 @@ vscode 那 8 行值得抄，它只做两件事：**指向真正的细则**，以
 | 搜索结果 | 这一行是什么 | 处理 |
 |---|---|---|
 | 主体里搜得到 | 双写 | 删掉，只留指针 |
-| 搜不到，但**把工具名换成别的工具，这句话仍然成立** | 通用约定，只是写错了地方 | 搬进主体 |
+| 搜不到，但**把工具换成别的工具，这句话仍然成立** | 通用约定，只是写错了地方 | 搬进主体 |
 | 搜不到，且**只有这个工具会执行它** | 合法残留 | 留下 |
 
 第三类是适配层存在的唯一理由，具体只有这几种东西算：该工具专有的设置名与开关、
-专有的 slash command、专有的 hook 事件名、专有的权限语法。
+专有的斜杠命令、专有的 hook 事件名、专有的权限语法。
 "这个项目用 pnpm 不用 npm" 不是——换任何工具都要用 pnpm，它属于 `AGENTS.md` 的命令表。
 
 再加两条形式检查，都能一眼看出：
 
-1. **第一行是指针。** `@AGENTS.md` 或等价的一行指向；没有指针的适配层默认就是第二事实源。
+1. **第一行是指针。** 一行指向主体（具体语法见 [机制对照表](../../mechanism-map.md)）；没有指针的适配层默认就是第二事实源。
 2. **适配层里没有小节标题。** 一旦长出 `## 命令`、`## 代码风格` 这种标题，它就在长主体，
-   下一步一定是两份开始漂移。真需要分主题，用工具自己的分层机制（如 `.claude/rules/*.md` + `paths:`、
-   `.github/instructions/*.instructions.md` + `applyTo`），不要塞回适配层。
+   下一步一定是两份开始漂移。真需要分主题，用工具自己的分层机制（见 [机制对照表](../../mechanism-map.md)），
+   不要塞回适配层。
 
 体积只能当参照，不能当阈值：本库证据里被当作"薄"的样本是 8 行 / 0.5 KB，反面样本是两份都超过 10 KB。
 
-## 不绑定工具：判据为什么都以"若用"开头
+## 不绑定工具：判据为什么都带"若"
 
-本库的硬约定是**不默认读者的 agent 工具**；需要提到具体工具时写成条件式（"若你用 Claude Code…"）。
-本页两条判据句就是这条约定的产物：`若用 Claude Code：CLAUDE.md 是薄适配层`、
-`若用 Copilot：仓库级指令文件存在，且不与 AGENTS.md 双写`。
+本库的硬约定是**不默认读者的 agent 工具**；提到某类机制时写成条件式——
+**存在即适用、不存在即不适用**。本页两条判据句就是这条约定的产物：
+`工具专属指令文件是薄适配层`、`平台级指令文件不与 AGENTS.md 双写`。
 这个措辞不是修辞，它改变判定结果：
 
 | 你的情况 | 判定 |
 |---|---|
-| 不用 Claude Code，仓库里没有 `CLAUDE.md` | **不适用**，不是不合格 |
-| 用 Claude Code，`CLAUDE.md` 里抄了一份命令表和风格说明 | 不合格：双事实源 |
-| 不用 Copilot，没有 `copilot-instructions.md` | **不适用**（这条本身也只是 `may`） |
-| 用 Copilot，细则在 `AGENTS.md`，`copilot-instructions.md` 只有一句指向它 | 合格 |
+| 你的工具没有独立指令文件，仓库里也没有 | **不适用**，不是不合格 |
+| 有工具专属指令文件，里面抄了一份命令表和风格说明 | 不合格：双事实源 |
+| 没有平台级指令文件 | **不适用**（这条本身也只是 `may`） |
+| 有平台级指令文件，细则在 `AGENTS.md`，它只有一句指向主体 | 合格 |
 
-所以读这两条时先问"我用不用这个工具"，再问"我做了没有"。
-[ADR-0009](../../../docs/adr/0009-spec-only-no-tooling.md) 删掉本库自带的 `.claude/` 与 `CLAUDE.md`，
-正是为了让规范不替读者选工具。
+所以读这两条时先问"我的工具有没有这个面"，再问"我做了没有"。
+[ADR-0009](../../../docs/adr/0009-spec-only-no-tooling.md) 删掉本库自带的工具专属目录与专属指令文件，
+正是为了让规范不替读者选工具；[ADR-0014](../../../docs/adr/0014-tool-neutral-spec.md)
+把规范正文里的工具名也清掉了。
 
 ## 常见误判
 
@@ -106,21 +108,21 @@ vscode 那 8 行值得抄，它只做两件事：**指向真正的细则**，以
 
 ## 条目
 
-### 若用 Claude Code：CLAUDE.md 是薄适配层
+### 工具专属指令文件是薄适配层
 
-`agent-config/claude-md-thin` · L3 · should · 旧 `R033`
+`agent-config/adapter-thin` · L3 · should · 旧 `R033`
 
-**为什么。** CLAUDE.md 与 AGENTS.md 各写一份会形成双事实源，agent 随机选一个生效。
+**为什么。** 工具专属指令文件与主体指令文件各写一份会形成双事实源，agent 随机选一个生效。
 
-**怎么做。** CLAUDE.md 第一行写 @AGENTS.md，只保留 Claude 专属的少量补充。
+**怎么做。** 工具专属指令文件第一行指向 `AGENTS.md`，只保留该工具专属的少量补充。
 
-### 若用 Copilot：仓库级指令文件存在，且不与 `AGENTS.md` 双写
+### 平台级指令文件不与 `AGENTS.md` 双写
 
-`agent-config/copilot-instructions` · L3 · may · 旧 `R046`
+`agent-config/instructions-single` · L3 · may · 旧 `R046`
 
-**为什么。** 实测里 `.github/copilot-instructions.md` 在头部仓库是主战场：`microsoft/vscode` 14.5 KB、`denoland/deno` 12.3 KB、`supabase/supabase` 6.5 KB。本库早期清单里这一条**零条**（`guide/02` 只在表格里带过），1.5.0 才补上 `R046`——证据先于规则，这条本身就是补上的产物。
+**为什么。** 实测里平台级指令文件在头部仓库是主战场：`microsoft/vscode` 14.5 KB、`denoland/deno` 12.3 KB、`supabase/supabase` 6.5 KB。本库早期清单里这一条**零条**（`guide/02` 只在表格里带过），1.5.0 才补上 `R046`——证据先于规则，这条本身就是补上的产物。
 
-**怎么做。** 细则只放一处（`AGENTS.md` 或 `.github/copilot-instructions.md`），另一处只放指针；分主题指令用 `.github/instructions/*.instructions.md` + `applyTo`。证据：[2026-11-18 采样](../../../docs/evidence/2026-11-18-agent-docs-sampling.md)。
+**怎么做。** 细则只放一处（`AGENTS.md` 或平台级指令文件），另一处只放指针；分主题指令用分主题指令文件机制。证据：[2026-11-18 采样](../../../docs/evidence/2026-11-18-agent-docs-sampling.md)。
 
 ## 相关
 
@@ -128,6 +130,7 @@ vscode 那 8 行值得抄，它只做两件事：**指向真正的细则**，以
 - [hooks 与 skill 资产](hooks-skills.md) — 多步流程与按需资产，别塞回根文件
 - [文档必备项](../documents/essentials.md) · [AGENTS.md 写法](../writing/agents-md.md) — 主体文件本身该有什么、多长
 - [目录与 agent 文件](../layout/agent-files.md) — 这些文件放哪、哪些进版本库
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体文件名（附录，非规范）
 - [guide/04 · Agent 怎么用](../../../guide/04-Agent怎么用.zh-CN.md) — 短、分层、按需
-- [guide/02 · 目录结构](../../../guide/02-目录结构.zh-CN.md) — `.claude/` 与 `.github/` 的分工表
+- [guide/02 · 目录结构](../../../guide/02-目录结构.zh-CN.md) — 工具专属目录与 `.github/` 的分工表
 - [2026-11-18 采样](../../../docs/evidence/2026-11-18-agent-docs-sampling.md) — 体积与四种形态的实测

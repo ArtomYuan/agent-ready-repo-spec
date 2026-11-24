@@ -64,6 +64,6 @@ Your repository's agent instructions should be in **the language you talk to you
 
 ## What these examples deliberately leave out
 
-- No `CLAUDE.md`, `.cursor/`, `.claude/` — tool-specific files are the adopter's choice, not the library's
+- No tool-specific instruction files or tool-specific asset directories — they are the adopter's choice, not the library's
 - No workflow files: the examples describe *how to describe* automation, not what your CI should run
 - No filled-in numbers (test counts, coverage): those rot fastest of all

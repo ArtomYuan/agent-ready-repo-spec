@@ -4,6 +4,7 @@
 > `documents/agents-md`（L0 · must · 旧 `R002`）· `documents/license`（L0 · must · 旧 `R004`）·
 > `documents/license-not-placeholder`（L2 · may · 旧 `R027`）
 > 讲解与采样依据见 [guide/01 · 该有什么文档](../../../guide/01-该有什么文档.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -17,8 +18,8 @@ README、AGENTS.md、LICENSE 是同一件事的三个面：**陌生人、agent�
 `AGENTS.md` 写给**每次会话全文加载它的 agent**，要给它命令、目录地图、硬约定、禁区、已知的坑；
 `LICENSE` 写给**打算合法使用的人（和他的法务）**，要给他可引用的协议名 + 真实著作权人与年份。
 
-十仓实测：README **10/10**、LICENSE **10/10**、`AGENTS.md` **6/10**、`CLAUDE.md` **1/10**（唯一那个是 Anthropic
-自家仓库），见 [十仓采样](../../../docs/evidence/2026-11-17-repo-sampling.md)（样本非随机、偏开源大仓）。
+十仓实测：README **10/10**、LICENSE **10/10**、`AGENTS.md` **6/10**、工具专属指令文件 **1/10**（唯一那个是某个
+agent 工具的自家仓库），见 [十仓采样](../../../docs/evidence/2026-11-17-repo-sampling.md)（样本非随机、偏开源大仓）。
 **README 与 LICENSE 是行业基线**，所以它们只该出现在"做得够不够"的讨论里。
 
 ## README：判据是 30 秒，不是完整
@@ -64,7 +65,7 @@ R027 只到 `may` 也是刻意的：它不阻断你达到 L0，而填占位符�
 
 | 误判 | 为什么错 |
 |---|---|
-| "有 `CLAUDE.md` 就够了" | 跨工具的公共项是 `AGENTS.md`；`CLAUDE.md` 实测 1/10，还是 Anthropic 自家仓库 |
+| "有工具专属指令文件就够了" | 跨工具的公共项是 `AGENTS.md`；工具专属指令文件实测 1/10，还是某个 agent 工具的自家仓库 |
 | "README 里写了 MIT，就等于有协议" | 一句话不是协议文本，GitHub 认的是根目录那个文件 |
 
 ## 条目
@@ -81,7 +82,7 @@ R027 只到 `may` 也是刻意的：它不阻断你达到 L0，而填占位符�
 
 `documents/agents-md` · L0 · must · 旧 `R002`
 
-**为什么。** AGENTS.md 是跨工具的 agent 唯一事实源；Claude Code 在无 CLAUDE.md 时默认直接读它。
+**为什么。** AGENTS.md 是跨工具的 agent 唯一事实源；若你的工具没有自己的专属指令文件，它默认直接读 AGENTS.md（哪些工具原生读它见 [机制对照表](../../mechanism-map.md)）。
 
 **怎么做。** 在根目录建 AGENTS.md。八段骨架见 [guide/03 §2](../../../guide/03-文档该怎么写.zh-CN.md)：项目是什么 / 语言约定 / 命令 / 目录地图 / 硬约定 / 禁区 / 已知的坑 / 拿不准时。可直接粘：[templates/AGENTS.md.tmpl](../../../templates/AGENTS.md.tmpl)。
 
@@ -106,4 +107,5 @@ R027 只到 `may` 也是刻意的：它不阻断你达到 L0，而填占位符�
 - [协作面四件套规则](collaboration.md) · [信任与举报规则](trust.md)
 - [AGENTS.md 写法规则](../writing/agents-md.md) — 长度、命令节、禁区节、引用路径
 - [根文件规则](../layout/root-files.md) — `.gitignore` 等根目录文件
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体文件名（附录，非规范）
 - [guide/01 · 该有什么文档](../../../guide/01-该有什么文档.zh-CN.md) — 三档清单与十仓实测

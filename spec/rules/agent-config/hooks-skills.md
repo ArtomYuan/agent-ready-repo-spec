@@ -1,7 +1,8 @@
 # hooks 与 skill 资产规则
 
-> 板块 `agent-config` · 本页承载 2 条条目：`agent-config/hooks-scripts`（L3 · should · 旧 `R034`）· `agent-config/skill-metadata`（L3 · should · 旧 `R035`）
+> 板块 `agent-config` · 本页承载 2 条条目：`agent-config/hook-scripts`（L3 · should · 旧 `R034`）· `agent-config/skill-metadata`（L3 · should · 旧 `R035`）
 > 讲解与依据见 [guide/04 · Agent 怎么用](../../../guide/04-Agent怎么用.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -14,22 +15,22 @@ hook 路径写错，门禁静默消失，比从来没配过 hook 更危险；ski
 
 | 资产 | 声明在哪 | 断掉时的表现 | 谁能发现 |
 |---|---|---|---|
-| hook 脚本 | 工具设置里的 `hooks` 配置 | 事件照常触发，脚本不运行，**没有任何地方报错** | 只有"故意触发一次"的人 |
-| skill | `.claude/skills/<name>/SKILL.md` 或 `.github/skills/` | 文件在，但没有 `description`，模型无从判断何时用 | 只有手动调用它的人 |
+| hook 脚本 | 共享工具配置文件里的 `hooks` 配置 | 事件照常触发，脚本不运行，**没有任何地方报错** | 只有"故意触发一次"的人 |
+| skill | 工具专属资产目录下的 `<name>/SKILL.md` 或 `.github/skills/` | 文件在，但没有 `description`，模型无从判断何时用 | 只有手动调用它的人 |
 
 两条判据因此都是**存在性 + 一致性**，不是质量判断：脚本在不在、字段有没有。这和整个规范的口径一致——
 只写结构性判据（文件在不在、字段有没有），不写需要主观判断的条目（见 [spec/README](../../README.md)「判定靠什么」）。
 
 ## hooks：配置指向脚本
 
-`agent-config/hooks-scripts` 的判据只有一句：hooks 引用的脚本存在。落地时三件事：
+`agent-config/hook-scripts` 的判据只有一句：hooks 引用的脚本存在。落地时三件事：
 
 1. **路径以仓库根为基准写相对路径。** 绝对路径和个人目录属于机器本地状态，写进共享配置就违反了
    "不提交个人配置"这条硬约定（见 [AGENTS.md 写法](../writing/agents-md.md) 与 [目录与 agent 文件](../layout/agent-files.md)）。
 2. **改完必须故意触发一次。** 这是唯一能证明"这条 hook 真的会拦"的动作——也是本条判据的验收方式。
    光看配置文件看不出脚本是不是 404。
 3. **脚本存在 ≠ 会阻断。** 脚本在、跑起来了、退出码用错，照样放行。那是
-   [`agent-config/hook-exit-2`](permissions.md) 管的事，两条要一起过。
+   [`agent-config/gate-hook`](permissions.md) 管的事，两条要一起过。
 
 一个具体的坑：`AGENTS.md` 里"禁区"这一节，[templates/AGENTS.md.tmpl](../../../templates/AGENTS.md.tmpl) 的标题写的是
 **"禁区（由 hooks 与 CI 强制）"**。这句话是一个**承诺**——文档声称有东西在强制，读者就会信。
@@ -65,45 +66,45 @@ hook 路径写错，门禁静默消失，比从来没配过 hook 更危险；ski
 [AGENTS.md 写法](../writing/agents-md.md) 那条"根文件不超过预算"的判据，正路就是把流程搬出去。
 反过来也成立：**别把每次都要用的三条命令塞进 skill**，那样 agent 每次都得先猜"有没有相关 skill"。
 
-## 放哪：`.claude/` 还是 `.github/`
+## 放哪：工具专属资产目录 还是 `.github/`
 
 实测里 agent 资产有两种放法：`cli/cli` 与 `microsoft/vscode` 放 `.github/agents`、`.github/skills`，
-Claude Code 那套放 `.claude/`（[guide/02 §5](../../../guide/02-目录结构.zh-CN.md)）。判断规则记一条就够：
+只服务单一工具的那套放工具专属资产目录（[guide/02 §5](../../../guide/02-目录结构.zh-CN.md)）。判断规则记一条就够：
 
 > **只有这一个工具用的 → 工具私有目录；任何别的工具也可能用的 → `.github/`。**
 
-| 资产 | Claude 专属 | 多工具 |
+| 资产 | 单工具专属（工具专属资产目录） | 多工具（`.github/`） |
 |---|---|---|
-| 权限与 hooks | `.claude/settings.json` + hooks 配置 | `.github/hooks/`（vscode 的做法） |
-| 可复用流程 | `.claude/skills/<name>/SKILL.md` | `.github/skills/`（cli/cli、vscode） |
-| 分主题规则 | `.claude/rules/*.md`（可带 `paths`） | `.github/instructions/*`（vscode） |
+| 权限与 hooks | 共享工具配置文件 + hooks 配置 | `.github/hooks/`（vscode 的做法） |
+| 可复用流程 | 工具专属资产目录下的 `<name>/SKILL.md` | `.github/skills/`（cli/cli、vscode） |
+| 分主题规则 | 分层机制（按路径生效的规则文件） | `.github/instructions/*`（vscode） |
 
-`.claude/` 与 `.github/` 各存一份 agent 规则 = 双事实源，随机生效——这是 [guide/02](../../../guide/02-目录结构.zh-CN.md)
+工具专属资产目录与 `.github/` 各存一份 agent 规则 = 双事实源，随机生效——这是 [guide/02](../../../guide/02-目录结构.zh-CN.md)
 反例表里的原条目，也是 [各工具的指令面](surfaces.md) 那篇的主题。这些文件该不该提交进版本库，见
-[目录与 agent 文件](../layout/agent-files.md)。
+[目录与 agent 文件](../layout/agent-files.md)；具体目录名与文件名见 [机制对照表](../../mechanism-map.md)。
 
 ## 常见误判与本库的诚实说明
 
 | 误判 | 问题 | 改法 |
 |---|---|---|
-| "配置里有 hooks 这一段，就说明有门禁" | 脚本可能不存在，或存在但不阻断 | 两条一起过：脚本在（本页）+ 违规分支 `exit 2`（[permissions.md](permissions.md)） |
+| "配置里有 hooks 这一段，就说明有门禁" | 脚本可能不存在，或存在但不阻断 | 两条一起过：脚本在（本页）+ 违规分支用阻塞退出码（[permissions.md](permissions.md)） |
 | hook 报错就默认放行 | 崩溃和"没违规"看起来一模一样 | 需要"崩了也拦住"就加 `onFailure: "block"`（[guide/04 §3](../../../guide/04-Agent怎么用.zh-CN.md)） |
 | skill 只写正文不写 frontmatter | 内容再好也不会被自动命中 | 先补 `name` + `description`，再谈正文 |
 | 用 skill 承载"绝不能有例外"的约束 | skill 是模型选择要不要调用的，仍是提示 | 那条约束升级到 [权限与 hook 门禁](permissions.md) |
 | 给本库提 PR 加检查脚本 | 本库不提供规则校验器（[ADR-0009](../../../docs/adr/0009-spec-only-no-tooling.md)） | 想自动化就另建仓库消费本清单 |
 
 **本库这两条都不适用。** [ADR-0009](../../../docs/adr/0009-spec-only-no-tooling.md) 把本库自带的
-`.claude/`（settings、hooks、skills、commands）整体删掉了，所以现在**本库里没有任何 hook 脚本，也没有任何 skill**；
+工具专属资产目录（settings、hooks、skills、commands）整体删掉了，所以现在**本库里没有任何 hook 脚本，也没有任何 skill**；
 唯一的自动化是 `.github/workflows/docs.yml` 的两个必需检查，它们只校验文档自身。
 本页举的写法来自给被指导仓库的 [templates/AGENTS.md.tmpl](../../../templates/AGENTS.md.tmpl)、官方文档摘录
-[Claude Code 文档摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md)（hooks 与确定性部分），
+[证据摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md)（hooks 与确定性部分），
 以及上游 Skills 的公开加载机制（frontmatter 的 `name` / `description`——该摘录未收录 Skills 一节）。
 
 ## 条目
 
 ### 若配了 hooks：hooks 引用的脚本存在
 
-`agent-config/hooks-scripts` · L3 · should · 旧 `R034`
+`agent-config/hook-scripts` · L3 · should · 旧 `R034`
 
 **为什么。** hook 指向不存在的脚本时，门禁静默失效，比没有 hook 更危险。
 
@@ -119,9 +120,10 @@ Claude Code 那套放 `.claude/`（[guide/02 §5](../../../guide/02-目录结构
 
 ## 相关
 
-- [权限与 hook 门禁](permissions.md) — 脚本存在之后，还得 `exit 2` 才真的拦得住
+- [权限与 hook 门禁](permissions.md) — 脚本存在之后，违规分支还得返回阻塞退出码才真的拦得住
 - [各工具的指令面](surfaces.md) — 指令文件只放指针，流程与资产放这里
-- [目录与 agent 文件](../layout/agent-files.md) — `.claude/` 与 `.github/` 下的资产哪些进版本库
+- [目录与 agent 文件](../layout/agent-files.md) — 工具专属资产目录与 `.github/` 下的资产哪些进版本库
 - [AGENTS.md 写法](../writing/agents-md.md) — 根文件的预算，以及"流程搬出去"的正路
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体目录与文件名（附录，非规范）
 - [guide/04 · Agent 怎么用](../../../guide/04-Agent怎么用.zh-CN.md) — §1.3 根文件 vs skill、§3 hook 的类型与 `onFailure`
 - [guide/02 · 目录结构](../../../guide/02-目录结构.zh-CN.md) — 两种放法的实测对照

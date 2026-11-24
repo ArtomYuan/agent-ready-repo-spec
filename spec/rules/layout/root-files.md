@@ -3,6 +3,7 @@
 > 板块 `layout` · 本页承载 3 条条目：`layout/gitignore`（L0 · must · 旧 `R003`）·
 > `layout/editorconfig`（L1 · may · 旧 `R015`）· `layout/gitattributes`（L1 · may · 旧 `R016`）
 > 讲解与采样依据见 [guide/02 · 目录结构](../../../guide/02-目录结构.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -20,7 +21,7 @@
 | 颜色 | 内容 | 本页负责的部分 |
 |---|---|---|
 | **必须有** | `README.md`、`LICENSE`、`.gitignore`、`AGENTS.md` | `.gitignore`（工具默认读根） |
-| **可以有** | `.github/`、`CONTRIBUTING.md`、`SECURITY.md`、`CHANGELOG.md`、`CODE_OF_CONDUCT.md`、构建清单、`Makefile`、`.editorconfig`、`.gitattributes`、`CLAUDE.md`、`.mcp.json` | `.editorconfig`、`.gitattributes` |
+| **可以有** | `.github/`、`CONTRIBUTING.md`、`SECURITY.md`、`CHANGELOG.md`、`CODE_OF_CONDUCT.md`、构建清单、`Makefile`、`.editorconfig`、`.gitattributes`、工具专属指令文件、`.mcp.json` | `.editorconfig`、`.gitattributes` |
 | **不要放** | 架构文档与长指南（→ `docs/`）、会议记录与临时笔记、生成物与日志（→ `.gitignore` 掉）、成堆脚本（→ `scripts/`）、各环境配置副本、一个只装一个文件的目录 | 最后一列的"生成物"就是 `layout/gitignore` 的落点 |
 
 **"根目录越少越好"是误判。** 同章 §1 的实测里，`sindresorhus/got` 根目录只有几个文件，
@@ -70,9 +71,10 @@
 `.editorconfig` 与 `.gitattributes` 的缺失同样会烦人，但**永远可以在下一个 PR 里补上而不碰历史**，所以停在 `may`。
 
 **一个文件，两种职责，分属两页。** `.gitignore` 的通用忽略（依赖目录、构建产物、`.env*`）判据在本页
-`layout/gitignore`；**排除个人 agent 配置**（`.claude/settings.local.json`、`CLAUDE.local.md`）是另一条判据，
+`layout/gitignore`；**排除个人 agent 配置**（个人覆盖文件，具体文件名见
+[机制对照表](../../mechanism-map.md)）是另一条判据，
 归 [agent 配置文件的提交纪律](agent-files.md) 的 `layout/ignore-agent-personal`。
-本仓库 [.gitignore](../../../.gitignore) 第 1–4 行是后者，其余是编辑器/系统/临时文件；
+本仓库 [.gitignore](../../../.gitignore) 开头几行是后者，其余是编辑器/系统/临时文件；
 **前者那三项（依赖目录、构建产物、`.env*`）是本页判据对"有代码的仓库"的要求**——本库是纯文档库，
 没有依赖目录，所以没列，照抄到真实项目时要补上。同一个文件，两条判据各查各的，别写重。
 
@@ -119,5 +121,6 @@
 - [分支保护规则](../settings/branch-protection.md) — `non_fast_forward` 让"改写历史清泄露"这条路走不通
 - [规则索引](../README.md) — 本板块 8 条的档位与判据一览
 - [spec/README.md](../../README.md) — 三档严重度与符合性声明
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体文件名（附录，非规范）
 - [guide/02 · 目录结构](../../../guide/02-目录结构.zh-CN.md) — 三色清单与十仓实测
 - [十仓形态采样](../../../docs/evidence/2026-11-17-repo-sampling.md) — 根目录形态与 `.github/` 内容

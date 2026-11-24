@@ -4,6 +4,7 @@
 > `writing/agents-md-commands`（L3 · should · 旧 `R031`）· `writing/agents-md-boundaries`（L3 · should · 旧 `R032`）·
 > `writing/agents-md-paths`（L3 · should · 旧 `R037`）· `writing/agents-md-language`（L3 · may · 旧 `R042`）
 > 讲解见 [guide/03 · 文档该怎么写](../../../guide/03-文档该怎么写.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -39,14 +40,14 @@
 | microsoft/vscode | `AGENTS.md` | 8 | 路由型：指向别处 + 门口写最容易做错的那一条 |
 | python/cpython | `AGENTS.md` | 30 | |
 | kubernetes/kubernetes | `AGENTS.md` | 40 | 沟通偏好 + 约束 + 命令 + 风格 |
-| anthropics/claude-code | `CLAUDE.md` | 41 | |
-| openai/openai-python | `AGENTS.md` | 60 | 所有权 + 安全 + 验证 |
+| 某 agent 工具的自家仓库 | 工具专属指令文件 | 41 | |
+| 某工具厂商自家的 SDK 仓库 | `AGENTS.md` | 60 | 所有权 + 安全 + 验证 |
 | supabase/supabase | `AGENTS.md` | 78 | |
 | cli/cli | `AGENTS.md` | 105 | 三条边界最显眼 |
 | rust-lang/rust | `AGENTS.md` | 266 | **已记行数**中唯一超 200 行的（下两行未记行数，按体积必然远超） |
 | vercel/next.js · modelcontextprotocol/servers | `AGENTS.md` | 33.6 KB · 50 KB | 大全型，根文件承载全部约定，无分层 |
 
-那份报告自己写明：样本**非随机、非分层**，12 个里 4 个是 GitHub / Anthropic 生态的仓库，它支撑"存在哪些形态"，
+那份报告自己写明：样本**非随机、非分层**，12 个里 4 个属于同一平台与工具生态的仓库，它支撑"存在哪些形态"，
 **不支撑**"多数仓库如此"。所以这张表的正确读法不是"别人都多少行"，而是：**8 行到 266 行都有人在用**，
 200 行是这条分布里"仍然可维护"的上沿，不是达标线。
 
@@ -78,16 +79,16 @@ LF 行尾、无 BOM）。骨架是八段，实际十段——多出来的两段�
 
 ## 分流表：什么进根文件，什么搬走
 
-`writing/agents-md-length` 的「怎么做」只有一句"移到 `.claude/rules/`（带 paths）、移到 skill"。
+`writing/agents-md-length` 的「怎么做」只有一句"移到分层机制（按路径生效的规则文件）、移到 skill"。
 判断标准在 [guide/04 §1.3](../../../guide/04-Agent怎么用.zh-CN.md)：**每次都要知道 → 根文件；做某件事时才需要 → skill。**
 
 | 这段内容 | 该放哪 | 为什么 | 加载机制 |
 |---|---|---|---|
 | 跑测试 / 构建 / lint 的命令 | 根文件 | 每次都要 | 启动即加载 |
 | 目录地图、硬约定、已知的坑 | 根文件 | 每次都要 | 启动即加载 |
-| 某个包 / 子系统的专属规则 | 子目录 `AGENTS.md`，或 `.claude/rules/*.md` + `paths:` | 只有读到那里才需要 | 根文件启动时加载，子目录**按需**加载；不想要的用 `claudeMdExcludes` 排除 |
+| 某个包 / 子系统的专属规则 | 子目录 `AGENTS.md`，或分层机制（按路径生效的规则文件） | 只有读到那里才需要 | 根文件启动时加载，子目录**按需**加载；不想要的用工具自己的排除开关（见 [机制对照表](../../mechanism-map.md)） |
 | 发布、迁移这类多步流程 | skill | 只在被调用时加载，不占日常上下文 | 位置约定见 [hooks 与 skill 资产规则](../agent-config/hooks-skills.md) |
-| 只对某一个工具有意义的一句 | 工具的适配层文件（如 `CLAUDE.md`） | 别的工具读到会困惑 | 判据是"这条对别的工具没意义" |
+| 只对某一个工具有意义的一句 | 工具专属指令文件 | 别的工具读到会困惑 | 判据是"这条对别的工具没意义" |
 | "这个仓库有没有 `AGENTS.md`" | 不在本页 | 那是存在性 | [根目录规则](../documents/essentials.md) |
 | 为什么当初选了 A 不选 B | ADR | 未来的维护者读，agent 不必每次读 | [ADR 规则](adr.md) |
 
@@ -99,7 +100,7 @@ LF 行尾、无 BOM）。骨架是八段，实际十段——多出来的两段�
 | "遵循项目既有风格" | 无判据 | "新增文件用 kebab-case，导出统一放 index.ts" |
 | 列了 12 条代码规范 | 占了 1/3 预算，几乎不被用到 | 压成 3 条真正会踩的 |
 | "不要破坏现有功能" | 无法执行 | "改 `src/api/` 后必须跑 `pnpm test:e2e`" |
-| 写"如何发布"的 8 个步骤 | 属于流程，不是事实 | 移进 `.claude/skills/release/SKILL.md` |
+| 写"如何发布"的 8 个步骤 | 属于流程，不是事实 | 移进 skill 资产（`SKILL.md`） |
 
 **常见误判一：把 200 行当达标线。** 超了不是"内容多"，是"位置错"。
 **常见误判二：以为越短越好。** vscode 那 8 行成立的前提是"真正的细则在别处、且指针是对的"；
@@ -181,7 +182,7 @@ LF 行尾、无 BOM）。骨架是八段，实际十段——多出来的两段�
 
 **为什么。** 每次会话都全文加载；超过 200 行内容变贵且遵守率下降。
 
-**怎么做。** 把模块级规则移到 .claude/rules/（带 paths），把多步流程移到 skill。
+**怎么做。** 把模块级规则移到工具的分层机制（按路径生效的规则文件，具体见 [机制对照表](../../mechanism-map.md)），把多步流程移到 skill。
 
 ### AGENTS.md 含“命令”一节
 
@@ -223,7 +224,8 @@ LF 行尾、无 BOM）。骨架是八段，实际十段——多出来的两段�
 - [根目录规则](../documents/essentials.md) — `AGENTS.md` 的存在性
 - [权限与 hook 门禁规则](../agent-config/permissions.md) — 禁区的确定性执行端
 - [hooks 与 skill 资产规则](../agent-config/hooks-skills.md) — 搬出去的"多步流程"放哪
-- [目录树与文档位置规则](../layout/docs-tree.md) — `.claude/rules/` 与 skill 的位置约定
+- [目录树与文档位置规则](../layout/docs-tree.md) — 分层机制与 skill 的位置约定
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体目录与文件名（附录，非规范）
 - [提交规则](../governance/commits.md) — 仓库自己的提交约定写进 `AGENTS.md`
 - [分支保护规则](../settings/branch-protection.md) — 提示与闸门的分工
 - [guide/03 · 文档该怎么写](../../../guide/03-文档该怎么写.zh-CN.md) — 八段骨架与判据的原处

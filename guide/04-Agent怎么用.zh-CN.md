@@ -2,10 +2,10 @@
 **[English](04-Agent怎么用.md)** · 简体中文
 
 > 这一章讲**把仓库交给 agent 时的操作方式**，不讲话术技巧。
-> 主要依据 Anthropic 官方的 [Best practices](https://code.claude.com/docs/en/best-practices)、
-> [Memory](https://code.claude.com/docs/en/memory)、[Skills](https://code.claude.com/docs/en/skills)、
-> [Subagents](https://code.claude.com/docs/en/sub-agents)，以及 `cli/cli`、`python/cpython` 等仓库里
+> 主要依据是[证据摘录](../docs/evidence/2026-11-17-claude-code-docs.md)里落下来的官方文档片段
+> （最佳实践、记忆、skill、子代理），以及 `cli/cli`、`python/cpython` 等仓库里
 > 真实在用的 `AGENTS.md` 写法。
+> 全章用通用术语指代各类工具机制；通用术语与具体机制的对照见 [机制对照表](../spec/mechanism-map.md)（附录，非规范）。
 
 ---
 
@@ -15,13 +15,13 @@
 
 | | 非确定性（模型自己决定） | 确定性（harness 强制执行） |
 |---|---|---|
-| 载体 | 你的 prompt、`AGENTS.md`/`CLAUDE.md`、skill | hook、`deny` 规则、managed settings |
-| 谁执行 | 模型 | Claude Code 本体 |
+| 载体 | 你的 prompt、`AGENTS.md`/工具专属指令文件、skill | 门禁 hook、权限声明（deny 清单）、managed settings |
+| 谁执行 | 模型 | harness 本体 |
 | 保证 | **通常**遵守，没有保证 | **每一次**都执行，不管模型怎么想 |
 
-官方原话很值得抄下来：
+官方原话很值得抄下来（点到模型名处做了中性化转述，原文见[证据摘录 §3](../docs/evidence/2026-11-17-claude-code-docs.md)）：
 
-> Almost every guideline has exceptions... With the actual code in front of it, Claude is usually better placed to make that call than a rule you wrote in advance.
+> Almost every guideline has exceptions... With the actual code in front of it, the model is usually better placed to make that call than a rule you wrote in advance.
 > （绝大多数规则都有例外；看到真实代码时，模型通常比你事先写下的规则更会判断。）
 
 **所以默认应该是"让模型判断"，只把"绝不能有例外"的那几条升级成确定性机制。**
@@ -33,7 +33,7 @@
 
 ### 1.1 根文件要短
 
-官方建议在 `CLAUDE.md`/`AGENTS.md` 里只写**模型看不到、又每次都要用**的东西：
+官方建议在主体指令文件（`AGENTS.md`）里只写**模型看不到、又每次都要用**的东西：
 
 - 跑测试/构建/lint 的那几条命令
 - 目录地图（哪个目录做什么，哪里有雷）
@@ -44,12 +44,12 @@
 
 ### 1.2 按目录分层，而不是把根文件写长
 
-官方在 [large codebases 指南](https://code.claude.com/docs/en/large-codebases) 给的做法：
+若你的工具自带分层机制，官方给大仓的做法是（具体文件名与配置键见[机制对照表](../spec/mechanism-map.md)）：
 
-- 根放共享约定；每个包/子系统再放一份（`packages/api/CLAUDE.md`）；
+- 根放共享约定；每个包/子系统再放一份（`packages/api/<指令文件>`）；
 - 根在启动时加载，**子目录的只在你读到那里时才加载**；
-- 不想加载的包用 `claudeMdExcludes` 排除；
-- 也可以改成 `path-scoped rules`（`.claude/rules/*.md` + `paths:`）。
+- 不想加载的包用该工具的"指令文件排除项"排除；
+- 也可以改成该工具的分层机制（带路径作用域的规则）。
 
 ### 1.3 多步流程放 skill，不占根文件
 
@@ -74,9 +74,9 @@ Precedence: repository overlay instructions override defaults in this agent when
 
 ## 2. 给检查：让它能自己判断"做完了"
 
-官方这句话是整章的题眼：
+官方这句话是整章的题眼（做了中性化转述）：
 
-> Claude stops when the work looks done. If it has nothing to run that tells it whether the work actually *is* done, "looks done" is all it has to go on.
+> The agent stops when the work looks done. If it has nothing to run that tells it whether the work actually *is* done, "looks done" is all it has to go on.
 > （模型在"看起来做完了"时停下。如果没有能跑出 pass/fail 的东西，"看起来"就是它唯一的依据。）
 
 四种收紧方式，从松到紧：
@@ -98,9 +98,9 @@ Precedence: repository overlay instructions override defaults in this agent when
 
 | 规则 | 写在 `AGENTS.md` 里 | 升级为确定性 |
 |---|---|---|
-| 不要读 `.env` | 模型通常遵守 | `permissions.deny: ["Read(./.env)"]` |
-| 改完必须格式化 | 经常忘 | `PostToolUse` hook 直接跑 formatter |
-| 不要动 `migrations/` | 偶尔会绕 | `Edit(./migrations/**)` deny，或 hook 里 `exit 2` |
+| 不要读 `.env` | 模型通常遵守 | 权限声明里给 `Read(./.env)` 加一条 deny |
+| 改完必须格式化 | 经常忘 | 编辑后事件上的门禁 hook 直接跑 formatter |
+| 不要动 `migrations/` | 偶尔会绕 | 给 `Edit(./migrations/**)` 加 deny，或让门禁 hook 写 stderr 后返回阻塞退出码 |
 
 要点：
 
@@ -115,8 +115,8 @@ Precedence: repository overlay instructions override defaults in this agent when
 | 场景 | 做法 | 什么时候**不**该用 | 成本量级 |
 |---|---|---|---|
 | 改动跨多个文件、方向不明 | 先 plan mode 出方案再执行（官方 permission modes） | 方案已经明确时——多一轮确认只是延迟 | 无额外调用，多一次交互 |
-| 一次改很多、互不相干的文件 | 派 subagent，各自独立上下文（[Subagents](https://code.claude.com/docs/en/sub-agents)） | 任务之间有强依赖、需要共享中间结论时 | 每个 subagent 重新读一遍相关文件；3 个 ≈ 3 份上下文 |
-| 多个任务并行、会互相踩文件 | 每个任务一个 worktree（[Worktrees](https://code.claude.com/docs/en/worktrees)） | 只改同一个文件时 | 磁盘与依赖安装成本，首次准备较慢 |
+| 一次改很多、互不相干的文件 | 派 subagent，各自独立上下文 | 任务之间有强依赖、需要共享中间结论时 | 每个 subagent 重新读一遍相关文件；3 个 ≈ 3 份上下文 |
+| 多个任务并行、会互相踩文件 | 每个任务一个 worktree | 只改同一个文件时 | 磁盘与依赖安装成本，首次准备较慢 |
 | 需要大量搜索/读文件才能定位 | 交给 subagent 去搜，主上下文只要结论 | 读一两个文件就能定位时 | 一次独立读取，只回传结论 |
 | 长任务、可以无人值守 | 设目标 + 明确检查 + 预算上限（`--max-turns` / `--max-budget-usd`） | 没有可运行的检查时——无人值守只会放大错误 | 按 token 与轮次计费 |
 
@@ -136,7 +136,7 @@ Precedence: repository overlay instructions override defaults in this agent when
 同源的一个效果问题：**上下文越满，判断质量越差**。
 所以"根文件短、流程进 skill、搜索进 subagent"不是洁癖，是在保质量。
 
-官方还说明：宽泛的代码库搜索会自动交给内置的 Explore agent，侧任务在 fork 模式下默认分叉并在后台跑——
+官方还说明：宽泛的代码库搜索会自动交给工具内置的只读检索代理，侧任务在 fork 模式下默认分叉并在后台跑——
 也就是说**这些切换很多时候不是你决定的**，你至少要知道它的账怎么算。
 
 ---
@@ -150,7 +150,7 @@ Precedence: repository overlay instructions override defaults in this agent when
 | 没有可运行的检查，只靠人看 | 人变成测试套件 | 给一条能跑出 pass/fail 的命令 |
 | 让 agent"注意代码风格" | 无法执行 | 给 formatter + lint 命令 |
 | 一个会话里连做五件不相关的事 | 上下文污染、互相踩 | 拆 subagent / worktree |
-| 用 prompt hook 做安全拦截 | 仍是模型判断 | 换 `command` hook + `exit 2` |
+| 用 prompt hook 做安全拦截 | 仍是模型判断 | 换 `command` 型门禁 hook，返回阻塞退出码 |
 
 ---
 
@@ -177,11 +177,11 @@ Precedence: repository overlay instructions override defaults in this agent when
 
 | 论断 | 来源 |
 |---|---|
-| 确定性 vs 非确定性指令；"多数时候应让模型判断" | [Best practices · Deterministic and non-deterministic instructions](https://code.claude.com/docs/en/best-practices) |
-| "给一个能跑出 pass/fail 的检查"；四级收紧 | 同上 · Give Claude a check to run |
-| 不可例外的规则用 hook / deny / managed settings；`onFailure: block` | 同上 · Enforce the rules that can't have exceptions |
-| 根文件短、按目录分层、`claudeMdExcludes`、per-directory skills | [Set up Claude Code in a monorepo](https://code.claude.com/docs/en/large-codebases) |
-| 加载顺序与作用域 | [How Claude remembers your project](https://code.claude.com/docs/en/memory) |
+| 确定性 vs 非确定性指令；"多数时候应让模型判断" | [证据摘录 §3](../docs/evidence/2026-11-17-claude-code-docs.md) |
+| "给一个能跑出 pass/fail 的检查"；四级收紧 | 同上（最佳实践摘录） |
+| 不可例外的规则用门禁 hook / deny 清单 / managed settings；`onFailure: block` | 同上（最佳实践摘录） |
+| 根文件短、按目录分层、指令文件排除项、per-directory skills | [机制对照表](../spec/mechanism-map.md)（分层机制） |
+| 加载顺序与作用域 | [证据摘录 §2](../docs/evidence/2026-11-17-claude-code-docs.md) |
 | 覆盖层 + 优先级声明的真实写法 | `cli/cli` 的 `.github/agents/agentic-workflows.md`（实测） |
 
 ---
@@ -195,7 +195,7 @@ Precedence: repository overlay instructions override defaults in this agent when
 | `R005` | "给检查"——没有可运行的检查，就没有拒绝 agent 改动的依据 |
 | `R024` `R026` | 权限基线：共享配置进版本库、`deny` 非空 |
 | `R030` `R031` `R032` | 什么该进 `AGENTS.md`，什么必须分层放别处 |
-| `R034` `R040` | 真能拦住的 hook：脚本存在，且违规分支 `exit 2` |
+| `R034` `R040` | 真能拦住的 hook：脚本存在，且违规分支返回阻塞退出码 |
 | `R035` | 能被自动命中的 skill（`name` + `description`） |
 
 证据：[docs/evidence/2026-11-17-claude-code-docs.md](../docs/evidence/2026-11-17-claude-code-docs.md)。

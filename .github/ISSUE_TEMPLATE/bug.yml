@@ -38,4 +38,4 @@ body:
     id: version
     attributes:
       label: specVersion / commit
-      placeholder: 2.0.0
+      placeholder: 3.0.0
