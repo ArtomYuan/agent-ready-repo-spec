@@ -4,9 +4,13 @@
 格式遵循 [Keep a Changelog](https://keepachangelog.com/)，版本号遵循 [SemVer](https://semver.org/)。
 更细的过程（谁在什么时候改了什么）看 `git log` 与 `docs/adr/`。
 
-## [Unreleased]
+## [2.0.0] - 2026-11-24
 
-### Added —— 发布物本身也要有判据（`R064`–`R070`，specVersion → 1.6.0）
+`1.5.0 → 2.0.0`：规则 ID 从号段 `R0xx` 换成 `板块/主题`、判据正文从一张大表迁到 22 篇主题文档——
+按 [spec/README.md](spec/README.md)「版本策略」"改规则 ID / 改板块划分 / 改规则文件路径 → major"，
+属 **major**；`1.6.0`（`R064`–`R070`）从未单独发布，随本版一并落地。
+
+### Added —— 发布物本身也要有判据（`R064`–`R070`，specVersion → 1.6.0，最终并入 2.0.0）
 
 - 清单新增 7 条：`R064` 每个发布版本都要有 tag **和** Release 页、且锚在发布提交上；
   `R065` Release 正文四节（升级注意 / 新增·变更·修复 / 已知问题 / 校验）；
