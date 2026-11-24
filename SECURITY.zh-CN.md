@@ -32,7 +32,7 @@
 这里没有可执行代码（[ADR-0009](docs/adr/0009-spec-only-no-tooling.md)），所以没有可被利用的代码。
 真正**可执行的是文本**：一个采用这套规范的仓库，会把它当作指令喂给 agent。三条真实攻击面：
 
-1. **文档是被当作指令执行的。** [spec/agent-playbook.md](spec/agent-playbook.md)、[spec/checklist.md](spec/checklist.md)
+1. **文档是被当作指令执行的。** [spec/agent-playbook.md](spec/agent-playbook.md)、[spec/rules/README.md](spec/rules/README.md)
    和 [AGENTS.md](AGENTS.md) 都用祈使句写（"按下面的顺序做，不要跳步"）。那里一句过期或写错的句子不是笔误，
    而是每一个下游 agent 都会照做的坏指令。这就是规则只保留一份事实源的原因，也是 ADR-0009 选择删掉检查器、
    而不是让同一条规则存在两份描述的原因。

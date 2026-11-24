@@ -6,7 +6,7 @@
 - 取代：[ADR-0001](0001-rules-as-single-source.md)（规则以 JSON 为唯一事实源 + 检查器）、
   [ADR-0002](0002-checker-is-read-only.md)（检查器只读）、
   [ADR-0006](0006-github-action-distribution.md)（以 GitHub Action 分发）
-- 相关：[spec/checklist.md](../../spec/checklist.md) · [guide/README.md](../../guide/README.md)
+- 相关：[spec/checklist.md](../../spec/rules/README.md) · [guide/README.md](../../guide/README.md)
 
 ## 背景
 

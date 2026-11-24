@@ -34,7 +34,7 @@ What *is* executable is **the text**: a repository that adopts this library feed
 Three real surfaces:
 
 1. **Documentation is executed as instructions.** [spec/agent-playbook.md](spec/agent-playbook.md),
-   [spec/checklist.md](spec/checklist.md) and [AGENTS.md](AGENTS.md) are written in the imperative
+   [spec/rules/README.md](spec/rules/README.md) and [AGENTS.md](AGENTS.md) are written in the imperative
    ("follow this order, do not skip"). A stale or wrong sentence there is not a typo — it is a bad instruction every
    downstream agent obeys. This is why there is exactly one source of truth for the rules, and why ADR-0009 deleted the
    checker instead of keeping two descriptions of the same rule.

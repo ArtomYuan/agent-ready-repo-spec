@@ -284,7 +284,7 @@ The two must match one-to-one. One extra → pending forever
 
 ## Appendix: rules this chapter decides
 
-Navigation only — the criteria themselves live in [spec/checklist.md](../spec/checklist.md).
+Navigation only — the criteria themselves live in [spec/rules/README.md](../spec/rules/README.md).
 
 | Rule | What this chapter explains about it |
 |---|---|

@@ -4,9 +4,13 @@
 格式遵循 [Keep a Changelog](https://keepachangelog.com/)，版本号遵循 [SemVer](https://semver.org/)。
 更细的过程（谁在什么时候改了什么）看 `git log` 与 `docs/adr/`。
 
-## [Unreleased]
+## [2.0.0] - 2026-11-24
 
-### Added —— 发布物本身也要有判据（`R064`–`R070`，specVersion → 1.6.0）
+`1.5.0 → 2.0.0`：规则 ID 从号段 `R0xx` 换成 `板块/主题`、判据正文从一张大表迁到 22 篇主题文档——
+按 [spec/README.md](spec/README.md)「版本策略」"改规则 ID / 改板块划分 / 改规则文件路径 → major"，
+属 **major**；`1.6.0`（`R064`–`R070`）从未单独发布，随本版一并落地。
+
+### Added —— 发布物本身也要有判据（`R064`–`R070`，specVersion → 1.6.0，最终并入 2.0.0）
 
 - 清单新增 7 条：`R064` 每个发布版本都要有 tag **和** Release 页、且锚在发布提交上；
   `R065` Release 正文四节（升级注意 / 新增·变更·修复 / 已知问题 / 校验）；
@@ -61,6 +65,48 @@
 - `docs/adr/0011`：背景句补上版本锚点，"把 **1.4.0 的** 37 条摊开数一遍"。
   同文件里"37 → 48"那两处是对的（本来就在描述这次跃迁），不动。
 
+### Changed —— 规则按板块分**主题文档**，ID 换成 `板块/主题`（**2.0.0**）
+
+- `spec/checklist.md`（55 行一张表）拆到 **`spec/rules/<板块>/`**，按 8 个板块分目录，
+  与 `guide/00`–`07` 一一对应；板块内按话题成篇，一条规则是一节；`spec/rules/README.md` 变成索引
+  （按 L0/L1/L2/L3 分四节，一行一条：旧号 · ID · 级别 · 判据 · 链接）。
+- **规范名 = `板块/主题`**：`release/moving-tags`。ID 不编码到文件名——一个板块下是若干**主题文档**，
+  一条规则是其中一节；**55 条收在 22 篇**：`release/` 3 篇 · `documents/` 3 篇 · `layout/` 3 篇 ·
+  `writing/` 4 篇 · `agent-config/` 3 篇 · `governance/` 3 篇 · `settings/` 2 篇 · `adoption/` 1 篇。
+  旧号 `R0xx` **永久保留**为索引第一列，历史引用零改动。
+- 每篇主题文档的形状固定：一句话 → 话题正文（判断表、模板、反例）→「条目」小节逐条列
+  `为什么` / `怎么做` →「相关」指回对应章节。这是"有章节没条目"那个病
+  （ADR-0011 / ADR-0012 / `release/version-bump-why` 三次发作）的结构解。
+- 决策、代价与回退见 [ADR-0013](docs/adr/0013-rules-by-domain.md)。
+- 全库活文件（`guide/` 16 个章节文件及 README、SECURITY、模板等）里的 `spec/checklist.md` 引用
+  全部重定向到 `spec/rules/README.md` 与对应承载页；历史叙述（ADR、旧 CHANGELOG 节）里的旧路径**刻意不改**。
+
+### Added —— 版本策略补上"改 ID / 改路径算哪一档"
+
+- `spec/README.md`「版本策略」新增四条：**改规则 ID、改板块划分、改规则文件路径 → major**；
+  **改判据措辞但不改判定结果 → patch**；**删条目、废弃条目 → major**；**新增板块、新增文档章节 → minor**。
+  前两条是 2.0.0 升号的直接依据，后两条是 2026-11-23 全量审计时补齐、与 `release/version.md`
+  的 8 行判断表对齐的。此前策略只覆盖"新增 should/may"和"收紧判据"，
+  对换 ID 这件事**没有任何判据**——与 `release/moving-tags` 之前"要移动 tag 却没规则"、
+  `release/version-bump-why` 之前"要升号却没规则"是同一种缺口第四次发作。
+
+### Fixed —— 2026-11-23 全量审计修正（6 处 blocker + 约 30 处 fix）
+
+- 事实修正：`ownership.md` 的 credentials 命中改 **0 命中**（该文件已并入本页）；
+  `surfaces.md` 的"清单里零条"改"1.5.0 才补上 `R046`"；`artifact.md` 引用的"2.0.0 已知问题"
+  （尚不存在）改指 CHANGELOG 1.5.0 重锚记录；`branch-protection.md` 三处"锁过一次"改"两次"
+  （ADR-0010 原文）；`R044` 自曝出处统一改指 guide/00 §6 与 CHANGELOG 1.5.0 节；
+  `agents-md.md`"样本里唯一超 200 行"限定为已记行数。
+- 实测数字：git 统计分母 58→59（截至 `06fe228`，并写明稳定口径 `main` 21/44）；作者邮箱大写变体
+  14→15 并标注字段口径；`AGENTS.md` 106 行 / 8281 字节；PR 模板 tmpl 33 行；installation 批准权限
+  14→15 项；自审 PR 字符数按 `#3`→`#6` 升序列出。
+- 规则对齐：`release/moving-tags` 怎么做补第三路径（正确锚是错锚祖先→超集，发更正版本是倒退，
+  直接记录偏差）；`templates/adoption.md.tmpl` 补「设置」节（含"谁能改"列，`adoption/record` 与
+  guide/07 均已声称模板有此节）；`settings/ci.md` 按 `release/self-noncompliance` 精神自曝本库无 lint/test。
+- 链接与指针：4 处链接标签还写着已删除的 `governance/credentials.md`；6 处小节号错位修正；
+  2 处链接文字层级；`revertable` 五步第 1 步补"在被 revert 提交的合并点上判"与只读探针；
+  #38→#39 的 create→modify 依赖如实入表。
+- `.gitignore` 删除体检产物 3 行残留（`/reports/`、`*.spec-report.*`——检查器已随 ADR-0009 删除）。
 ## [1.5.0] - 2026-11-18
 
 ### Fixed —— 扫掉 ADR-0009 的残留引用
@@ -236,7 +282,7 @@
 
 ### Added
 
-- **[spec/checklist.md](spec/checklist.md)**：37 条规则连同 `id / 级别 / 是否 must / 为什么 / 怎么改`（本版新增 `R042`），
+- **[spec/checklist.md](spec/rules/README.md)**：37 条规则连同 `id / 级别 / 是否 must / 为什么 / 怎么改`（本版新增 `R042`），
   成为**规则唯一事实源**（人可读，任何语言都能据此自行实现工具）。
 - **[templates/prompt-github-app-git.md.tmpl](templates/prompt-github-app-git.md.tmpl)**：
   可直接粘给 agent 的提示词模板——凭证、JWT 硬规则（`iss` 用数字 App ID、UTC 时间戳）、

@@ -1,0 +1,181 @@
+# ADR-0013：规则按板块分目录，一个板块若干**主题文档**，ID 换成 `板块/主题`
+
+- 状态：Accepted（8 个板块全部落地：**55 条规则收在 22 篇主题文档**）
+- 日期：2026-11-20
+- 决策者：@ArtomYuan（提出结构与切分单位）、agent（方案与执行）
+- 取代：**部分修订** [ADR-0009](0009-spec-only-no-tooling.md) 的落点约定
+  （"唯一事实源 = `spec/checklist.md` 一个文件"→"一条规则只有一处归属，归属地是主题文档里的一节"）
+  —— ADR-0009 的**理由不变**，见「为什么不违反 ADR-0009」
+- 相关：[spec/rules/README.md](../../spec/rules/README.md) ·
+  [spec/README.md](../../spec/README.md)「编号」「版本策略」 ·
+  [ADR-0011](0011-github-management-rules.md) · [ADR-0012](0012-release-notes-spec.md)
+
+## 背景
+
+`spec/checklist.md` 到 1.6.0 已经装了 **55 条**规则，一张表从头滚到尾。三个问题同时到期：
+
+1. **`R0xx` 没有辨识度。** reviewer 问"版本号那里不需要加后面的解释吧？"，
+   要回答这个问题得先查 `R070` 是什么。在 PR、issue、采用记录里写 `R067`，
+   读者必须跳一次表才知道在说什么——**编号越稳定，越难读**。
+
+2. **判据和它的解释分居两个文件，这是本库反复出血的伤口。**
+   [ADR-0011](0011-github-management-rules.md) 修的是"有章节没条目"（07 章论证了半天，清单 0 条）；
+   [ADR-0012](0012-release-notes-spec.md) 修的是同一处（06 章 §2 写完了发布规矩，清单 0 条）；
+   `release/version-bump-why` 是第三例（SemVer 策略写在 `spec/README.md`，清单 0 条）。
+   **三次都是同一个结构原因**：判据在 `spec/`，解释在 `guide/`，中间靠一张手写的章节索引连着，
+   而这张索引没人核对。
+
+3. **档位轴和板块轴挤在一张表里，只有一个能当目录。** 表按 L0–L3 分四节，
+   板块只存在于章节索引。想按板块读，就得在 55 行里跳着看。
+
+## 为什么不违反 ADR-0009
+
+ADR-0009 选"一个文件"的理由只有一句（原文 `:43`）：
+
+> 新增 `spec/checklist.md`：把规则写成一张人读的表，成为**唯一事实源**
+> （`rules/rules.json` 与 `spec/RULES.md` 同时下线，**避免双写**）。
+
+**理由是"避免双写"，不是"一个文件更好"。** 真正的不变量是**一条规则只有一处定义**。
+主题文档 + 规则小节照样满足：每条规则有唯一的归属文档与归属小节，别处只引用不复制。
+
+| | 1.6.0（单文件一张表） | 2.0.0（主题文档 + 小节） |
+|---|---|---|
+| 一条规则的判据正文 | 1 处（表里一行） | 1 处（主题文档里的一节） |
+| 判据句 | **3 处**：表的条目列 + `guide/` 正文 + 章节索引 | **1 处**：小节（索引那一列是它的复制，见「代价」） |
+| 一条规则有没有说明书 | 没有，只有一行 | 有，和同话题的规则放在一起 |
+| "有章节没条目"能不能悄悄发生 | 能，已经发生 3 次 | 结构上变难：文档自带「相关」指回章节，反向也指回来 |
+
+## 决策
+
+### 1. 规范名 = `板块/主题`，**ID 不编码到文件名**
+
+```
+release/moving-tags      →  spec/rules/release/artifact.md 的一节
+release/version-bump-why →  spec/rules/release/version.md 的一节
+```
+
+ID 是**稳定的引用名**，文件名是**文档单位**。两者由索引那一行的链接对齐。
+
+> 这里有一个明确的取舍：放弃了「ID 即路径」这个强性质（原方案里名字和路径不可能各说一套），
+> 换回「一篇文档讲透一个话题」。前者对机器友好，后者对读者友好。本库的主题是给人读的规范，
+> 所以选后者。
+
+### 2. 一个板块 = 若干**主题文档**，一条规则 = 文档里的**一节**
+
+全部 8 个板块共 **22 篇**。`release/` 三篇就是最初提的那三篇，其余按同一逻辑切：
+
+| 文档 | 话题 | 承载条目 |
+|---|---|---|
+| [version.md](../../spec/rules/release/version.md) | 版本号规则 | `version-bump-why` |
+| [content.md](../../spec/rules/release/content.md) | 内容规则 | `notes-sections` `no-stale-numbers` `self-noncompliance` |
+| [artifact.md](../../spec/rules/release/artifact.md) | 发布物规则 | `changelog` `tag-and-release` `moving-tags` `superseded-tags` |
+
+`settings/` 两篇，按"门与线"分；`adoption/` 1 条不成组，一篇：
+
+| 文档 | 话题 | 承载条目 |
+|---|---|---|
+| [branch-protection.md](../../spec/rules/settings/branch-protection.md) | 分支保护规则 | `main-protection` `required-check-names` `linear-history` |
+| [ci.md](../../spec/rules/settings/ci.md) | CI 规则 | `ci-exists` `workflow-permissions` |
+
+`documents/` 10 条按**共同话题**归组，不按"一文件一篇"切——那样会切出 9 篇装 10 条，
+等于退回被否掉的存根形状：
+
+| 文档 | 话题 | 承载条目 |
+|---|---|---|
+| [essentials.md](../../spec/rules/documents/essentials.md) | 三份基础文件 | `readme` `agents-md` `license` `license-not-placeholder` |
+| [collaboration.md](../../spec/rules/documents/collaboration.md) | 协作面四件套 | `contributing` `codeowners` `pr-template` `issue-template` |
+| [trust.md](../../spec/rules/documents/trust.md) | 信任与举报 | `security` `code-of-conduct` |
+
+`writing/` 按**被写的对象**切，`layout/` 按**位置**切，`agent-config/` 按**执行强度**切，
+`governance/` 按**变更单位**切：
+
+| 板块 | 篇 | 承载条数 |
+|---|---|---|
+| `writing/` | `agents-md.md`(5) · `adr.md`(2) · `pr-template.md`(1) · `untrusted-inputs.md`(1) | 9 |
+| `layout/` | `root-files.md`(3) · `docs-tree.md`(2) · `agent-files.md`(3) | 8 |
+| `agent-config/` | `permissions.md`(2) · `surfaces.md`(2) · `hooks-skills.md`(2) | 6 |
+| `governance/` | `commits.md`(4) · `pull-requests.md`(2) · `ownership.md`(2) | 8 |
+
+> **`documents/` 与 `writing/` 会各有一篇讲同一个文件**：`documents/essentials.md` 判 AGENTS.md
+> **存在**，`writing/agents-md.md` 判它**该写什么**。这不是重复——板块与 `guide/` 八章 1:1，
+> 存在性归 01 章、写法归 03 章，两篇互链。甲方案（按文件切）在板块冻结的前提下只能落到这个形状。
+
+每篇的形状固定：**一句话 → 话题正文（判断表、模板、反例、常见误判）→「条目」小节逐条列
+`为什么` / `怎么做` → 「相关」**。判据正文只出现在「条目」那一节，前面的正文是解释。
+
+### 3. 旧号 `R0xx` 永久保留为别名列
+
+`rules/README.md` 每行第一列就是旧号。历史 PR、CHANGELOG、ADR、已发出去的采用记录
+**一个字都不用改**。新写的引用一律用新名。
+
+> **旧号永不复用、永不改；板块名一经发布不再改**（它编码在每条 ID 里）。
+
+### 4. 档位做索引的分节，不做目录
+
+`rules/README.md` 按 L0 / L1 / L2 / L3 分四节，每节一张表。目录只有一层：板块。
+
+业界无一例外：ASVS 把 L1/L2/L3 做成**列**，NIST 800-53 把 baseline 做成
+**一份 control-ID 集合**（OSCAL profile），OpenSSF 做成 `p`/`s`/`g` **前缀**。
+本库的符合性模型（"L0…目标档位的全部 `must` 满足"、采用记录要写"目标档位"）依赖档位可扫描，
+所以它必须有实体落点——索引的分节就是落点。
+
+### 5. 一律链到文件，不链到小节
+
+`docs.yml` 的 lychee 参数是 `--offline --no-progress --accept 200,204,206,429`，
+**没有 `--include-fragments`**，而 lychee 默认不校验 fragment。
+所以 `xxx.md#小节` 写错了 CI 永远不红——**一种查不出来的腐烂**，而这个库的主题就是防腐。
+
+因此：索引链到**文档**，靠「条目」小节里的 ID 行定位到具体规则。
+代价是多一次 Ctrl-F，换来的是锚点不会悄悄烂掉。
+
+### 6. 板块 = 8 个，与 guide 八章 1:1
+
+`adoption` `documents` `layout` `writing` `agent-config` `governance` `release` `settings`
+↔ `guide/00`…`guide/07`。每篇文档末尾的「相关」指回对应章节。
+
+## 代价
+
+- **ID 不再等于路径。** 找一条规则要先查索引拿承载页。这是本 ADR 用掉的那个强性质，明码标价。
+- **锚点不可链。** 同一文档里的多条规则无法被深链区分，只能链到文件 + 写清小节名。
+- **三处受控双写**：索引的「判据」列 = 条目小节的标题；索引的「级别」列 = 条目小节的元数据行；
+  档位 = 索引分节 vs 条目小节元数据行。都是枚举值或短句，可逐字核对，
+  但**本库不提供检查器**（ADR-0009），所以它们会漂。已写进 `AGENTS.md`「已知的坑」。
+- **板块规模不均**：`documents/` 10 条 vs `adoption/` 1 条。没有掩盖，索引里就写着条数。
+- **`guide/` 里 365 处 `R0xx` 引用这一轮没改**，仍是旧号。它们继续有效（索引能查），
+  但"新旧两套名字并存"会持续一阵。要不要做正文改名，见「未解决」。
+- **`spec/` 若要双语就是全部主题文档**。现在 `pairing` 只扫 `guide/*.md`，`spec/` 不在范围内——
+  把这个事实当作"为什么 `spec/` 保持单语言"的正式理由。
+
+## 未解决
+
+- **`guide/` 正文要不要改用新 ID？** 365 处，含 19 处区间写法（`R064`–`R070` 这种）
+  不能机械替换。收益是解释性文字也可辨识，代价是一个巨大的、难评审的 diff。本轮**没做**。
+- **单篇体积没有上限判据。** 22 篇里最小 4.5 KB、最大 16 KB（`writing/agents-md.md`，承载 5 条）。
+  长是因为每条都带可执行判断表，还是该再切，目前没有判据。
+- **`adoption/` 只有 1 条、1 篇。** 它值不值得独占一个板块，取决于 `guide/00` 会不会继续长出判据。
+
+## 怎么回退
+
+22 篇的「条目」小节全部是从 `spec/checklist.md` 的 55 行**逐行抽取 + 补写解释**得到的。
+重组后拿 `1cc59d0` 的 55 个存根做过逐句比对，实测：**55 条的 `为什么` / `怎么做` 句子零丢失**。
+其中 13 条非逐字，全部是折行与引号字形（`“”`→`"`）差异；2 条有意的措辞改动已记录：
+
+- `release/version-bump-why`：`清单引用数` → `条目引用数`、`R064`–`R069` → `release/tag-and-release 那一批`。
+  原句里的"清单"指已删除的 `spec/checklist.md`，照抄会指向不存在的东西。
+- `release/notes-sections`：模板内联进本页后，"按 §2.3 的模板写"改成"按 §2.3 的模板（本页上方）写"，
+  链接保留。
+
+2026-11-23 全量审计又新增 2 处**有意的条目措辞改动**（均为事实修正，见 CHANGELOG 同名 Fixed 节）：
+
+- `agent-config/copilot-instructions` 为什么：「清单里零条」在条目落进清单后已失真，改为
+  「早期清单零条，1.5.0 才补上 `R046`」。
+- `settings/required-check-names` 为什么：「本仓库真的发生过一次」与 ADR-0010:17「前后踩了两次
+  同一个坑」矛盾，条目与承载页三处统一改为「两次」。
+- `release/moving-tags` 怎么做：补第三路径——正确锚点是错锚的祖先（错锚树是超集）时，
+  发更正版本是倒退，直接记录偏差。原句「能发 `1.4.1` 就别动 `1.4.0`」是无条件的，与本页正文矛盾。
+
+另有 1 处**接受的偏差**：`settings/workflow-permissions` 怎么做里的 GitHub 文档链接
+（`using-jobs/assigning-permissions-to-jobs`）已被官方重定向到新路径，旧链接仍可解析（HTTP 200），
+不改条目，留待下次动该条目时一并更新。
+
+回退 = `git revert` 这次重组的提交，`spec/checklist.md` 原样回来，`R0xx` 从未改过所以零损失。

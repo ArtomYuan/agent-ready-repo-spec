@@ -18,16 +18,16 @@
 
 <!-- 贴真实输出或可复现步骤，不要写"已测试" -->
 
-- 核对过 [spec/checklist.md](../spec/checklist.md) 的相关条目：<哪几条，结论>
+- 核对过 [spec/rules/README.md](../spec/rules/README.md) 的相关条目：<哪几条，结论>
 - 双语两版是否同步：<是 / 不适用>
 - 新增/删除的路径是否都有引用方已更新：<是 / 不适用>
 
 ## 自检清单
 
-- [ ] `spec/checklist.md` 是规则唯一改动源（没有第二份清单）
+- [ ] `spec/rules/README.md` 是规则唯一改动源（没有第二份清单）
 - [ ] 中英两版在同一 PR 内同步（[ADR-0008](../docs/adr/0008-bilingual-equal-status.md)）
 - [ ] `CHANGELOG.md` 已更新；判据变化已升 `specVersion`
-- [ ] 没有引入可执行物或规则校验（脚本 / 依赖清单 / 对 `checklist.md` 的机器校验；`docs.yml` 的文档一致性检查不在此列）
+- [ ] 没有引入可执行物或规则校验（脚本 / 依赖清单 / 对 `rules/README.md` 的机器校验；`docs.yml` 的文档一致性检查不在此列）
 - [ ] 文档里的路径都存在
 
 ## 需要 reviewer 特别看的地方
