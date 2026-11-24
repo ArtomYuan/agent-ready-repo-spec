@@ -4,6 +4,31 @@
 格式遵循 [Keep a Changelog](https://keepachangelog.com/)，版本号遵循 [SemVer](https://semver.org/)。
 更细的过程（谁在什么时候改了什么）看 `git log` 与 `docs/adr/`。
 
+## [Unreleased]
+
+### Changed —— 规范正文**零工具名**（specVersion → 3.0.0）
+
+`2.0.0 → 3.0.0`：6 条规则 ID 改名、判据句随之改写、承载页措辞全面抽象——
+按「版本策略」"改规则 ID → major"，属 **major**；判定结果逐条不变（见下）。
+
+- **ADR-0014**：规范正文（`spec/`、`guide/`、`templates/`、根文件）不再出现任何 agent 工具品牌名
+  与其专属文件名；判据改用通用术语（工具专属指令文件、平台级指令文件、工具专属资产目录、
+  共享工具配置文件、个人覆盖文件、门禁 hook、机器本地记忆、会话署名 trailer、分层机制）。
+  动因：实测各工具提及权重 294/32/23/4/0——用 Gemini CLI 或 DeepSeek Harness 的读者
+  在指令面清单里找不到自己。
+- **新增附录 `spec/mechanism-map.md`**：通用术语 ↔ 具体文件名的对照表。它**不是规范**——
+  不承载判据、不参与符合性声明、允许过期；工具名只允许出现在它与 `docs/evidence/`。
+- **ID 改名**（旧号 `R0xx` 映射不变，永不复用）：`agent-config/claude-md-thin`→`adapter-thin`、
+  `agent-config/copilot-instructions`→`instructions-single`、`agent-config/hook-exit-2`→`gate-hook`、
+  `agent-config/hooks-scripts`→`hook-scripts`、`layout/claude-settings`→`tool-settings`、
+  `layout/no-settings-local`→`no-personal-overrides`。
+- **判定结果不变**：条件式从"若你用某工具"改为"若你的工具存在 X"——存在即适用、不存在即不适用，
+  同一仓库改写前后的合格/不合格结论一致。
+- 豁免（历史与证据不改写）：`docs/adr/`、`docs/evidence/`、CHANGELOG 既有节、仓库名与同词不同义、
+  `.gitignore` 的忽略模式（防御性配置，模式必须具体）。
+- 指向厂商文档的外链（12 处）改指本库证据摘录与机制对照表——上游 URL 仍原样记录在
+  `docs/evidence/` 与附录出处节，读者路径不断。
+
 ## [2.0.0] - 2026-11-24
 
 `1.5.0 → 2.0.0`：规则 ID 从号段 `R0xx` 换成 `板块/主题`、判据正文从一张大表迁到 22 篇主题文档——

@@ -4,6 +4,7 @@
 > `documents/codeowners`（L1 · should · 旧 `R011`）· `documents/pr-template`（L1 · should · 旧 `R012`）·
 > `documents/issue-template`（L1 · should · 旧 `R013`）
 > 讲解与采样依据见 [guide/01 · 该有什么文档](../../../guide/01-该有什么文档.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -23,7 +24,7 @@ GitHub 只认固定位置的**文件**，不认"目录"：
 | `ISSUE_TEMPLATE/*.yml` | **只能** `.github/ISSUE_TEMPLATE/` | 不出现模板选择器；社区档案不打勾 |
 
 **CONTRIBUTING 为什么只是 `may`**：十仓实测里根目录有它的只有 **6/10**，而且它是四件套里唯一一份
-**agent 不会自动加载**的——Claude Code 的加载链里没有它。要 agent 遵守，就在 `AGENTS.md` 里写一句指针
+**agent 不会自动加载**的——agent 工具的默认加载链里没有它。要 agent 遵守，就在 `AGENTS.md` 里写一句指针
 （`cli/cli`：`Read CONTRIBUTING, the canonical contribution policy.`）。它该有内容时必含四样：分支模型、
 提交格式、PR 流程、**评审 SLA（写数字）**——"尽快回复"= 没有承诺。
 
@@ -31,7 +32,7 @@ GitHub 只认固定位置的**文件**，不认"目录"：
 
 | 条件 | 不满足时 |
 |---|---|
-| 覆盖关键路径：`.claude/`、`.github/workflows/`、`AGENTS.md`、关键业务目录 | 只有 `*` 一条 → 没有分级，改 CI 和改错别字走同一条路 |
+| 覆盖关键路径：工具专属资产目录、`.github/workflows/`、`AGENTS.md`、关键业务目录 | 只有 `*` 一条 → 没有分级，改 CI 和改错别字走同一条路 |
 | 开启 `Require review from Code Owners` | **写得再漂亮也只是注释**，不会有人被强制指派 |
 
 owner **必须是人类账号或团队，不能是 bot 或 agent**：闸门由被闸门约束的对象持有钥匙，闸门就消失了
@@ -74,7 +75,7 @@ ruleset 六项见 [分支保护规则](../settings/branch-protection.md)。
 
 `documents/contributing` · L1 · may · 旧 `R010`
 
-**为什么。** 这份文件是写给人看的：agent 不会自动加载它（Claude Code 的加载链里没有 CONTRIBUTING），GitHub 也只认固定位置的入口文件（根 / .github / docs，文件名大小写不敏感，.rst 也认，`contributing/` 目录本身不算）。所以它是公开库的常见习惯，不是 agent 就绪的必要条件。
+**为什么。** 这份文件是写给人看的：agent 不会自动加载它（agent 工具的默认加载链里没有 CONTRIBUTING），GitHub 也只认固定位置的入口文件（根 / .github / docs，文件名大小写不敏感，.rst 也认，`contributing/` 目录本身不算）。所以它是公开库的常见习惯，不是 agent 就绪的必要条件。
 
 **怎么做。** 在根或 .github/ 放一个 CONTRIBUTING.md 作入口，详细内容放 docs/ 或 contributing/ 目录并在入口里指过去；私有库且不收外部 PR 可以不管。
 
@@ -84,7 +85,7 @@ ruleset 六项见 [分支保护规则](../settings/branch-protection.md)。
 
 **为什么。** 按路径自动指派评审人，是 agent 改动的第一道人工闸门；需同时开启 Require review from Code Owners。
 
-**怎么做。** 加 CODEOWNERS，覆盖 .claude/、.github/workflows/、AGENTS.md 与关键业务目录。
+**怎么做。** 加 CODEOWNERS，覆盖工具专属资产目录（若存在）、.github/workflows/、AGENTS.md 与关键业务目录。
 
 ### 存在 PR 模板
 
@@ -108,4 +109,5 @@ ruleset 六项见 [分支保护规则](../settings/branch-protection.md)。
 - [PR 模板写法规则](../writing/pr-template.md) — 自检清单该含什么
 - [治理面归属规则](../governance/ownership.md) — CODEOWNERS 的 owner 该归谁
 - [提交规则](../governance/commits.md) · [分支保护规则](../settings/branch-protection.md)
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体文件名（附录，非规范）
 - [guide/01 · 该有什么文档](../../../guide/01-该有什么文档.zh-CN.md) — 第一档清单与识别位置

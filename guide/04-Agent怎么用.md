@@ -3,10 +3,11 @@
 **English** · [简体中文](04-Agent怎么用.zh-CN.md)
 
 > This chapter is about **how to operate** when handing a repository to an agent — not about prompt tricks.
-> Sources: Anthropic's [Best practices](https://code.claude.com/docs/en/best-practices),
-> [Memory](https://code.claude.com/docs/en/memory), [Skills](https://code.claude.com/docs/en/skills),
-> [Subagents](https://code.claude.com/docs/en/sub-agents), plus the `AGENTS.md` files actually used in
+> Sources: the vendor documentation excerpted in [evidence](../docs/evidence/2026-11-17-claude-code-docs.md)
+> (best practices, memory, skills, subagents), plus the `AGENTS.md` files actually used in
 > `cli/cli` and `python/cpython`.
+> Generic terms for tool mechanisms are used throughout; their mapping to concrete mechanisms lives in the
+> [mechanism map](../spec/mechanism-map.md) (appendix, non-normative).
 
 ---
 
@@ -16,14 +17,15 @@ The official docs split every instruction you give an agent into two kinds, and 
 
 | | Non-deterministic (the model decides) | Deterministic (the harness enforces) |
 |---|---|---|
-| Carrier | your prompt, `AGENTS.md`/`CLAUDE.md`, skills | hooks, `deny` rules, managed settings |
-| Who executes | the model | Claude Code itself |
+| Carrier | your prompt, `AGENTS.md` / the tool-specific instruction file, skills | gate hooks, the permission declaration (deny list), managed settings |
+| Who executes | the model | the harness itself |
 | Guarantee | it **usually** complies — no guarantee | **always**, regardless of what the model decided |
 
-Worth quoting in full:
+Worth quoting in full (paraphrased where it named the model; original wording in
+[evidence §3](../docs/evidence/2026-11-17-claude-code-docs.md)):
 
-> Almost every guideline has exceptions... With the actual code in front of it, Claude is usually better placed to make
-> that call than a rule you wrote in advance.
+> Almost every guideline has exceptions... With the actual code in front of it, the model is usually better placed to
+> make that call than a rule you wrote in advance.
 
 **So the default should be "let the model judge", and only the "no exceptions" rules get promoted to deterministic
 mechanisms.** This is the same reasoning as "guidance documentation does not make decisions for people" — only the
@@ -46,12 +48,13 @@ Only what the model **cannot see and needs every time**:
 
 ### 1.2 Layer by directory instead of growing the root file
 
-Per Claude Code's [large codebases guide](https://code.claude.com/docs/en/large-codebases):
+Where a tool ships a layering mechanism, the published guidance for large codebases is (concrete file names and keys:
+[mechanism map](../spec/mechanism-map.md)):
 
-- shared conventions at the root; one more per package/subsystem (`packages/api/CLAUDE.md`);
+- shared conventions at the root; one more per package/subsystem (`packages/api/<instruction file>`);
 - the root loads at startup, **subdirectory files load only when work reaches them**;
-- exclude packages with `claudeMdExcludes`;
-- or replace a pile of files with `path-scoped rules` (`.claude/rules/*.md` + `paths:`).
+- exclude packages with the tool's instruction-file exclusion key;
+- or replace a pile of files with the tool's layering mechanism (path-scoped rules).
 
 ### 1.3 Put multi-step procedures in skills
 
@@ -76,9 +79,9 @@ Precedence: repository overlay instructions override defaults in this agent when
 
 ## 2. Give it a check: something that decides "done"
 
-This line is the heart of the chapter:
+This line is the heart of the chapter (paraphrased from the same guidance):
 
-> Claude stops when the work looks done. If it has nothing to run that tells it whether the work actually *is* done,
+> The agent stops when the work looks done. If it has nothing to run that tells it whether the work actually *is* done,
 > "looks done" is all it has to go on.
 
 Four levels, from loose to strict:
@@ -101,9 +104,9 @@ Three official examples, usable as-is:
 
 | Rule | Written in `AGENTS.md` | Promoted to deterministic |
 |---|---|---|
-| Do not read `.env` | usually obeyed | `permissions.deny: ["Read(./.env)"]` |
-| format after editing | often forgotten | a `PostToolUse` hook runs the formatter |
-| do not touch `migrations/` | occasionally worked around | `Edit(./migrations/**)` deny, or a hook with `exit 2` |
+| Do not read `.env` | usually obeyed | a deny entry for `Read(./.env)` in the permission declaration |
+| format after editing | often forgotten | a gate hook on the after-edit event runs the formatter |
+| do not touch `migrations/` | occasionally worked around | a deny entry for `Edit(./migrations/**)`, or a gate hook that writes stderr and returns the blocking exit code |
 
 Two rules of thumb:
 
@@ -118,8 +121,8 @@ Two rules of thumb:
 | Situation | Do | When **not** to | Cost |
 |---|---|---|---|
 | Change spans many files, direction unclear | plan mode first, then execute (official permission modes) | the plan is already clear — the extra round trip is just delay | no extra call, one more exchange |
-| Many unrelated files to touch | dispatch a subagent with its own context ([Subagents](https://code.claude.com/docs/en/sub-agents)) | tasks depend on each other and must share intermediate results | each subagent re-reads the relevant files; 3 ≈ 3 contexts |
-| Several tasks in parallel, files would collide | one worktree per task ([Worktrees](https://code.claude.com/docs/en/worktrees)) | they all edit the same file | disk + dependency install; slower first run |
+| Many unrelated files to touch | dispatch a subagent with its own context | tasks depend on each other and must share intermediate results | each subagent re-reads the relevant files; 3 ≈ 3 contexts |
+| Several tasks in parallel, files would collide | one worktree per task | they all edit the same file | disk + dependency install; slower first run |
 | Need heavy search/reading to locate something | let a subagent search; return only the conclusion | one or two files would find it | one independent read, conclusion comes back |
 | Long run, unattended | set a goal + a runnable check + a budget cap (`--max-turns` / `--max-budget-usd`) | there is no runnable check — unattended runs amplify errors | billed per token and per turn |
 
@@ -139,8 +142,9 @@ In a repo with large files and deep dependencies, "dispatch a subagent to look" 
 A related quality effect: **the fuller the context, the worse the judgement.** "Short root file, procedures in skills,
 searches in subagents" is not tidiness — it protects quality.
 
-The docs also note that broad codebase searches are delegated to the built-in Explore agent, and side tasks fork and run
-in the background by default — **many of these switches are not yours to make**; at least know the arithmetic.
+The docs also note that broad codebase searches are delegated to the tool's built-in read-only search agent, and side
+tasks fork and run in the background by default — **many of these switches are not yours to make**; at least know the
+arithmetic.
 
 ---
 
@@ -153,7 +157,7 @@ in the background by default — **many of these switches are not yours to make*
 | No runnable check, only human review | you become the test suite | give it one pass/fail command |
 | Telling the agent to "mind the code style" | not executable | provide formatter + lint commands |
 | Five unrelated changes in one session | context pollution, files collide | split into subagents / worktrees |
-| A `prompt` hook as a safety gate | still a model decision | `command` hook with `exit 2` |
+| A `prompt` hook as a safety gate | still a model decision | a `command` gate hook that returns the blocking exit code |
 
 ---
 
@@ -181,11 +185,11 @@ in the background by default — **many of these switches are not yours to make*
 
 | Claim | Source |
 |---|---|
-| Deterministic vs non-deterministic instructions; "let the model judge most of the time" | [Best practices · Deterministic and non-deterministic instructions](https://code.claude.com/docs/en/best-practices) |
-| "Give Claude a check it can run" with a pass/fail result; the four tightening levels | ibid · Give Claude a check to run |
-| Rules with no exceptions → hook / deny / managed settings; `onFailure: block` | ibid · Enforce the rules that can't have exceptions |
-| Short root file, per-directory layering, `claudeMdExcludes`, per-directory skills | [Set up Claude Code in a monorepo](https://code.claude.com/docs/en/large-codebases) |
-| Load order and scope | [How Claude remembers your project](https://code.claude.com/docs/en/memory) |
+| Deterministic vs non-deterministic instructions; "let the model judge most of the time" | [evidence §3](../docs/evidence/2026-11-17-claude-code-docs.md) |
+| "Give it a check it can run" with a pass/fail result; the four tightening levels | ibid (best-practices excerpt) |
+| Rules with no exceptions → gate hook / deny list / managed settings; `onFailure: block` | ibid (best-practices excerpt) |
+| Short root file, per-directory layering, the instruction-file exclusion key, per-directory skills | [mechanism map](../spec/mechanism-map.md) (layering mechanism) |
+| Load order and scope | [evidence §2](../docs/evidence/2026-11-17-claude-code-docs.md) |
 | A real overlay-with-precedence example | `cli/cli`'s `.github/agents/agentic-workflows.md` (sampled) |
 
 ---
@@ -199,7 +203,7 @@ Navigation only — the criteria themselves live in [spec/rules/README.md](../sp
 | `R005` | "give it a check" — without a runnable check there is nothing to reject an agent's change by |
 | `R024` `R026` | the permission baseline: shared config in the repo, `deny` non-empty |
 | `R030` `R031` `R032` | what belongs in `AGENTS.md`, and what has to be layered elsewhere |
-| `R034` `R040` | hooks that actually block: the script exists, and the failing branch exits 2 |
+| `R034` `R040` | hooks that actually block: the script exists, and the failing branch returns the blocking exit code |
 | `R035` | skills that can be hit automatically (`name` + `description`) |
 
 Evidence: [docs/evidence/2026-11-17-claude-code-docs.md](../docs/evidence/2026-11-17-claude-code-docs.md).

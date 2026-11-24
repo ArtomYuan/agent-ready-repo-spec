@@ -1,4 +1,5 @@
 # 个人 agent 配置（含本机路径/令牌，绝不提交）
+# 个人覆盖文件（ADR-0014 豁免：忽略规则的模式必须写具体文件名，示例见 spec/mechanism-map.md）
 .claude/settings.local.json
 CLAUDE.local.md
 .cursor/rules.local.md

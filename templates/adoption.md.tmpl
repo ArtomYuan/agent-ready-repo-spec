@@ -18,10 +18,10 @@
 | 3 | 管理员是否可绕过 | {{不允许 / 允许}} | 分支保护 `Do not allow bypassing` |
 | 4 | 必需检查 | {{job 名列表 / 无}} | 分支保护 `Required status checks` + CI 里真实存在的 job |
 | 5 | 提交规范 | {{仅文档约定 / commitlint}} | `AGENTS.md` 一节 / `.commitlintrc.json` + CI job |
-| 6 | agent 归属 | {{默认 Co-Authored-By / 自定义 / 关闭}} | `.claude/settings.json` 的 `attribution` |
+| 6 | agent 归属 | {{默认会话署名 trailer / 自定义 / 关闭}} | 共享工具配置文件的 `attribution`（位置示例见 `spec/mechanism-map.md`） |
 | 7 | agent 指令形态 | {{单根 / 根+子目录 / 路由型}} | `AGENTS.md`（+ 子目录文件） |
-| 8 | 权限基线 | {{deny 清单}} | `.claude/settings.json` 的 `permissions.deny` |
-| 9 | 硬约束形态 | {{只写文档 / hook / CI}} | `.claude/settings.json` 的 `hooks`、或 CI workflow |
+| 8 | 权限基线 | {{deny 清单}} | 共享工具配置文件的 `permissions.deny`（位置示例见 `spec/mechanism-map.md`） |
+| 9 | 硬约束形态 | {{只写文档 / 门禁 hook / CI}} | 共享工具配置文件的 `hooks`、或 CI workflow |
 | 10 | 文档集 | {{README / LICENSE / SECURITY / CHANGELOG / ADR / …}} | 对应文件本身 |
 
 ## 未采用

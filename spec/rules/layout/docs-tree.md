@@ -3,6 +3,7 @@
 > 板块 `layout` · 本页承载 2 条条目：`layout/docs-index`（L2 · should · 旧 `R022`）·
 > `layout/assets-location`（L3 · may · 旧 `R047`）
 > 讲解与采样依据见 [guide/02 · 目录结构](../../../guide/02-目录结构.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -71,13 +72,13 @@ docs/
 | 仓库 | `.github/` 里的 agent 资产 |
 |---|---|
 | `cli/cli` | `agents/`、`skills/`、`actions/`、`mcp.json`（外加 CODEOWNERS、ISSUE_TEMPLATE 等平台文件） |
-| `microsoft/vscode` | `agents/`、`skills/`、`instructions/`、`hooks/`、`commands/`、`copilot-instructions.md` |
+| `microsoft/vscode` | `agents/`、`skills/`、`instructions/`、`hooks/`、`commands/`、平台级指令文件 |
 | `vercel/next.js` | `AGENTS.md`（根目录也有一份） |
 
-Claude Code 那套则在自己的目录里：`.claude/settings.json`、`.claude/rules/`、`.claude/skills/`、
-`.claude/agents/`、`.claude/commands/`，加上项目根的 `.mcp.json`。
+只服务单一工具的那套则在自己的目录里：共享工具配置文件、分层机制的规则文件、skill 目录、
+agent 定义目录、命令目录，加上项目根的 `.mcp.json`（具体路径见 [机制对照表](../../mechanism-map.md)）。
 
-**双事实源的失效方式是"生效哪个看运气"**：同一份 skill 在 `.github/skills/` 和 `.claude/skills/` 各存一份，
+**双事实源的失效方式是"生效哪个看运气"**：同一份 skill 在 `.github/skills/` 和工具专属资产目录里各存一份，
 改了一份、另一份还在，两个工具读到不同的规则——**而且没有任何报错**。
 所以判据的后半句"且只有一处事实源"才是重点：**另一处只放指针**，一句话指过去，不复制内容。
 
@@ -92,7 +93,7 @@ Claude Code 那套则在自己的目录里：`.claude/settings.json`、`.claude/
 | "有 `docs/` 就算有地图" | 判据是 `docs/index.md` 存在且能导航；目录在、但没人知道先点哪个，等于没有 | 建一张"我想 X → 去哪"的表，见本页实测 |
 | "地图就是文件清单" | 清单不回答"我该点哪个"；读者要的是入口，不是目录树 | 每行写"我想做什么"，不写"这里有什么" |
 | "`Doc/` 不合规，改名成 `docs/`" | 外部链接全断，收益远小于成本 | 新建用 `docs/`，存量不动 |
-| "agent 规则在 `.github/` 和 `.claude/` 各放一份保险" | 双事实源，改一份另一份还在，静默漂移 | 按"谁用"选一处，另一处只放指针 |
+| "agent 规则在 `.github/` 和工具专属资产目录各放一份保险" | 双事实源，改一份另一份还在，静默漂移 | 按"谁用"选一处，另一处只放指针 |
 | "把 `AGENTS.md` 的细则复制进 README" | 工具读不到，人看着是噪音（guide/02 §7 反模式） | 细则归 `AGENTS.md`，README 只留入口 |
 | "`docs/` 里放一份构建产物方便看" | 仓库膨胀 + diff 噪音（guide/02 §7） | `.gitignore` 掉，见 [root-files.md](root-files.md) |
 
@@ -110,15 +111,16 @@ Claude Code 那套则在自己的目录里：`.claude/settings.json`、`.claude/
 
 `layout/assets-location` · L3 · may · 旧 `R047`
 
-**为什么。** `cli/cli` 与 `microsoft/vscode` 把 agents / skills 放 `.github/`，Claude 那套放 `.claude/`。两边各存一份就是两个事实源，生效哪个看运气。
+**为什么。** `cli/cli` 与 `microsoft/vscode` 把 agents / skills 放 `.github/`，只服务单一工具的那套放工具专属资产目录。两边各存一份就是两个事实源，生效哪个看运气。
 
 **怎么做。** 一句话判据：**只有某个工具用 → 那个工具的目录；可能被多个工具用 → `.github/`**；另一处只放指针。详见 [guide/02 §5](../../../guide/02-目录结构.zh-CN.md)。
 
 ## 相关
 
 - [根目录规则](root-files.md) — 什么留在根、什么下沉；生成物 `.gitignore` 掉
-- [agent 配置文件的提交纪律](agent-files.md) — `.claude/` 里哪些必须提交、哪些必须不提交
+- [agent 配置文件的提交纪律](agent-files.md) — 工具专属资产目录里哪些必须提交、哪些必须不提交
 - [ADR 存放位置与命名](../writing/adr.md) — `docs/adr/` 那一格该由谁填
 - [采用记录规则](../adoption/record.md) — 把"没有 X，且是刻意的"写成一份落在仓库里的文件
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体目录与文件名（附录，非规范）
 - [规则索引](../README.md) · [guide/02 · 目录结构](../../../guide/02-目录结构.zh-CN.md)
 - [十仓形态采样](../../../docs/evidence/2026-11-17-repo-sampling.md) — 文档目录命名与 `.github/` 内容的出处

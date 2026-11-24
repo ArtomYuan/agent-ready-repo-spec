@@ -3,10 +3,11 @@
 **English** · [简体中文](05-Agent参与怎么管理.zh-CN.md)
 
 > This chapter is about **what changes once agent commits become common**.
-> Sources: Anthropic's [Best practices](https://code.claude.com/docs/en/best-practices),
-> [Permissions](https://code.claude.com/docs/en/permissions), [Hooks](https://code.claude.com/docs/en/hooks),
-> [Worktrees](https://code.claude.com/docs/en/worktrees); GitHub's branch-protection and CODEOWNERS rules;
+> Sources: the vendor documentation excerpted in [evidence](../docs/evidence/2026-11-17-claude-code-docs.md)
+> (best practices, permissions, hooks, worktrees, settings); GitHub's branch-protection and CODEOWNERS rules;
 > and the agent gates **actually written down** in `cli/cli`, `python/cpython` and `microsoft/vscode`.
+> Generic terms for tool mechanisms are used throughout; their mapping to concrete mechanisms lives in the
+> [mechanism map](../spec/mechanism-map.md) (appendix, non-normative).
 
 ---
 
@@ -14,10 +15,10 @@
 
 | Question | Mechanism | Who enforces |
 |---|---|---|
-| **Who may change what** | branch protection, CODEOWNERS, deny rules, managed settings | platform / harness |
+| **Who may change what** | branch protection, CODEOWNERS, the permission declaration (deny list), managed settings | platform / harness |
 | **When may work start** | contribution eligibility gates, pre-flight checks | rules set by people, followed by the agent |
 | **How is it judged** | required checks, PR template, the human's final vote | CI + a person |
-| **How is it recorded and reverted** | attribution trailer, CHANGELOG, ADRs, PR discussion, worktrees | tooling + convention |
+| **How is it recorded and reverted** | session attribution trailer, CHANGELOG, ADRs, PR discussion, worktrees | tooling + convention |
 
 The official position, in one line:
 
@@ -53,7 +54,7 @@ Two notes on bypass:
 ### 1.2 Give the governance surface its own owners
 
 ```
-/.claude/               @org/agent-ops
+/<tool asset dir>/      @org/agent-ops
 /.github/workflows/     @org/agent-ops
 /AGENTS.md              @org/agent-ops
 ```
@@ -130,13 +131,14 @@ duplicates" becomes an executable action.
 
 | What | Mechanism | Note |
 |---|---|---|
-| who wrote this commit | **git trailer** (Claude Code writes `Co-Authored-By: <model> <noreply@anthropic.com>` by default) | configured via `attribution.commit`; do not invent a custom `Agent:` line |
+| who wrote this commit | **session attribution trailer** (if your tool adds a `Co-Authored-By: <model> <noreply address>` trailer by default; original wording in [evidence §1](../docs/evidence/2026-11-17-claude-code-docs.md)) | configured via the tool's attribution setting; do not invent a custom `Agent:` line |
 | what changed in this version | `CHANGELOG.md` | user-visible changes only, with PR numbers |
 | why it was designed this way | `docs/adr/` | options must say why they were rejected |
 | what was discussed | PR description and comments | the template forces structure so discussion doesn't scatter |
 
 **Why attribution matters**: it is the only clue that later answers "who wrote this, and can it be reproduced".
-Turning it off (`attribution: false` or an empty string) is knowingly discarding auditability — which is why it is the
+Turning it off (the tool's attribution setting set to false or an empty string) is knowingly discarding
+auditability — which is why it is the
 only `should` among this repo's commit-related rules.
 
 ---
@@ -196,11 +198,11 @@ directory** is much harder to bypass than spreading them out.
 |---|---|---|
 | The agent commits straight to main | no review, no rollback point | branch protection |
 | CODEOWNERS present but `Require review from Code Owners` off | looks like governance, does nothing | enable the toggle |
-| The agent can edit `.github/workflows/` and `.claude/` | it can let itself through | separate owners + deny rules |
+| The agent can edit `.github/workflows/` and the tool-specific asset directory | it can let itself through | separate owners + deny rules |
 | Attribution turned off | you cannot tell which commits came from a model | keep the trailer |
 | "Tested" as the only verification | false green | require pasted output |
 | One PR mixing three rounds of refactoring | unreviewable, unrevertable | enforce focus; split |
-| A `prompt` hook as the security gate | still a model decision | `command` hook + `exit 2` + `onFailure: block` |
+| A `prompt` hook as the security gate | still a model decision | a `command` gate hook returning the blocking exit code, plus `onFailure: block` |
 
 ---
 
@@ -209,7 +211,7 @@ directory** is much harder to bypass than spreading them out.
 **Must hold (if not, governance is not installed)**
 
 - [ ] Is branch protection on? Is `Require review from Code Owners` on?
-- [ ] Do `/.claude/`, `/.github/workflows/` and `/AGENTS.md` have their own owners?
+- [ ] Does the tool-specific asset directory, and do `/.github/workflows/` and `/AGENTS.md`, have their own owners?
 - [ ] Can an incident be undone with a single `git revert`?
 - [ ] Is any "no exceptions" rule still only written in a document?
 
@@ -227,11 +229,11 @@ directory** is much harder to bypass than spreading them out.
 
 | Claim | Source |
 |---|---|
-| "the last word goes to branch protection and the person who approves the merge" | [Best practices](https://code.claude.com/docs/en/best-practices) |
-| how far deny rules, sandbox and managed settings actually bind | [Permissions](https://code.claude.com/docs/en/permissions) · [Settings](https://code.claude.com/docs/en/settings) |
-| hook determinism, `exit 2`, `onFailure: block` | [Hooks reference](https://code.claude.com/docs/en/hooks) |
-| worktree isolation and `.worktreeinclude` | [Worktrees](https://code.claude.com/docs/en/worktrees) |
-| the default `Co-Authored-By` trailer and `attribution` | [Settings reference · Git and attribution](https://code.claude.com/docs/en/settings-reference) |
+| "the last word goes to branch protection and the person who approves the merge" | [evidence §3](../docs/evidence/2026-11-17-claude-code-docs.md) |
+| how far the deny list, sandbox and managed settings actually bind | [permission declaration and gate hook](../spec/rules/agent-config/permissions.md) |
+| gate-hook determinism, the blocking exit code, `onFailure: block` | [permission declaration and gate hook](../spec/rules/agent-config/permissions.md) |
+| worktree isolation and the tool's worktree-include file | git worktrees; the include file is a per-tool convention (see the [mechanism map](../spec/mechanism-map.md)) |
+| the default `Co-Authored-By` trailer and the attribution setting | [evidence §1](../docs/evidence/2026-11-17-claude-code-docs.md) |
 | eligibility gates before starting, "done ≠ may submit" | `AGENTS.md` in `cli/cli` (measured) |
 | read the AI policy first, no auto-generated issues, de-duplication command | `AGENTS.md` in `python/cpython` (measured) |
 | overlay + explicit precedence; capabilities and constraints under one governed directory | `.github/agents/agentic-workflows.md` in `cli/cli`, `.github/` in `microsoft/vscode` (measured) |

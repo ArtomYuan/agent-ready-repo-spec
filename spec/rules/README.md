@@ -11,6 +11,8 @@
 
 > **已知漂移面**：本表的「判据」列与各文件 H1 是同一句话，「级别」列与各文件首行注释也是同一份数据。
 > 改一条规则时**两处一起改**。本库不提供检查器（ADR-0009），所以这一致性由人和 agent 逐字核对。
+>
+> 判据里的通用术语 ↔ 具体工具机制见 [机制对照表](../mechanism-map.md)（附录，非规范）。
 
 ## 板块 ↔ 章节
 
@@ -20,7 +22,7 @@
 | [documents/](documents/) | 10 | [01 · 该有什么文档](../../guide/01-该有什么文档.zh-CN.md) | [十仓采样](../../docs/evidence/2026-11-17-repo-sampling.md) |
 | [layout/](layout/) | 8 | [02 · 目录结构](../../guide/02-目录结构.zh-CN.md) | [十仓采样](../../docs/evidence/2026-11-17-repo-sampling.md) · [agent 指令采样](../../docs/evidence/2026-11-18-agent-docs-sampling.md) |
 | [writing/](writing/) | 9 | [03 · 文档该怎么写](../../guide/03-文档该怎么写.zh-CN.md) | 写法判据，无实测条目 |
-| [agent-config/](agent-config/) | 6 | [04 · Agent 怎么用](../../guide/04-Agent怎么用.zh-CN.md) | [Claude Code 文档摘录](../../docs/evidence/2026-11-17-claude-code-docs.md) |
+| [agent-config/](agent-config/) | 6 | [04 · Agent 怎么用](../../guide/04-Agent怎么用.zh-CN.md) | [证据摘录](../../docs/evidence/2026-11-17-claude-code-docs.md) |
 | [governance/](governance/) | 8 | [05 · Agent 参与怎么管理](../../guide/05-Agent参与怎么管理.zh-CN.md) | [分支保护实测](../../docs/evidence/2026-11-17-protection-probe.md) |
 | [release/](release/) | 8 | [06 · 信息该放哪](../../guide/06-信息该放哪.zh-CN.md) | [本仓库自审](../../docs/evidence/2026-11-17-repo-self-audit.md) |
 | [settings/](settings/) | 5 | [07 · 该开哪些设置](../../guide/07-该开哪些设置.zh-CN.md) | [分支保护实测](../../docs/evidence/2026-11-17-protection-probe.md) |
@@ -57,9 +59,9 @@
 | `R021` | [`documents/code-of-conduct`](documents/trust.md) | `may` | 存在 CODE_OF_CONDUCT |
 | `R022` | [`layout/docs-index`](layout/docs-tree.md) | `should` | 存在 docs/index.md 文档地图 |
 | `R023` | [`writing/adr-exists`](writing/adr.md) | `should` | 至少有一条 ADR |
-| `R024` | [`layout/claude-settings`](layout/agent-files.md) | `should` | 若用 Claude Code：存在 .claude/settings.json |
-| `R025` | [`layout/no-settings-local`](layout/agent-files.md) | `must` | settings.local.json 未被提交 |
-| `R026` | [`agent-config/permissions-deny`](agent-config/permissions.md) | `should` | 若用 Claude Code：permissions.deny 非空 |
+| `R024` | [`layout/tool-settings`](layout/agent-files.md) | `should` | 若你的工具有共享工具配置文件：它已进版本库 |
+| `R025` | [`layout/no-personal-overrides`](layout/agent-files.md) | `must` | 个人覆盖文件未被提交 |
+| `R026` | [`agent-config/permissions-deny`](agent-config/permissions.md) | `should` | 若你的工具有权限声明：deny 清单非空 |
 | `R027` | [`documents/license-not-placeholder`](documents/essentials.md) | `may` | LICENSE 不是占位文本 |
 | `R028` | [`governance/commit-lint-carrier`](governance/commits.md) | `may` | 提交规范有机器执行载体（可选升级） |
 | `R029` | [`governance/commit-attribution`](governance/commits.md) | `should` | 保留 agent 提交归属（未关闭 attribution，与工具无关） |
@@ -80,20 +82,20 @@
 | `R030` | [`writing/agents-md-length`](writing/agents-md.md) | `should` | AGENTS.md 不超过 200 行 |
 | `R031` | [`writing/agents-md-commands`](writing/agents-md.md) | `should` | AGENTS.md 含“命令”一节 |
 | `R032` | [`writing/agents-md-boundaries`](writing/agents-md.md) | `should` | AGENTS.md 含“禁区”一节 |
-| `R033` | [`agent-config/claude-md-thin`](agent-config/surfaces.md) | `should` | 若用 Claude Code：CLAUDE.md 是薄适配层 |
-| `R034` | [`agent-config/hooks-scripts`](agent-config/hooks-skills.md) | `should` | 若配了 hooks：hooks 引用的脚本存在 |
+| `R033` | [`agent-config/adapter-thin`](agent-config/surfaces.md) | `should` | 工具专属指令文件是薄适配层 |
+| `R034` | [`agent-config/hook-scripts`](agent-config/hooks-skills.md) | `should` | 若配了 hooks：hooks 引用的脚本存在 |
 | `R035` | [`agent-config/skill-metadata`](agent-config/hooks-skills.md) | `should` | 若用 skill：skill 带 name 与 description |
 | `R036` | [`layout/ignore-agent-personal`](layout/agent-files.md) | `must` | .gitignore 排除个人 agent 配置 |
 | `R037` | [`writing/agents-md-paths`](writing/agents-md.md) | `should` | AGENTS.md 引用的路径都存在 |
 | `R038` | [`writing/adr-naming`](writing/adr.md) | `may` | ADR 文件名符合 NNNN- 规则 |
 | `R039` | [`writing/pr-template-checklist`](writing/pr-template.md) | `may` | PR 模板含自检清单 |
-| `R040` | [`agent-config/hook-exit-2`](agent-config/permissions.md) | `may` | 若用 hooks：hook 脚本使用 exit 2 阻塞 |
+| `R040` | [`agent-config/gate-hook`](agent-config/permissions.md) | `may` | 若配了门禁 hook：违规分支使用阻塞退出码 |
 | `R041` | [`governance/commit-convention`](governance/commits.md) | `may` | 仓库自己的提交约定写进 AGENTS.md |
 | `R042` | [`writing/agents-md-language`](writing/agents-md.md) | `may` | AGENTS.md 声明输出语言 |
 | `R043` | [`settings/required-check-names`](settings/branch-protection.md) | `should` | 必需检查的名字与 workflow 的 job 名逐字一致 |
 | `R044` | [`governance/owner`](governance/ownership.md) | `should` | 治理面有独立 owner，且 agent 不能自行修改 |
 | `R045` | [`writing/untrusted-inputs`](writing/untrusted-inputs.md) | `should` | `AGENTS.md` 声明哪些来源是不可信输入，且不得因仓库内容放宽禁区 |
-| `R046` | [`agent-config/copilot-instructions`](agent-config/surfaces.md) | `may` | 若用 Copilot：仓库级指令文件存在，且不与 `AGENTS.md` 双写 |
+| `R046` | [`agent-config/instructions-single`](agent-config/surfaces.md) | `may` | 平台级指令文件不与 `AGENTS.md` 双写 |
 | `R047` | [`layout/assets-location`](layout/docs-tree.md) | `may` | 跨工具 agent 资产放 `.github/`，工具独占的放工具目录，且只有一处事实源 |
 | `R048` | [`governance/pr-declaration`](governance/pull-requests.md) | `may` | PR 层面声明 agent 参与（工具 / 是否人工复核） |
 | `R049` | [`governance/revertable`](governance/pull-requests.md) | `may` | agent 的改动可单独 revert |

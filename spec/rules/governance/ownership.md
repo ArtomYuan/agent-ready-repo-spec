@@ -3,6 +3,7 @@
 > 板块 `governance` · 本页承载 2 条条目：`governance/owner`（L3 · should · 旧 `R044`）·
 > `governance/credentials`（L2 · should · 旧 `R062`）
 > 讲解与事故见 [guide/05 · Agent 参与怎么管理](../../../guide/05-Agent参与怎么管理.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -17,7 +18,7 @@
 | `/AGENTS.md` | agent 处理这个仓库的唯一事实源，"禁区"全在里面 | 禁区可以被一次提交抹掉 |
 | `/.github/workflows/` | 必需检查的生产者 | 改 job 名 = 拆门禁（见 [ADR-0010](../../../docs/adr/0010-required-checks-self-lock.md)）；加 job = 给自己放行 |
 | `/.github/` 其余部分 | PR 模板、Issue 模板、`CODEOWNERS` 本身 | 评审结构被削弱，且改 `CODEOWNERS` 就是改"谁必须批" |
-| 工具目录（若存在，如 `/.claude/`） | 权限基线、hooks、skills | deny 规则一删，本地那层拦截当场消失 |
+| 工具专属资产目录（若存在） | 权限基线、hooks、skills | deny 规则一删，本地那层拦截当场消失 |
 
 判断标准不是"这个文件重不重要"，而是**"改它能不能扩大改动者的权限"**。
 `spec/` 里的判据很重要，但改它不会让谁获得新权限；`/.github/workflows/` 一行都不重要，改对一行就能让门禁消失。
@@ -52,7 +53,7 @@
 | 这些行指向**独立**的 owner | **没做到**：五行全部指向同一个 `@ArtomYuan`。写代码的人、拥有治理面的人、批准合并的人是同一个人 | 同上 |
 | `Require review from Code Owners` | **没开**：2026-11-17 的 PUT body 里 `require_code_owner_reviews = $false` | [docs/evidence/2026-11-17-protection-probe.md](../../../docs/evidence/2026-11-17-protection-probe.md) §1 |
 | 文件是否生效 | **不生效**：`guide/00` 与本库 `CHANGELOG.md` 都明写"CODEOWNERS 目前只是索引 / 目前不生效" | [guide/00 §6 这个库自己怎么做的](../../../guide/00-接入决策.zh-CN.md) |
-| 本地 deny 基线 | **不适用**：本库按 ADR-0009 删掉了 `.claude/`，也没有权限基线文件；这一层等于空 | ADR-0009 |
+| 本地 deny 基线 | **不适用**：本库按 ADR-0009 删掉了工具专属资产目录，也没有权限基线文件；这一层等于空 | ADR-0009 |
 
 还有一处**文档与平台是两份数据**的实证：`AGENTS.md` 的保护表写"必须 PR；1 个人工批准"，
 而 2026-11-17 的实测回读是 `required_approving_review_count = 0`（允许自己合并，但必须走 PR）。
@@ -126,7 +127,7 @@ token 走环境变量（`GH_TOKEN` 只对 `gh` 生效，原生 git 不认），g
 
 **为什么。** `AGENTS.md`、`.github/workflows/`、`CODEOWNERS` 是"规则本身"。谁能改它们，谁就能改自己的权限边界；`CODEOWNERS` 只有一行 `*` 等于没有区分。
 
-**怎么做。** `CODEOWNERS` 给 `/AGENTS.md`、`/.github/`、（若存在）`/.claude/` 各单独一行；ruleset 开 `Require review from Code Owners`——**不开它就只是一份索引，不指派任何人**；权限基线里 deny 掉这些路径的 `Edit`。
+**怎么做。** `CODEOWNERS` 给 `/AGENTS.md`、`/.github/`、（若存在）工具专属资产目录 各单独一行；ruleset 开 `Require review from Code Owners`——**不开它就只是一份索引，不指派任何人**；权限基线里 deny 掉这些路径的 `Edit`。
 
 ### agent 使用的凭证是最小权限，且不落盘
 
@@ -144,6 +145,7 @@ token 走环境变量（`GH_TOKEN` 只对 `gh` 生效，原生 git 不认），g
 - [分支保护规则](../settings/branch-protection.md) — ruleset 六项、`bypass_actors`、必需检查名
 - [CI 规则](../settings/ci.md) — workflow 的 `permissions` 与 Action 固定 SHA（同一件事的另一端）
 - [权限 deny 基线](../agent-config/permissions.md) — 第三道门：agent 动手之前的本地拦截
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体目录与权限声明文件（附录，非规范）
 - [采用记录规则](../adoption/record.md) — 偏离 owner 判据时，理由与"谁能改 ruleset"的落点
 - [内容规则](../release/content.md) — `release/self-noncompliance`（旧 `R069`）：不合格要在 Release 里自曝
 - [guide/05 · Agent 参与怎么管理](../../../guide/05-Agent参与怎么管理.zh-CN.md) — 治理面单独 owner、反例表、自锁附录

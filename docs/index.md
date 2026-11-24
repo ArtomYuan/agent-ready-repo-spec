@@ -12,6 +12,7 @@
 | 写某一份具体文档 | [guide/03-文档该怎么写.zh-CN.md](../guide/03-文档该怎么写.zh-CN.md) |
 | 该点哪些仓库设置 | [guide/07-该开哪些设置.zh-CN.md](../guide/07-该开哪些设置.zh-CN.md) |
 | 看填好的 `AGENTS.md` 成品（两种形态） | [examples/](../examples/README.zh-CN.md) |
+| 判据里的通用术语对应到我工具的哪个文件 | [spec/mechanism-map.md](../spec/mechanism-map.md)（附录：机制对照表，非规范） |
 | 贡献一条规则或改一章 | [CONTRIBUTING.md](../CONTRIBUTING.md) |
 
 ## 我是 agent，要替人管一个库
@@ -32,6 +33,7 @@
 | 为什么把"GitHub 管理面"提升成可判定条目（`R043`、`R060`–`R063`） | [adr/0011-github-management-rules.md](adr/0011-github-management-rules.md) |
 | 为什么"发布物怎么写"也要进清单（`R064`–`R070`） | [adr/0012-release-notes-spec.md](adr/0012-release-notes-spec.md) |
 | 为什么规则按板块分**主题文档**、ID 换成 `板块/主题`（2.0.0） | [adr/0013-rules-by-domain.md](adr/0013-rules-by-domain.md) |
+| 为什么规范正文**零工具名**、通用术语表与旧 ID 映射在哪 | [adr/0014-tool-neutral-spec.md](adr/0014-tool-neutral-spec.md) |
 | 中英两版谁是事实源 | [adr/0008-bilingual-equal-status.md](adr/0008-bilingual-equal-status.md) |
 | **证据与实测数据** | [evidence/](evidence/)（按采集日期命名：仓库采样、本仓库自审、官方文档摘录、分支保护实测） |
 

@@ -2,10 +2,10 @@
 **[English](05-Agent参与怎么管理.md)** · 简体中文
 
 > 这一章讲**当 agent 的提交开始变多时，怎么管**。
-> 依据：Anthropic 的 [Best practices](https://code.claude.com/docs/en/best-practices)、
-> [Permissions](https://code.claude.com/docs/en/permissions)、[Hooks](https://code.claude.com/docs/en/hooks)、
-> [Worktrees](https://code.claude.com/docs/en/worktrees)；GitHub 的分支保护与 CODEOWNERS 规则；
+> 依据是[证据摘录](../docs/evidence/2026-11-17-claude-code-docs.md)里落下来的官方文档片段
+> （最佳实践、权限、hook、worktree、设置）；GitHub 的分支保护与 CODEOWNERS 规则；
 > 以及 `cli/cli`、`python/cpython`、`microsoft/vscode` 仓库里**真实写着的** agent 门槛。
+> 全章用通用术语指代各类工具机制；通用术语与具体机制的对照见 [机制对照表](../spec/mechanism-map.md)（附录，非规范）。
 
 ---
 
@@ -13,10 +13,10 @@
 
 | 问题 | 机制 | 谁执行 |
 |---|---|---|
-| **谁能改** | 分支保护、CODEOWNERS、deny 规则、managed settings | 平台 / harness |
+| **谁能改** | 分支保护、CODEOWNERS、权限声明（deny 清单）、managed settings | 平台 / harness |
 | **什么时候允许动手** | 贡献资格门槛、开工前检查 | 人定的规则 + agent 遵守 |
 | **怎么判合格** | required checks、PR 模板、人的最后一票 | CI + 人 |
-| **怎么留痕与回滚** | 归属 trailer、CHANGELOG、ADR、PR 讨论、worktree | 工具 + 惯例 |
+| **怎么留痕与回滚** | 会话署名 trailer、CHANGELOG、ADR、PR 讨论、worktree | 工具 + 惯例 |
 
 一句话立场（官方原话）：
 
@@ -50,7 +50,7 @@
 ### 1.2 治理面单独设 owner
 
 ```
-/.claude/               @org/agent-ops
+/<工具资产目录>/         @org/agent-ops
 /.github/workflows/     @org/agent-ops
 /AGENTS.md              @org/agent-ops
 ```
@@ -128,13 +128,13 @@
 
 | 留痕对象 | 机制 | 说明 |
 |---|---|---|
-| 这次提交是谁写的 | **git trailer**（Claude Code 默认写 `Co-Authored-By: <model> <noreply@anthropic.com>`） | 配置项是 `attribution.commit`；不要自造 `Agent:` 之类的新行 |
+| 这次提交是谁写的 | **会话署名 trailer**（若你的工具默认写 `Co-Authored-By: <model> <noreply 地址>`；原文见[证据摘录 §1](../docs/evidence/2026-11-17-claude-code-docs.md)） | 配置项是该工具的归属（attribution）设置；不要自造 `Agent:` 之类的新行 |
 | 这个版本改了什么 | `CHANGELOG.md` | 只写用户可感知的变化，带 PR 号 |
 | 为什么这么设计 | `docs/adr/` | 选项里必须写"为什么不选" |
 | 当时讨论了什么 | PR 描述与评论 | 模板强制了结构，讨论才不会散 |
 
 **归属为什么重要**：它是事后唯一能回答"这段代码是谁写的、能不能复现"的线索。
-把它关掉（`attribution: false` 或空串）等于主动放弃审计能力——这也是本库把它列为 `should` 的唯一一条提交相关规则。
+把它关掉（把工具的归属设置设为 `false` 或空串）等于主动放弃审计能力——这也是本库把它列为 `should` 的唯一一条提交相关规则。
 
 ---
 
@@ -190,11 +190,11 @@ Precedence: repository overlay instructions override defaults in this agent when
 |---|---|---|
 | agent 直推 main | 没有评审、没有回滚点 | 分支保护 |
 | 开了 CODEOWNERS 但没开 `Require review from Code Owners` | 看起来有治理，实际零效果 | 打开那个开关 |
-| agent 能改 `.github/workflows/` 和 `.claude/` | 自己给自己放行 | 治理面单独 owner + deny |
+| agent 能改 `.github/workflows/` 和工具专属资产目录 | 自己给自己放行 | 治理面单独 owner + deny |
 | 关掉 attribution | 事后分不清哪次提交是模型写的 | 保留 trailer |
 | 用 PR 描述里一句"已测试"当验证 | 假绿 | 要求贴输出 |
 | 一个 PR 混三轮重构 | 无法评审、无法回滚 | 强制聚焦，拆 PR |
-| 用 prompt hook 做安全拦截 | 仍是模型判断 | `command` hook + `exit 2` + `onFailure: block` |
+| 用 prompt hook 做安全拦截 | 仍是模型判断 | `command` 型门禁 hook 返回阻塞退出码 + `onFailure: block` |
 
 ---
 
@@ -203,7 +203,7 @@ Precedence: repository overlay instructions override defaults in this agent when
 **硬性（这四条不成立，治理等于没装）**
 
 - [ ] 分支保护开了吗？`Require review from Code Owners` 开了吗？
-- [ ] `/.claude/`、`/.github/workflows/`、`/AGENTS.md` 有独立 owner 吗？
+- [ ] 工具专属资产目录、`/.github/workflows/`、`/AGENTS.md` 有独立 owner 吗？
 - [ ] 出问题时能用一条 `git revert` 撤掉吗？
 - [ ] 有没有哪条"绝不能例外"的规则还只写在文档里？
 
@@ -221,11 +221,11 @@ Precedence: repository overlay instructions override defaults in this agent when
 
 | 论断 | 来源 |
 |---|---|
-| "最后一票在分支保护和批准合并的人" | [Best practices](https://code.claude.com/docs/en/best-practices) |
-| deny 规则、sandbox、managed settings 的强制力 | [Permissions](https://code.claude.com/docs/en/permissions) · [Settings](https://code.claude.com/docs/en/settings) |
-| hook 的确定性、`exit 2`、`onFailure: block` | [Hooks reference](https://code.claude.com/docs/en/hooks) |
-| worktree 隔离与 `.worktreeinclude` | [Worktrees](https://code.claude.com/docs/en/worktrees) |
-| 默认 `Co-Authored-By` trailer、`attribution` 配置 | [Settings reference · Git and attribution](https://code.claude.com/docs/en/settings-reference) |
+| "最后一票在分支保护和批准合并的人" | [证据摘录 §3](../docs/evidence/2026-11-17-claude-code-docs.md) |
+| 权限声明（deny 清单）、sandbox、managed settings 的强制力 | [权限声明与门禁 hook](../spec/rules/agent-config/permissions.md) |
+| 门禁 hook 的确定性、阻塞退出码、`onFailure: block` | [权限声明与门禁 hook](../spec/rules/agent-config/permissions.md) |
+| worktree 隔离与工具的 worktree 附带文件声明 | git worktree；附带文件清单是各工具自己的约定（见[机制对照表](../spec/mechanism-map.md)） |
+| 默认 `Co-Authored-By` trailer、归属（attribution）配置 | [证据摘录 §1](../docs/evidence/2026-11-17-claude-code-docs.md) |
 | 开工前资格门槛、"实现完 ≠ 可提交" | `cli/cli` 的 `AGENTS.md`（实测） |
 | 先读 AI 政策、不许自动开 issue、去重命令 | `python/cpython` 的 `AGENTS.md`（实测） |
 | 覆盖层 + 优先级声明；agent 能力与约束同目录受管 | `cli/cli` 的 `.github/agents/agentic-workflows.md`、`microsoft/vscode` 的 `.github/`（实测） |

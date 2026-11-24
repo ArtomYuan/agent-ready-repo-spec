@@ -1,7 +1,8 @@
 # 权限与 hook 门禁规则
 
-> 板块 `agent-config` · 本页承载 2 条条目：`agent-config/permissions-deny`（L2 · should · 旧 `R026`）· `agent-config/hook-exit-2`（L3 · may · 旧 `R040`）
+> 板块 `agent-config` · 本页承载 2 条条目：`agent-config/permissions-deny`（L2 · should · 旧 `R026`）· `agent-config/gate-hook`（L3 · may · 旧 `R040`）
 > 讲解与依据见 [guide/04 · Agent 怎么用](../../../guide/04-Agent怎么用.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -15,18 +16,19 @@
 [guide/04 §0](../../../guide/04-Agent怎么用.zh-CN.md) 把每一条给 agent 的指令分成"模型自己决定"和"harness 强制执行"两类。
 本页这两条都属于**确定性**那一侧——不管模型怎么想，每一次都执行。但它们的执行方式不同：
 
-| | 声明式禁止（`deny`） | 过程式拦截（hook + `exit 2`） |
+| | 声明式禁止（权限声明里的 `deny`） | 过程式拦截（门禁 hook + 阻塞退出码） |
 |---|---|---|
 | 谁来判 | 工具本体按规则匹配这次调用 | 你的脚本自己判 |
 | 能表达什么 | 工具名 + 路径 / 命令的**字面模式** | 任意逻辑：读 diff、看当前分支、跑一遍 formatter |
 | 判断成本 | 零代码，一行配置 | 一个脚本，加上长期维护它 |
 | 典型失效 | 模式没覆盖到的写法直接放行 | 脚本路径不存在、退出码用错、异常时默认放行 |
-| 对应条目 | `agent-config/permissions-deny`（L2 · should） | `agent-config/hook-exit-2`（L3 · may），脚本本身的存在性由 `agent-config/hooks-scripts` 管 |
+| 对应条目 | `agent-config/permissions-deny`（L2 · should） | `agent-config/gate-hook`（L3 · may），脚本本身的存在性由 `agent-config/hook-scripts` 管 |
 
 [guide/04 §3](../../../guide/04-Agent怎么用.zh-CN.md) 抄的是官方那三个例子，正好一条一例：
 "不要读 `.env`" 用 `permissions.deny: ["Read(./.env)"]`；"改完必须格式化" 用 `PostToolUse` hook 直接跑 formatter；
 "不要动 `migrations/`" 两条路都行——`Edit(./migrations/**)` deny，**或** hook 里 `exit 2`。
 第三个例子可以二选一，前两个不行：`.env` 不需要算，格式化算不了成"要不要做"。
+这些写法里的设置名与事件名都是工具专有的，对应关系见 [机制对照表](../../mechanism-map.md)。
 
 ## 为什么两个都要
 
@@ -35,7 +37,7 @@
 于是它们只能留在 `AGENTS.md` 里当提示，而提示是可以被忽略的。
 
 **只有 hook 会把门禁变成一段会坏、会指错、会不阻断的代码。** hook 是脚本，脚本有 bug：
-路径写错时它根本不运行（`agent-config/hooks-scripts`），退出码用错时它运行了但拦不住（本页 `agent-config/hook-exit-2`）。
+路径写错时它根本不运行（`agent-config/hook-scripts`），退出码用错时它运行了但拦不住（本页 `agent-config/gate-hook`）。
 `deny` 的价值恰恰是**零代码**——没有东西可以坏。
 
 所以顺序是固定的：**先写 `deny`，把 `deny` 表达不了的少数几条升级成 hook。**
@@ -44,7 +46,7 @@
 
 ## 阻塞只有一种写法
 
-`exit 2` 之所以单独成条，是因为**另外两种退出码看起来都像在工作**：
+阻塞退出码之所以单独成条，是因为**另外两种退出码看起来都像在工作**（下面表里的 `0` / `1` / `2` 是上游定义，具体工具用哪个值见 [机制对照表](../../mechanism-map.md)）：
 
 | 退出码 | 实际效果 | 什么时候用 |
 |---|---|---|
@@ -52,13 +54,13 @@
 | `1` | **非阻塞**错误：报错被显示出来，流程照走 | 警告，且你接受它继续 |
 | `2` | **阻塞**：这次调用被拦下 | 真正的门禁 |
 
-三个退出码与 stderr 反馈通道的语义出自官方 Hooks reference
-（[code.claude.com/docs/en/hooks](https://code.claude.com/docs/en/hooks)，与
-[guide/05 附录](../../../guide/05-Agent参与怎么管理.zh-CN.md) 引的是同一条链接）；
+三个退出码与 stderr 反馈通道的语义出自上游 Hooks reference 的摘录（见
+[证据摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md)，与
+[guide/05 附录](../../../guide/05-Agent参与怎么管理.zh-CN.md) 引的是同一条上游链接）；
 本库摘录里只落了 `exit 2`（[guide/04 §3](../../../guide/04-Agent怎么用.zh-CN.md)），`0` / `1` 两行是上游定义。
 
 写 `1` 的 hook 是最阴险的一种：它有日志、有报错、CI 里看着也红，但 agent 该改的文件一个都没被拦住。
-判据因此不是"有没有 hook"，而是"违规分支是不是 `exit 2`"。
+判据因此不是"有没有 hook"，而是"违规分支是不是阻塞退出码"。
 
 还有一条配套的：**写 stderr 再 `exit 2`**。stderr 是这条 hook 唯一的反馈通道——只 `exit 2` 不写 stderr，
 模型只知道被拦了，不知道为什么，于是它会换个写法再试一次，而不是去修真正的问题。
@@ -78,38 +80,39 @@
 ## 本库的诚实说明
 
 **本库这两条都不适用，而不是"已满足"。** [ADR-0009](../../../docs/adr/0009-spec-only-no-tooling.md) 把
-`.claude/`（settings、hooks、skills、commands）与 `CLAUDE.md` 全部删掉了，理由写在它的第 3 条后果里：
-自带这些等于默认读者用 Claude Code，而这份规范的立场是工具中立。
+工具专属资产目录（settings、hooks、skills、commands）与工具专属指令文件全部删掉了，理由写在它的第 3 条后果里：
+自带这些等于默认读者用某一个工具，而这份规范的立场是工具中立。
 所以本库现在**没有任何 `permissions.deny`，也没有任何 hook**；本页举的例子全部来自
 [templates/settings.json.tmpl](../../../templates/settings.json.tmpl)（给**被指导仓库**复制的模板）与官方文档摘录
-[Claude Code 文档摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md)。
+[证据摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md)。
 本库唯一真正硬的东西是平台侧那道闸：`main` 的 ruleset 加两个必需检查（链接检查 / 双语配对），
 见 [分支保护规则](../settings/branch-protection.md)。
 
 ## 条目
 
-### 若用 Claude Code：permissions.deny 非空
+### 若你的工具有权限声明：deny 清单非空
 
 `agent-config/permissions-deny` · L2 · should · 旧 `R026`
 
 **为什么。** 没有 deny 就是全开；密钥路径与破坏性命令必须先封。
 
-**怎么做。** 至少 deny：Read(./.env)、Read(./secrets/**)、Bash(rm *)、Bash(git reset *)。
+**怎么做。** 至少 deny：Read(./.env)、Read(./secrets/**)、Bash(rm *)、Bash(git reset *)。具体语法见 [机制对照表](../../mechanism-map.md)。
 
-### 若用 hooks：hook 脚本使用 exit 2 阻塞
+### 若配了门禁 hook：违规分支使用阻塞退出码
 
-`agent-config/hook-exit-2` · L3 · may · 旧 `R040`
+`agent-config/gate-hook` · L3 · may · 旧 `R040`
 
-**为什么。** 阻塞类 hook 不收 exit 2 就等于没检查：exit 0 只进日志，exit 1 是非阻塞错误。
+**为什么。** 阻塞类 hook 不收阻塞退出码就等于没检查：放行码只进日志，非阻塞错误码照样让流程走过去。
 
-**怎么做。** 违规分支改为写 stderr 后 exit 2。
+**怎么做。** 违规分支改为写 stderr 后返回阻塞退出码（本库样本工具是 `exit 2`，见 [机制对照表](../../mechanism-map.md)）。
 
 ## 相关
 
 - [各工具的指令面](surfaces.md) — 哪些规矩只能写成提示，哪些必须升级成本页这两道闸
 - [hooks 与 skill 资产](hooks-skills.md) — hook 指向的脚本得真的存在，否则本页第二道闸是空的
-- [目录与 agent 文件](../layout/agent-files.md) — `.claude/settings.json` 该不该提交进版本库
+- [目录与 agent 文件](../layout/agent-files.md) — 共享工具配置文件该不该提交进版本库
 - [分支保护规则](../settings/branch-protection.md) — 平台侧的最后一道闸门
 - [凭证规则](../governance/ownership.md) — 拦不住时的爆炸半径
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体文件名与退出码（附录，非规范）
 - [guide/04 · Agent 怎么用](../../../guide/04-Agent怎么用.zh-CN.md) — §0 两类指令、§3 官方三例、§5 反例
-- [Claude Code 文档摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md) — 确定性 / 非确定性的原文依据
+- [证据摘录](../../../docs/evidence/2026-11-17-claude-code-docs.md) — 确定性 / 非确定性的原文依据

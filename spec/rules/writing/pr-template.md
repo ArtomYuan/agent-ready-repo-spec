@@ -2,6 +2,7 @@
 
 > 板块 `writing` · 本页承载 1 条条目：`writing/pr-template-checklist`（L3 · may · 旧 `R039`）
 > 讲解见 [guide/03 · 文档该怎么写](../../../guide/03-文档该怎么写.zh-CN.md)。
+> 通用术语与具体文件名的对应见 [机制对照表](../../mechanism-map.md)（附录，非规范）。
 
 ## 一句话
 
@@ -65,7 +66,7 @@
 | [templates/PULL_REQUEST_TEMPLATE.md.tmpl](../../../templates/PULL_REQUEST_TEMPLATE.md.tmpl)（给被指导仓库） | [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md)（本库自己用） |
 |---|---|
 | 已读 `AGENTS.md`，未触碰禁区 | `spec/rules/README.md` 是规则唯一改动源（没有第二份清单） |
-| 未修改 `.claude/`、`.github/workflows/`（如需修改已说明理由） | 中英两版在同一 PR 内同步（ADR-0008） |
+| 未修改工具专属资产目录、`.github/workflows/`（如需修改已说明理由） | 中英两版在同一 PR 内同步（ADR-0008） |
 | 新命令 / 新目录已写入 `AGENTS.md` | `CHANGELOG.md` 已更新；判据变化已升 `specVersion` |
 | 行为变更已更新 `CHANGELOG.md` | 没有引入可执行物或规则校验（脚本 / 依赖清单 / 对 `rules/README.md` 的机器校验；`docs.yml` 的文档一致性检查不在此列） |
 | 架构 / 选型变更已新增 ADR | 文档里的路径都存在 |
@@ -134,4 +135,5 @@
 - [声明不可信输入](untrusted-inputs.md) — PR 正文本身就是不可信输入源之一
 - [分支保护规则](../settings/branch-protection.md) — 清单拦不住的东西由谁拦
 - [权限与 hook 门禁规则](../agent-config/permissions.md) — 把"绝不能有例外"的约定升级成确定性机制
+- [机制对照表](../../mechanism-map.md) — 通用术语 ↔ 具体目录与文件名（附录，非规范）
 - [guide/03 · 文档该怎么写](../../../guide/03-文档该怎么写.zh-CN.md) — PR 模板骨架与"5 条上限"的原处
