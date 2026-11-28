@@ -4,12 +4,12 @@
 格式遵循 [Keep a Changelog](https://keepachangelog.com/)，版本号遵循 [SemVer](https://semver.org/)。
 更细的过程（谁在什么时候改了什么）看 `git log` 与 `docs/adr/`。
 
-## [Unreleased]
+## [3.0.0] - 2026-11-28
+
+`2.0.0 → 3.0.0`：6 条规则 ID 改名（承载页与判据句随之更新）——按 [spec/README.md](spec/README.md)
+「版本策略」"改规则 ID / 改规则文件路径 → major"，属 **major**；判定结果逐条不变（无新增、删除或收紧）。
 
 ### Changed —— 规范正文**零工具名**（specVersion → 3.0.0）
-
-`2.0.0 → 3.0.0`：6 条规则 ID 改名、判据句随之改写、承载页措辞全面抽象——
-按「版本策略」"改规则 ID → major"，属 **major**；判定结果逐条不变（见下）。
 
 - **ADR-0014**：规范正文（`spec/`、`guide/`、`templates/`、根文件）不再出现任何 agent 工具品牌名
   与其专属文件名；判据改用通用术语（工具专属指令文件、平台级指令文件、工具专属资产目录、
